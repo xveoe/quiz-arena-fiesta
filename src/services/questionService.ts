@@ -1,5 +1,5 @@
-
 import { toast } from "sonner";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface Question {
   question: string;
@@ -18,7 +18,7 @@ export const categories = [
   { id: "literature", name: "أدب" }
 ];
 
-// مجموعة من الأسئلة الافتراضية لكل فئة 
+// مجموعة من الأسئلة الافتراضية لكل فئة كنسخة احتياطية
 const fallbackQuestions: Record<string, Question[]> = {
   general: [
     {
@@ -94,7 +94,7 @@ const fallbackQuestions: Record<string, Question[]> = {
       correctAnswer: "هانيبال"
     },
     {
-      question: "ما هي الثورة التي أطاحت بالقيصر الروسي عام 1917؟",
+      question: "ما هي الثورة الت�� أطاحت بالقيصر الروسي عام 1917؟",
       options: ["الثورة البلشفية", "الثورة الفرنسية", "الثورة الصناعية", "ثورة المستعمرات الأمريكية"],
       correctAnswer: "الثورة البلشفية"
     },
@@ -213,7 +213,7 @@ const fallbackQuestions: Record<string, Question[]> = {
       correctAnswer: "البحر الميت"
     },
     {
-      question: "ما هي الدولة التي يمر بها خط الاستواء والتي تقع في قارة أمريكا الجنوبية؟",
+      question: "ما هو الدولة التي يمر بها خط الاستواء والتي تقع في قارة أمريكا الجنوبية؟",
       options: ["الإكوادور", "البرازيل", "كولومبيا", "فنزويلا"],
       correctAnswer: "الإكوادور"
     },
@@ -341,7 +341,7 @@ const fallbackQuestions: Record<string, Question[]> = {
     {
       question: "من اخترع البنسلين؟",
       options: ["ألكسندر فلمنج", "لويس باستير", "جوناس سالك", "روبرت كوخ"],
-      correctAnswer: "ألكسندر فلمنج"
+      correctAnswer: "ألكسندر فلمجين"
     },
     {
       question: "من هو مخترع الإنترنت؟",
@@ -421,7 +421,7 @@ const fallbackQuestions: Record<string, Question[]> = {
       correctAnswer: "الجاحظ"
     },
     {
-      question: "من هو شاعر الأندلس الشهير صاحب الموشحات؟",
+      question: "من هو شاعر الأندلس الشهير صاحب الموشقات؟",
       options: ["ابن زيدون", "لسان الدين بن الخطيب", "ابن زمرك", "ابن خفاجة"],
       correctAnswer: "لسان الدين بن الخطيب"
     },
@@ -438,33 +438,105 @@ const fallbackQuestions: Record<string, Question[]> = {
   ]
 };
 
-// We'll use a static approach since the current Gemini API seems to have issues
+// Initialize Google Generative AI with API key
+const API_KEY = "AIzaSyBcjp9TbyXAyNWH_mywRZSYWSPlPGO5ZSA"; // This is a demo key for testing only
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+async function generateQuestionsFromAPI(category: string, count: number = 10): Promise<Question[]> {
+  try {
+    console.log(`Using Gemini API to generate ${count} questions for category: ${category}`);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `
+      Generate ${count} multiple-choice trivia questions in Arabic about the category "${category}".
+      Return the result ONLY as a valid JSON array.
+      Each object in the array should have the following keys:
+      - "question": string in Arabic
+      - "options": array of 4 strings in Arabic
+      - "correctAnswer": string (must be one of the options)
+
+      Ensure the output is only the JSON array, with no introductory text or markdown formatting.
+      Make the questions challenging but not impossibly difficult.
+      For the ${category} category, ensure questions are relevant and accurate.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    console.log("Got response from Gemini API");
+    
+    // Try to parse JSON safely
+    let parsedQuestions;
+    try {
+      // Clean the text if it contains ```json ... ```
+      const cleanedText = text.replace(/^```json\s*|```$/g, '').trim();
+      parsedQuestions = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error("Failed to parse JSON response:", parseError);
+      console.error("Response text was:", text);
+      throw new Error("Invalid JSON format received from API.");
+    }
+
+    // Ensure the result is an array
+    if (!Array.isArray(parsedQuestions)) {
+      console.error("Parsed data is not an array:", parsedQuestions);
+      throw new Error("API did not return a valid array of questions.");
+    }
+
+    // Validate each question
+    const validQuestions = parsedQuestions.filter((q: any) => {
+      return (
+        q && 
+        typeof q.question === 'string' && 
+        Array.isArray(q.options) && 
+        q.options.length === 4 && 
+        typeof q.correctAnswer === 'string' &&
+        q.options.includes(q.correctAnswer)
+      );
+    });
+
+    if (validQuestions.length === 0) {
+      throw new Error("No valid questions were returned from the API.");
+    }
+
+    console.log(`Successfully generated ${validQuestions.length} valid questions`);
+    return validQuestions;
+  } catch (error) {
+    console.error("Error generating questions with Gemini API:", error);
+    throw error;
+  }
+}
+
+// Main function to generate questions
 export async function generateQuestions(category: string, count: number = 10): Promise<Question[]> {
   console.log("Generating questions for category:", category);
   
   try {
-    // Get the category questions from our fallback database
-    const categoryQuestions = fallbackQuestions[category];
+    // First try to generate questions using Gemini API
+    const generatedQuestions = await generateQuestionsFromAPI(category, count);
+    console.log(`Generated ${generatedQuestions.length} questions from Gemini API for ${category}`);
+    toast.success("تم توليد أسئلة جديدة بواسطة الذكاء الاصطناعي");
+    return generatedQuestions;
     
-    if (categoryQuestions && categoryQuestions.length > 0) {
-      console.log(`Generated ${categoryQuestions.length} questions from the database for ${category}`);
-      
-      // Return the questions or slice them if more than requested count
-      return categoryQuestions.length > count 
-        ? categoryQuestions.slice(0, count) 
-        : categoryQuestions;
-    } else {
-      // If no questions for this specific category, return general questions
-      console.log("No questions found for category, using general questions");
-      return fallbackQuestions.general.slice(0, count);
-    }
   } catch (error) {
-    console.error("Error generating questions:", error);
+    console.error("Error with Gemini API, falling back to local questions:", error);
     toast.error("حدث خطأ أثناء توليد الأسئلة، نستخدم الأسئلة المخزنة مسبقًا");
     
-    // Return general questions as fallback
-    return fallbackQuestions.general.slice(0, count);
+    // Fall back to the local database
+    const fallbackCategoryQuestions = fallbackQuestions[category];
+    
+    if (fallbackCategoryQuestions && fallbackCategoryQuestions.length > 0) {
+      console.log(`Using ${fallbackCategoryQuestions.length} fallback questions for ${category}`);
+      
+      // Return the questions or slice them if more than requested count
+      return fallbackCategoryQuestions.length > count 
+        ? fallbackCategoryQuestions.slice(0, count) 
+        : fallbackCategoryQuestions;
+    } else {
+      // If no questions for this specific category, return general questions
+      console.log("No fallback questions found for category, using general questions");
+      return fallbackQuestions.general.slice(0, count);
+    }
   }
 }
-
-// Future improvement: add more questions to each category

@@ -53,7 +53,7 @@ const LoadingQuestions = () => {
           </motion.div>
         </motion.div>
         
-        {/* Particle effects */}
+        {/* Particle effects - removed dot from inside star */}
         <motion.div 
           className="absolute top-0 left-0 transform -translate-x-1/2 -translate-y-1/2"
           animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}

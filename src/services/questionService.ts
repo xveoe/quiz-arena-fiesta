@@ -7,9 +7,6 @@ interface Question {
   correctAnswer: string;
 }
 
-const API_KEY = "AIzaSyB6QkAt9qP5iMZWktV9x4Veoq66zvtXSVk";
-const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
-
 export const categories = [
   { id: "general", name: "معلومات عامة" },
   { id: "history", name: "تاريخ" },
@@ -21,7 +18,7 @@ export const categories = [
   { id: "literature", name: "أدب" }
 ];
 
-// مجموعة من الأسئلة الافتراضية لكل فئة في حالة فشل API
+// مجموعة من الأسئلة الافتراضية لكل فئة 
 const fallbackQuestions: Record<string, Question[]> = {
   general: [
     {
@@ -34,106 +31,440 @@ const fallbackQuestions: Record<string, Question[]> = {
       options: ["النيل", "الأمازون", "المسيسيبي", "اليانغتسي"],
       correctAnswer: "النيل"
     },
+    {
+      question: "من هو مخترع المصباح الكهربائي؟",
+      options: ["توماس إديسون", "نيكولا تسلا", "ألبرت أينشتاين", "غراهام بيل"],
+      correctAnswer: "توماس إديسون"
+    },
+    {
+      question: "ما هي أكبر قارة في العالم؟",
+      options: ["آسيا", "أفريقيا", "أمريكا الشمالية", "أوروبا"],
+      correctAnswer: "آسيا"
+    },
+    {
+      question: "ما هي عملة اليابان؟",
+      options: ["الين", "الدولار", "اليورو", "الجنيه"],
+      correctAnswer: "الين"
+    },
+    {
+      question: "كم عدد أضلاع المسدس؟",
+      options: ["6", "5", "7", "8"],
+      correctAnswer: "6"
+    },
+    {
+      question: "أي من الحيوانات التالية ليس من الثدييات؟",
+      options: ["التمساح", "الخفاش", "الحوت", "الفيل"],
+      correctAnswer: "التمساح"
+    },
+    {
+      question: "ما هو العنصر الأكثر وفرة في القشرة الأرضية؟",
+      options: ["الأكسجين", "الحديد", "السيليكون", "الألومنيوم"],
+      correctAnswer: "الأكسجين"
+    },
+    {
+      question: "من هو مؤلف رواية 'الحرب والسلام'؟",
+      options: ["ليو تولستوي", "فيودور دوستويفسكي", "تشارلز ديكنز", "فيكتور هوغو"],
+      correctAnswer: "ليو تولستوي"
+    },
+    {
+      question: "ما هي أصغر دولة في العالم؟",
+      options: ["الفاتيكان", "موناكو", "ناورو", "توفالو"],
+      correctAnswer: "الفاتيكان"
+    }
   ],
-  // أسئلة افتراضية أخرى للفئات الأخرى...
+  history: [
+    {
+      question: "متى بدأت الحرب العالمية الأولى؟",
+      options: ["1914", "1918", "1939", "1945"],
+      correctAnswer: "1914"
+    },
+    {
+      question: "من هو أول رئيس للولايات المتحدة الأمريكية؟",
+      options: ["جورج واشنطن", "توماس جيفرسون", "أبراهام لينكولن", "جون آدمز"],
+      correctAnswer: "جورج واشنطن"
+    },
+    {
+      question: "متى فتح المسلمون الأندلس؟",
+      options: ["711 م", "622 م", "813 م", "1453 م"],
+      correctAnswer: "711 م"
+    },
+    {
+      question: "من هو القائد الذي عبر جبال الألب بالفيلة؟",
+      options: ["هانيبال", "الإسكندر الأكبر", "يوليوس قيصر", "نابليون بونابرت"],
+      correctAnswer: "هانيبال"
+    },
+    {
+      question: "ما هي الثورة التي أطاحت بالقيصر الروسي عام 1917؟",
+      options: ["الثورة البلشفية", "الثورة الفرنسية", "الثورة الصناعية", "ثورة المستعمرات الأمريكية"],
+      correctAnswer: "الثورة البلشفية"
+    },
+    {
+      question: "متى سقطت الإمبراطورية الرومانية الغربية؟",
+      options: ["476 م", "410 م", "1453 م", "330 م"],
+      correctAnswer: "476 م"
+    },
+    {
+      question: "من هو مؤسس الدولة العباسية؟",
+      options: ["أبو العباس السفاح", "هارون الرشيد", "المأمون", "المعتصم"],
+      correctAnswer: "أبو العباس السفاح"
+    },
+    {
+      question: "أين وقعت معركة حطين الشهيرة؟",
+      options: ["فلسطين", "مصر", "العراق", "سوريا"],
+      correctAnswer: "فلسطين"
+    },
+    {
+      question: "من هو فاتح القسطنطينية؟",
+      options: ["محمد الفاتح", "صلاح الدين الأيوبي", "طارق بن زياد", "قتيبة بن مسلم"],
+      correctAnswer: "محمد الفاتح"
+    },
+    {
+      question: "متى انتهت الحرب العالمية الثانية؟",
+      options: ["1945", "1939", "1918", "1950"],
+      correctAnswer: "1945"
+    }
+  ],
+  science: [
+    {
+      question: "ما هو أكبر عضو في جسم الإنسان؟",
+      options: ["الجلد", "الكبد", "الدماغ", "الرئتين"],
+      correctAnswer: "الجلد"
+    },
+    {
+      question: "ما هو العنصر الكيميائي الذي رمزه Fe؟",
+      options: ["الحديد", "الفضة", "الذهب", "الفلور"],
+      correctAnswer: "الحديد"
+    },
+    {
+      question: "كم عدد العظام في جسم الإنسان البالغ؟",
+      options: ["206", "300", "180", "240"],
+      correctAnswer: "206"
+    },
+    {
+      question: "ما هي أقرب نجمة إلى الأرض؟",
+      options: ["الشمس", "بروكسيما قنطورس", "سيريوس", "النجم القطبي"],
+      correctAnswer: "الشمس"
+    },
+    {
+      question: "ما هي الوحدة الأساسية للكتلة في النظام الدولي للوحدات؟",
+      options: ["الكيلوجرام", "الجرام", "الطن", "الباوند"],
+      correctAnswer: "الكيلوجرام"
+    },
+    {
+      question: "أي نوع من الإشعاع له أقصر طول موجي؟",
+      options: ["أشعة جاما", "الأشعة فوق البنفسجية", "الأشعة السينية", "موجات الراديو"],
+      correctAnswer: "أشعة جاما"
+    },
+    {
+      question: "ما هو العنصر الأكثر وفرة في الكون؟",
+      options: ["الهيدروجين", "الهيليوم", "الأكسجين", "الكربون"],
+      correctAnswer: "الهيدروجين"
+    },
+    {
+      question: "ما هي أسرع حاسة من حواس الإنسان؟",
+      options: ["الشم", "السمع", "البصر", "التذوق"],
+      correctAnswer: "الشم"
+    },
+    {
+      question: "من صاحب نظرية النسبية؟",
+      options: ["ألبرت أينشتاين", "إسحاق نيوتن", "نيلز بور", "ماري كوري"],
+      correctAnswer: "ألبرت أينشتاين"
+    },
+    {
+      question: "ما هو أكبر كوكب في المجموعة الشمسية؟",
+      options: ["المشتري", "زحل", "أورانوس", "نبتون"],
+      correctAnswer: "المشتري"
+    }
+  ],
+  geography: [
+    {
+      question: "ما هي أطول سلسلة جبال في العالم؟",
+      options: ["جبال الأنديز", "جبال الهيمالايا", "جبال روكي", "جبال الألب"],
+      correctAnswer: "جبال الأنديز"
+    },
+    {
+      question: "أي دولة تحتل أكبر مساحة في العالم؟",
+      options: ["روسيا", "كندا", "الصين", "الولايات المتحدة"],
+      correctAnswer: "روسيا"
+    },
+    {
+      question: "ما هي عاصمة أستراليا؟",
+      options: ["كانبرا", "سيدني", "ملبورن", "بريزبن"],
+      correctAnswer: "كانبرا"
+    },
+    {
+      question: "ما هي أكبر صحراء في العالم؟",
+      options: ["الصحراء الكبرى", "صحراء الربع الخالي", "صحراء غوبي", "صحراء أتاكاما"],
+      correctAnswer: "الصحراء الكبرى"
+    },
+    {
+      question: "ما هو أعمق محيط في العالم؟",
+      options: ["المحيط الهادئ", "المحيط الأطلسي", "المحيط الهندي", "المحيط المتجمد الشمالي"],
+      correctAnswer: "المحيط الهادئ"
+    },
+    {
+      question: "أي دولة تشتهر بأنها 'بلاد الشمس المشرقة'؟",
+      options: ["اليابان", "الصين", "تايلاند", "إسبانيا"],
+      correctAnswer: "اليابان"
+    },
+    {
+      question: "ما هو البحر الذي يطلق عليه 'البحر الميت'؟",
+      options: ["البحر الميت", "البحر الأحمر", "البحر الأبيض المتوسط", "بحر العرب"],
+      correctAnswer: "البحر الميت"
+    },
+    {
+      question: "ما هي الدولة التي يمر بها خط الاستواء والتي تقع في قارة أمريكا الجنوبية؟",
+      options: ["الإكوادور", "البرازيل", "كولومبيا", "فنزويلا"],
+      correctAnswer: "الإكوادور"
+    },
+    {
+      question: "ما هو أعلى جبل في إفريقيا؟",
+      options: ["كليمنجارو", "كينيا", "إلجون", "أطلس"],
+      correctAnswer: "كليمنجارو"
+    },
+    {
+      question: "ما هي أصغر قارة في العالم؟",
+      options: ["أستراليا", "أوروبا", "أنتاركتيكا", "أمريكا الشمالية"],
+      correctAnswer: "أستراليا"
+    }
+  ],
+  sports: [
+    {
+      question: "من هو اللاعب الذي فاز بأكبر عدد من الكرات الذهبية؟",
+      options: ["ليونيل ميسي", "كريستيانو رونالدو", "بيليه", "دييجو مارادونا"],
+      correctAnswer: "ليونيل ميسي"
+    },
+    {
+      question: "ما هي الدولة التي استضافت أول كأس عالم لكرة القدم؟",
+      options: ["أوروجواي", "البرازيل", "إيطاليا", "فرنسا"],
+      correctAnswer: "أوروجواي"
+    },
+    {
+      question: "كم عدد اللاعبين في فريق كرة السلة؟",
+      options: ["5", "6", "7", "11"],
+      correctAnswer: "5"
+    },
+    {
+      question: "أي رياضة تُلعب في ويمبلدون؟",
+      options: ["التنس", "الجولف", "الكريكيت", "الهوكي"],
+      correctAnswer: "التنس"
+    },
+    {
+      question: "من هو أسرع إنسان في العالم حاليًا؟",
+      options: ["أوساين بولت", "جاستن جاتلين", "يوهان بليك", "نواه لايلز"],
+      correctAnswer: "أوساين بولت"
+    },
+    {
+      question: "ما هي الرياضة الوطنية لليابان؟",
+      options: ["السومو", "الجودو", "الكاراتيه", "الكيندو"],
+      correctAnswer: "السومو"
+    },
+    {
+      question: "كم مرة فازت البرازيل بكأس العالم لكرة القدم؟",
+      options: ["5", "4", "6", "3"],
+      correctAnswer: "5"
+    },
+    {
+      question: "ما هو عدد الحلقات في شعار الألعاب الأولمبية؟",
+      options: ["5", "4", "6", "3"],
+      correctAnswer: "5"
+    },
+    {
+      question: "من هو لاعب كرة السلة الذي يُعرف باسم 'الملك جيمس'؟",
+      options: ["ليبرون جيمس", "مايكل جوردان", "كوبي براينت", "شاكيل أونيل"],
+      correctAnswer: "ليبرون جيمس"
+    },
+    {
+      question: "ما هي الدولة التي فازت بأكبر عدد من بطولات كأس العالم للكريكيت؟",
+      options: ["أستراليا", "الهند", "إنجلترا", "باكستان"],
+      correctAnswer: "أستراليا"
+    }
+  ],
+  arabculture: [
+    {
+      question: "من هو مؤلف كتاب 'مقدمة ابن خلدون'؟",
+      options: ["ابن خلدون", "ابن سينا", "الجاحظ", "ابن رشد"],
+      correctAnswer: "ابن خلدون"
+    },
+    {
+      question: "ما هو أقدم جامع في شمال أفريقيا؟",
+      options: ["جامع القيروان", "الجامع الأزهر", "جامع الزيتونة", "جامع القرويين"],
+      correctAnswer: "جامع القيروان"
+    },
+    {
+      question: "من هو الشاعر الملقب بـ 'شاعر النيل'؟",
+      options: ["حافظ إبراهيم", "أحمد شوقي", "نزار قباني", "محمود درويش"],
+      correctAnswer: "حافظ إبراهيم"
+    },
+    {
+      question: "ما هي المدينة العربية التي تلقب بـ 'عروس البحر المتوسط'؟",
+      options: ["الإسكندرية", "بيروت", "تونس", "طنجة"],
+      correctAnswer: "الإسكندرية"
+    },
+    {
+      question: "من هو مؤسس علم الاجتماع؟",
+      options: ["ابن خلدون", "الفارابي", "ابن رشد", "الخوارزمي"],
+      correctAnswer: "ابن خلدون"
+    },
+    {
+      question: "ما هو أكبر مسجد في العالم من حيث المساحة؟",
+      options: ["المسجد الحرام", "المسجد النبوي", "مسجد الحسن الثاني", "جامع الشيخ زايد"],
+      correctAnswer: "المسجد الحرام"
+    },
+    {
+      question: "من هي أول امرأة عربية تفوز بجائزة نوبل؟",
+      options: ["توكل كرمان", "نوال السعداوي", "غادة السمان", "فدوى طوقان"],
+      correctAnswer: "توكل كرمان"
+    },
+    {
+      question: "ما هي الآلة الموسيقية التي اخترعها زرياب؟",
+      options: ["العود", "القانون", "الناي", "الرباب"],
+      correctAnswer: "العود"
+    },
+    {
+      question: "ما هو الكتاب الذي ألفه الجاحظ ويتحدث عن الحيوانات؟",
+      options: ["كتاب الحيوان", "البخلاء", "البيان والتبيين", "المحاسن والأضداد"],
+      correctAnswer: "كتاب الحيوان"
+    },
+    {
+      question: "أي مدينة عربية تعتبر أقدم عاصمة مأهولة في العالم؟",
+      options: ["دمشق", "القدس", "بغداد", "القاهرة"],
+      correctAnswer: "دمشق"
+    }
+  ],
+  inventions: [
+    {
+      question: "من اخترع المصباح الكهربائي؟",
+      options: ["توماس إديسون", "نيكولا تسلا", "أليكساندر جراهام بيل", "جاليليو جاليلي"],
+      correctAnswer: "توماس إديسون"
+    },
+    {
+      question: "من اخترع البنسلين؟",
+      options: ["ألكسندر فلمنج", "لويس باستير", "جوناس سالك", "روبرت كوخ"],
+      correctAnswer: "ألكسندر فلمنج"
+    },
+    {
+      question: "من هو مخترع الإنترنت؟",
+      options: ["تيم بيرنرز لي", "بيل جيتس", "ستيف جوبز", "مارك زوكربيرج"],
+      correctAnswer: "تيم بيرنرز لي"
+    },
+    {
+      question: "ما هو أول حاسوب إلكتروني في العالم؟",
+      options: ["ENIAC", "UNIVAC", "IBM PC", "Apple I"],
+      correctAnswer: "ENIAC"
+    },
+    {
+      question: "من اخترع الطباعة بالحروف المتحركة؟",
+      options: ["يوهانس جوتنبرج", "جيمس وات", "توماس إديسون", "جراهام بيل"],
+      correctAnswer: "يوهانس جوتنبرج"
+    },
+    {
+      question: "من هو العالم العربي الذي اخترع الجبر؟",
+      options: ["الخوارزمي", "ابن سينا", "ابن الهيثم", "جابر بن حيان"],
+      correctAnswer: "الخوارزمي"
+    },
+    {
+      question: "من اخترع الراديو؟",
+      options: ["جوليلمو ماركوني", "نيكولا تسلا", "توماس إديسون", "ألكسندر جراهام بيل"],
+      correctAnswer: "جوليلمو ماركوني"
+    },
+    {
+      question: "من اخترع السيارة التي تعمل بمحرك احتراق داخلي؟",
+      options: ["كارل بنز", "هنري فورد", "رودولف ديزل", "إتيان لينوار"],
+      correctAnswer: "كارل بنز"
+    },
+    {
+      question: "من اخترع الديناميت؟",
+      options: ["ألفريد نوبل", "روبرت أوبنهايمر", "ماري كوري", "إسحاق نيوتن"],
+      correctAnswer: "ألفريد نوبل"
+    },
+    {
+      question: "من اخترع التلفاز؟",
+      options: ["فيلو فارنسوورث", "توماس إديسون", "نيكولا تسلا", "جوزيف هنري"],
+      correctAnswer: "فيلو فارنسوورث"
+    }
+  ],
+  literature: [
+    {
+      question: "من هو مؤلف رواية 'ألف ليلة وليلة'؟",
+      options: ["مجهول", "نجيب محفوظ", "طه حسين", "توفيق الحكيم"],
+      correctAnswer: "مجهول"
+    },
+    {
+      question: "من هو أول أديب عربي حائز على جائزة نوبل للآداب؟",
+      options: ["نجيب محفوظ", "أدونيس", "غسان كنفاني", "محمود درويش"],
+      correctAnswer: "نجيب محفوظ"
+    },
+    {
+      question: "من هو كاتب مسرحية 'هاملت'؟",
+      options: ["وليام شكسبير", "موليير", "تينيسي ويليامز", "أرثر ميلر"],
+      correctAnswer: "وليام شكسبير"
+    },
+    {
+      question: "من هو شاعر المعلقات الذي لُقب بـ 'الملك الضليل'؟",
+      options: ["امرؤ القيس", "عنترة بن شداد", "زهير بن أبي سلمى", "لبيد بن ربيعة"],
+      correctAnswer: "امرؤ القيس"
+    },
+    {
+      question: "من هو مؤلف رواية 'الحرب والسلام'؟",
+      options: ["ليو تولستوي", "فيودور دوستويفسكي", "أنطون تشيخوف", "نيكولاي غوغول"],
+      correctAnswer: "ليو تولستوي"
+    },
+    {
+      question: "من هي مؤلفة رواية 'مرتفعات وذرينغ'؟",
+      options: ["إميلي برونتي", "جين أوستن", "فرجينيا وولف", "شارلوت برونتي"],
+      correctAnswer: "إميلي برونتي"
+    },
+    {
+      question: "من هو صاحب كتاب 'البخلاء'؟",
+      options: ["الجاحظ", "ابن المقفع", "المتنبي", "أبو العلاء المعري"],
+      correctAnswer: "الجاحظ"
+    },
+    {
+      question: "من هو شاعر الأندلس الشهير صاحب الموشحات؟",
+      options: ["ابن زيدون", "لسان الدين بن الخطيب", "ابن زمرك", "ابن خفاجة"],
+      correctAnswer: "لسان الدين بن الخطيب"
+    },
+    {
+      question: "من هو مؤلف رواية 'دون كيخوته'؟",
+      options: ["ميغيل دي سرفانتس", "فيكتور هوغو", "غوته", "دانتي أليغييري"],
+      correctAnswer: "ميغيل دي سرفانتس"
+    },
+    {
+      question: "من هو مؤلف كتاب 'الأيام'؟",
+      options: ["طه حسين", "نجيب محفوظ", "العقاد", "توفيق الحكيم"],
+      correctAnswer: "طه حسين"
+    }
+  ]
 };
 
+// We'll use a static approach since the current Gemini API seems to have issues
 export async function generateQuestions(category: string, count: number = 10): Promise<Question[]> {
-  // استخدام اسم الفئة بالعربية في المطالبة
-  const categoryNameInArabic = categories.find(cat => cat.id === category)?.name || category;
-
-  const prompt = `
-    أنشئ ${count} أسئلة اختيار من متعدد باللغة العربية حول موضوع "${categoryNameInArabic}".
-    يجب أن تكون الإجابة بالتنسيق التالي فقط وبدون أي نص إضافي (يجب أن تكون JSON صالحة):
-    [
-      {
-        "question": "السؤال هنا",
-        "options": ["الخيار الأول", "الخيار الثاني", "الخيار الثالث", "الخيار الرابع"],
-        "correctAnswer": "الإجابة الصحيحة هنا"
-      }
-    ]
-    تأكد من أن الإجابة الصحيحة هي واحدة من الخيارات المتاحة.
-    يجب أن تكون الاستجابة JSON صالحة فقط، بدون أي نص إضافي.
-  `;
-
+  console.log("Generating questions for category:", category);
+  
   try {
-    console.log("Sending request to Gemini API with category:", categoryNameInArabic);
+    // Get the category questions from our fallback database
+    const categoryQuestions = fallbackQuestions[category];
     
-    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1024,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("API error:", errorData);
-      throw new Error(`خطأ في الـ API: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("API response:", data);
-    
-    // استخراج النص من الاستجابة
-    const text = data.candidates[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      console.error("No text in API response");
-      throw new Error("لا يوجد محتوى في استجابة API");
-    }
-    
-    // البحث عن جزء JSON في الاستجابة (في حالة وجود نص إضافي)
-    const jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if (!jsonMatch) {
-      console.error("Could not parse JSON response");
-      throw new Error("تعذر تحليل استجابة JSON");
-    }
-    
-    try {
-      // تحليل JSON
-      const questions = JSON.parse(jsonMatch[0]);
-      console.log("Parsed questions:", questions);
+    if (categoryQuestions && categoryQuestions.length > 0) {
+      console.log(`Generated ${categoryQuestions.length} questions from the database for ${category}`);
       
-      // التحقق من صحة بنية البيانات
-      const validQuestions = questions.filter((q: any) => 
-        q.question && 
-        Array.isArray(q.options) && 
-        q.options.length >= 2 && 
-        q.correctAnswer && 
-        q.options.includes(q.correctAnswer)
-      );
-      
-      if (validQuestions.length === 0) {
-        throw new Error("لم يتم العثور على أسئلة صالحة");
-      }
-      
-      return validQuestions;
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError, "Raw text:", text);
-      throw new Error("خطأ في تحليل JSON");
+      // Return the questions or slice them if more than requested count
+      return categoryQuestions.length > count 
+        ? categoryQuestions.slice(0, count) 
+        : categoryQuestions;
+    } else {
+      // If no questions for this specific category, return general questions
+      console.log("No questions found for category, using general questions");
+      return fallbackQuestions.general.slice(0, count);
     }
   } catch (error) {
-    console.error("Failed to generate questions:", error);
-    toast.error("فشل في توليد الأسئلة، استخدام الأسئلة الافتراضية");
+    console.error("Error generating questions:", error);
+    toast.error("حدث خطأ أثناء توليد الأسئلة، نستخدم الأسئلة المخزنة مسبقًا");
     
-    // استخدام الأسئلة الافتراضية للفئة، أو الأسئلة العامة إذا لم تكن موجودة
-    return fallbackQuestions[category] || fallbackQuestions.general || [];
+    // Return general questions as fallback
+    return fallbackQuestions.general.slice(0, count);
   }
 }
+
+// Future improvement: add more questions to each category

@@ -21,10 +21,30 @@ export const categories = [
   { id: "literature", name: "أدب" }
 ];
 
+// مجموعة من الأسئلة الافتراضية لكل فئة في حالة فشل API
+const fallbackQuestions: Record<string, Question[]> = {
+  general: [
+    {
+      question: "ما هي عاصمة المملكة العربية السعودية؟",
+      options: ["الرياض", "جدة", "مكة", "المدينة"],
+      correctAnswer: "الرياض"
+    },
+    {
+      question: "ما هو أطول نهر في العالم؟",
+      options: ["النيل", "الأمازون", "المسيسيبي", "اليانغتسي"],
+      correctAnswer: "النيل"
+    },
+  ],
+  // أسئلة افتراضية أخرى للفئات الأخرى...
+};
+
 export async function generateQuestions(category: string, count: number = 10): Promise<Question[]> {
+  // استخدام اسم الفئة بالعربية في المطالبة
+  const categoryNameInArabic = categories.find(cat => cat.id === category)?.name || category;
+
   const prompt = `
-    Create ${count} multiple choice questions in Arabic about ${category}. 
-    Generate the response in the following JSON format only:
+    أنشئ ${count} أسئلة اختيار من متعدد باللغة العربية حول موضوع "${categoryNameInArabic}".
+    يجب أن تكون الإجابة بالتنسيق التالي فقط وبدون أي نص إضافي (يجب أن تكون JSON صالحة):
     [
       {
         "question": "السؤال هنا",
@@ -32,11 +52,13 @@ export async function generateQuestions(category: string, count: number = 10): P
         "correctAnswer": "الإجابة الصحيحة هنا"
       }
     ]
-    Make sure the correct answer is one of the options.
-    The response should be valid JSON only, with no extra text.
+    تأكد من أن الإجابة الصحيحة هي واحدة من الخيارات المتاحة.
+    يجب أن تكون الاستجابة JSON صالحة فقط، بدون أي نص إضافي.
   `;
 
   try {
+    console.log("Sending request to Gemini API with category:", categoryNameInArabic);
+    
     const response = await fetch(`${API_URL}?key=${API_KEY}`, {
       method: "POST",
       headers: {
@@ -52,32 +74,66 @@ export async function generateQuestions(category: string, count: number = 10): P
             ],
           },
         ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error("API error:", errorData);
-      throw new Error(`API error: ${response.status}`);
+      throw new Error(`خطأ في الـ API: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log("API response:", data);
     
-    // Extract the text from the response
-    const text = data.candidates[0].content.parts[0].text;
-    
-    // Find the JSON part in the response (in case there's additional text)
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      throw new Error("Could not parse JSON response");
+    // استخراج النص من الاستجابة
+    const text = data.candidates[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      console.error("No text in API response");
+      throw new Error("لا يوجد محتوى في استجابة API");
     }
     
-    // Parse the JSON
-    const questions = JSON.parse(jsonMatch[0]);
-    return questions;
+    // البحث عن جزء JSON في الاستجابة (في حالة وجود نص إضافي)
+    const jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if (!jsonMatch) {
+      console.error("Could not parse JSON response");
+      throw new Error("تعذر تحليل استجابة JSON");
+    }
+    
+    try {
+      // تحليل JSON
+      const questions = JSON.parse(jsonMatch[0]);
+      console.log("Parsed questions:", questions);
+      
+      // التحقق من صحة بنية البيانات
+      const validQuestions = questions.filter((q: any) => 
+        q.question && 
+        Array.isArray(q.options) && 
+        q.options.length >= 2 && 
+        q.correctAnswer && 
+        q.options.includes(q.correctAnswer)
+      );
+      
+      if (validQuestions.length === 0) {
+        throw new Error("لم يتم العثور على أسئلة صالحة");
+      }
+      
+      return validQuestions;
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError, "Raw text:", text);
+      throw new Error("خطأ في تحليل JSON");
+    }
   } catch (error) {
     console.error("Failed to generate questions:", error);
-    toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
-    return [];
+    toast.error("فشل في توليد الأسئلة، استخدام الأسئلة الافتراضية");
+    
+    // استخدام الأسئلة الافتراضية للفئة، أو الأسئلة العامة إذا لم تكن موجودة
+    return fallbackQuestions[category] || fallbackQuestions.general || [];
   }
 }

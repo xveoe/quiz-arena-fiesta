@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const LoadingQuestions = () => {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-black/90 z-40">
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/95 dark:bg-black/95 z-40 backdrop-blur-sm">
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
@@ -23,6 +23,12 @@ const LoadingQuestions = () => {
       <p className="text-gray-600 dark:text-gray-300 text-center">
         جاري توليد الأسئلة باستخدام الذكاء الاصطناعي...
       </p>
+      <motion.div 
+        initial={{ width: 0 }}
+        animate={{ width: "60%" }}
+        transition={{ duration: 5, ease: "easeInOut" }}
+        className="h-1 bg-blue-600 rounded-full mt-6"
+      />
     </div>
   );
 };

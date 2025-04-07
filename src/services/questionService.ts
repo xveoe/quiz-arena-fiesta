@@ -439,9 +439,36 @@ const fallbackQuestions: Record<string, Question[]> = {
   ]
 };
 
+// Cache for pre-generated questions to avoid API calls on every game start
+let questionsCache: Record<string, Question[]> = {};
+
 // Initialize Google Generative AI with API key
-const API_KEY = "AIzaSyDeh4J6gm-eln8JE_PpKt8qNtiUdjyTZYc"; // Using the provided API key
+const API_KEY = "AIzaSyDeh4J6gm-eln8JE_PpKt8qNtiUdjyTZYc";
 const genAI = new GoogleGenerativeAI(API_KEY);
+
+// Try to pre-generate questions for all categories when the app loads
+export const preGenerateQuestions = async () => {
+  console.log("Pre-generating questions for all categories...");
+  try {
+    for (const category of categories) {
+      if (!questionsCache[category.id]) {
+        console.log(`Pre-generating questions for ${category.id}...`);
+        try {
+          const questions = await generateQuestionsFromAPI(category.id, 20);
+          if (questions && questions.length > 0) {
+            questionsCache[category.id] = questions;
+            console.log(`Successfully pre-generated ${questions.length} questions for ${category.id}`);
+          }
+        } catch (error) {
+          console.log(`Failed to pre-generate questions for ${category.id}, will use fallback`);
+          // If pre-generation fails, we'll fall back to local questions later
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error during question pre-generation:", error);
+  }
+};
 
 async function generateQuestionsFromAPI(category: string, count: number = 20): Promise<Question[]> {
   try {
@@ -514,19 +541,31 @@ async function generateQuestionsFromAPI(category: string, count: number = 20): P
 export async function generateQuestions(category: string, count: number = 20): Promise<Question[]> {
   console.log("Generating questions for category:", category);
   
+  // First check if we have cached questions for this category
+  if (questionsCache[category] && questionsCache[category].length >= count) {
+    console.log(`Using ${count} cached questions for ${category}`);
+    
+    // Return the requested number of questions from cache
+    const cachedQuestions = questionsCache[category].slice(0, count);
+    
+    // Remove used questions from cache to avoid repeats
+    questionsCache[category] = questionsCache[category].slice(count);
+    
+    return cachedQuestions;
+  }
+  
   try {
-    // First try to generate questions using Gemini API
+    // If no cache, generate questions using Gemini API
     const generatedQuestions = await generateQuestionsFromAPI(category, count);
     console.log(`Generated ${generatedQuestions.length} questions from Gemini API for ${category}`);
     toast.success("تم توليد أسئلة جديدة بواسطة الذكاء الاصطناعي");
     
-    // Distribute questions evenly for both teams
-    const totalQuestions = generatedQuestions.length;
-    if (totalQuestions < count) {
-      // If we got fewer questions than requested, we'll use what we have
-      return generatedQuestions;
+    // Store extra questions in cache for future use
+    if (generatedQuestions.length > count) {
+      questionsCache[category] = generatedQuestions.slice(count);
     }
     
+    // Return the requested number of questions
     return generatedQuestions.slice(0, count);
     
   } catch (error) {

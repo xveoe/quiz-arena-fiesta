@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -9,8 +10,9 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Intro from "@/components/Intro";
 import LoadingQuestions from "@/components/LoadingQuestions";
-import { generateQuestions, categories } from "@/services/questionService";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star } from "lucide-react";
+import { generateQuestions, categories, preGenerateQuestions } from "@/services/questionService";
+import Judge from "@/components/Judge";
+import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -37,6 +39,7 @@ const Index = () => {
     questionCount: 10,
     difficulty: 50,
     timePerQuestion: 45,
+    judgeName: "الحكم",
   });
   
   const [currentTab, setCurrentTab] = useState("setup");
@@ -54,11 +57,17 @@ const Index = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);
   const [powerUpsAvailable, setPowerUpsAvailable] = useState({
     extraTime: [2, 2],
     doublePoints: [1, 1],
     skipQuestion: [1, 1]
   });
+  
+  // Pre-generate questions when the app loads
+  useEffect(() => {
+    preGenerateQuestions();
+  }, []);
   
   const triggerConfetti = () => {
     confetti({
@@ -80,7 +89,7 @@ const Index = () => {
   }, [gameSetup.team1Name, gameSetup.team2Name]);
 
   useEffect(() => {
-    if (!gameStarted || timer <= 0 || showAnswer) return;
+    if (!gameStarted || !timerActive || timer <= 0 || showAnswer) return;
 
     const countdown = setInterval(() => {
       setTimer(prev => {
@@ -95,7 +104,7 @@ const Index = () => {
     }, 1000);
 
     return () => clearInterval(countdown);
-  }, [timer, gameStarted, showAnswer]);
+  }, [timer, gameStarted, showAnswer, timerActive]);
 
   const handleStartGame = async () => {
     setIsLoading(true);
@@ -108,6 +117,7 @@ const Index = () => {
         setCurrentTab("game");
         setCurrentQuestionIndex(0);
         setTimer(gameSetup.timePerQuestion);
+        setTimerActive(false);
         setCurrentTeam(0);
         setExcludedOptions([]);
         setShowAnswer(false);
@@ -123,11 +133,17 @@ const Index = () => {
     }
   };
 
+  const handleStartTimer = () => {
+    setTimerActive(true);
+    toast.info("بدأ العد التنازلي!");
+  };
+
   const handleAnswerSelect = (option: string) => {
     if (!gameStarted || timer === 0 || showAnswer) return;
 
     const currentQuestion = questions[currentQuestionIndex];
     setShowAnswer(true);
+    setTimerActive(false);
     
     if (option === currentQuestion.correctAnswer) {
       setTeams(prev => {
@@ -145,8 +161,9 @@ const Index = () => {
         
         pointsToAdd = (pointsToAdd + timeBonus) * streakMultiplier * doubleMultiplier;
         
-        newTeams[currentTeam].score += Math.round(pointsToAdd * 10) / 10;
-        newTeams[currentTeam].bonusPoints += Math.round((pointsToAdd - 1) * 10) / 10;
+        // Round to 1 decimal place to prevent long numbers
+        newTeams[currentTeam].score = Math.round((newTeams[currentTeam].score + pointsToAdd) * 10) / 10;
+        newTeams[currentTeam].bonusPoints = Math.round((newTeams[currentTeam].bonusPoints + timeBonus) * 10) / 10;
         
         return newTeams;
       });
@@ -168,6 +185,32 @@ const Index = () => {
     }, 2000);
   };
 
+  const handleJudgeDecision = (isCorrect: boolean) => {
+    if (!showAnswer) return;
+
+    if (isCorrect) {
+      setTeams(prev => {
+        const newTeams = [...prev] as [Team, Team];
+        
+        const pointsToAdd = 1;
+        
+        // Round to 1 decimal place
+        newTeams[currentTeam].score = Math.round((newTeams[currentTeam].score + pointsToAdd) * 10) / 10;
+        
+        return newTeams;
+      });
+      
+      toast.success("الحكم صحح الإجابة! 🎉");
+      triggerConfetti();
+    } else {
+      toast.error("الحكم رفض الإجابة! ❌");
+    }
+    
+    setTimeout(() => {
+      nextQuestion();
+    }, 1500);
+  };
+
   const nextQuestion = () => {
     if (currentQuestionIndex >= questions.length - 1) {
       setGameStarted(false);
@@ -178,6 +221,7 @@ const Index = () => {
     setCurrentTeam(prev => (prev === 0 ? 1 : 0));
     
     setTimer(gameSetup.timePerQuestion);
+    setTimerActive(false);
     setCurrentQuestionIndex(prev => prev + 1);
     setExcludedOptions([]);
     setShowAnswer(false);
@@ -246,6 +290,7 @@ const Index = () => {
     setQuestions([]);
     setCurrentQuestionIndex(0);
     setTimer(gameSetup.timePerQuestion);
+    setTimerActive(false);
     setShowAnswer(false);
     setPowerUpsAvailable({
       extraTime: [2, 2],
@@ -281,7 +326,7 @@ const Index = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-silver flex items-center justify-center gap-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-silver flex items-center justify-center gap-2 animate-silver-shine">
               <Sparkles className="w-8 h-8 text-zinc-400" />
               مسابقات المعرفة
               <Sparkles className="w-8 h-8 text-zinc-400" />
@@ -334,6 +379,15 @@ const Index = () => {
                         className="text-center luxury-input"
                       />
                     </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-zinc-400">اسم الحكم</label>
+                    <Input
+                      value={gameSetup.judgeName}
+                      onChange={(e) => setGameSetup({...gameSetup, judgeName: e.target.value})}
+                      className="text-center luxury-input"
+                    />
                   </div>
                   
                   <div>
@@ -482,7 +536,9 @@ const Index = () => {
                       </div>
                       <div className={`
                         text-xl font-bold rounded-full w-12 h-12 flex items-center justify-center
-                        ${timer <= 10 ? 'bg-red-900/30 text-red-300 animate-pulse' : 'bg-zinc-800 text-silver'}
+                        ${!timerActive ? 'bg-zinc-800 text-silver' : 
+                           timer <= 10 ? 'bg-red-900/30 text-red-300 animate-pulse' : 
+                           'bg-zinc-800 text-silver'}
                       `}>
                         {timer}
                       </div>
@@ -492,6 +548,18 @@ const Index = () => {
                       {questions[currentQuestionIndex].question}
                     </h3>
                     
+                    {!timerActive && !showAnswer && (
+                      <div className="mb-6">
+                        <Button 
+                          onClick={handleStartTimer}
+                          className="w-full py-4 flex items-center justify-center gap-2 bg-gradient-to-r from-green-800 to-green-900 hover:from-green-700 hover:to-green-800 text-green-100"
+                        >
+                          <Play className="w-5 h-5" />
+                          <span className="text-lg">بدء الوقت</span>
+                        </Button>
+                      </div>
+                    )}
+                    
                     {!showAnswer ? (
                       <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
@@ -499,17 +567,17 @@ const Index = () => {
                             <motion.button
                               key={index}
                               onClick={() => handleAnswerSelect(option)}
-                              disabled={excludedOptions.includes(index) || timer === 0}
+                              disabled={excludedOptions.includes(index) || timer === 0 || !timerActive}
                               className={`
                                 p-4 rounded-lg text-center text-lg transition-all relative overflow-hidden
-                                ${excludedOptions.includes(index) 
+                                ${!timerActive ? 'bg-zinc-900 text-zinc-600' : excludedOptions.includes(index) 
                                   ? 'bg-zinc-900 text-zinc-600 line-through' 
                                   : 'bg-zinc-800 hover:bg-zinc-700 text-silver'
                                 }
                               `}
-                              whileHover={{ scale: excludedOptions.includes(index) ? 1 : 1.02 }}
+                              whileHover={{ scale: (!timerActive || excludedOptions.includes(index)) ? 1 : 1.02 }}
                             >
-                              {!excludedOptions.includes(index) && (
+                              {!excludedOptions.includes(index) && timerActive && (
                                 <motion.div 
                                   className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-zinc-500 to-zinc-300"
                                   initial={{ scaleX: 1 }}
@@ -523,12 +591,14 @@ const Index = () => {
                           ))}
                         </div>
                         
-                        <div className="mt-4 text-center text-sm text-zinc-400">
-                          نقاط الوقت: <span className="text-zinc-300">+{calculateTimeBonus()}</span>
-                        </div>
+                        {timerActive && (
+                          <div className="mt-4 text-center text-sm text-zinc-400">
+                            نقاط الوقت: <span className="text-zinc-300">+{calculateTimeBonus()}</span>
+                          </div>
+                        )}
                       </>
                     ) : (
-                      <div className="mt-6">
+                      <div className="mt-6 space-y-6">
                         <div className="text-center text-xl mb-4 text-silver">الإجابة الصحيحة:</div>
                         <div className="bg-zinc-800 p-4 rounded-lg text-center text-xl font-bold text-green-300 border border-zinc-600 glow-effect">
                           {questions[currentQuestionIndex].correctAnswer}
@@ -536,6 +606,14 @@ const Index = () => {
                       </div>
                     )}
                   </Card>
+                  
+                  {/* Add the Judge component */}
+                  <Judge 
+                    name={gameSetup.judgeName}
+                    onApproveAnswer={() => handleJudgeDecision(true)}
+                    onRejectAnswer={() => handleJudgeDecision(false)}
+                    isDisabled={!showAnswer}
+                  />
 
                   <Button 
                     onClick={resetGame} 
@@ -569,10 +647,10 @@ const Index = () => {
                         className={`
                           p-6 rounded-lg relative overflow-hidden
                           ${isTie 
-                            ? 'bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800' 
+                            ? 'bg-blue-950/30 border border-blue-800/50' 
                             : isWinner
-                              ? 'bg-gradient-to-br from-amber-50 to-yellow-100 dark:from-amber-950 dark:to-yellow-900 border-2 border-yellow-400 dark:border-yellow-600' 
-                              : 'bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800'
+                              ? 'bg-gradient-to-br from-amber-950/30 to-yellow-900/30 border-2 border-yellow-700/50' 
+                              : 'bg-gray-900/30 border border-gray-800/50'
                           }
                         `}
                         animate={isWinner ? {
@@ -590,18 +668,18 @@ const Index = () => {
                           </motion.div>
                         )}
                         
-                        <h3 className="text-xl font-bold mb-3">{team.name}</h3>
-                        <div className="text-5xl font-bold mb-3">
+                        <h3 className="text-xl font-bold mb-3 text-silver">{team.name}</h3>
+                        <div className="text-5xl font-bold mb-3 text-silver">
                           {team.score}
                         </div>
                         
                         {team.bonusPoints > 0 && (
-                          <div className="text-sm text-green-600 dark:text-green-400 mb-2">
+                          <div className="text-sm text-green-400 mb-2">
                             نقاط إضافية: +{team.bonusPoints}
                           </div>
                         )}
                         
-                        <div className="text-lg text-gray-700 dark:text-gray-300">
+                        <div className="text-lg text-silver">
                           {isTie 
                             ? 'تعادل 🤝' 
                             : isWinner 
@@ -619,7 +697,14 @@ const Index = () => {
                   })}
                 </div>
                 
-                <div className="flex flex-col gap-4 mt-8">
+                <div className="mt-8 space-y-4">
+                  <div className="flex justify-center">
+                    <div className="flex items-center gap-2 text-silver text-lg">
+                      <Gavel className="w-5 h-5 text-zinc-400" />
+                      <span>الحكم: {gameSetup.judgeName}</span>
+                    </div>
+                  </div>
+                  
                   <Button 
                     onClick={resetGame} 
                     className="w-full luxury-button glow-effect py-6"

@@ -443,7 +443,7 @@ const fallbackQuestions: Record<string, Question[]> = {
 const API_KEY = "AIzaSyDeh4J6gm-eln8JE_PpKt8qNtiUdjyTZYc"; // Using the provided API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-async function generateQuestionsFromAPI(category: string, count: number = 10): Promise<Question[]> {
+async function generateQuestionsFromAPI(category: string, count: number = 20): Promise<Question[]> {
   try {
     console.log(`Using Gemini API to generate ${count} questions for category: ${category}`);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -452,13 +452,14 @@ async function generateQuestionsFromAPI(category: string, count: number = 10): P
       Generate ${count} multiple-choice trivia questions in Arabic about the category "${category}".
       Return the result ONLY as a valid JSON array.
       Each object in the array should have the following keys:
-      - "question": string in Arabic
-      - "options": array of 4 strings in Arabic
+      - "question": string in Arabic containing a challenging knowledge question
+      - "options": array of 4 strings in Arabic with possible answers
       - "correctAnswer": string (must be one of the options)
 
       Ensure the output is only the JSON array, with no introductory text or markdown formatting.
       Make the questions challenging but not impossibly difficult.
-      For the ${category} category, ensure questions are relevant and accurate.
+      For the ${category} category, ensure questions are relevant, accurate and diverse.
+      Each question must have exactly 4 options, and one correct answer that matches one of the options.
     `;
 
     const result = await model.generateContent(prompt);
@@ -510,7 +511,7 @@ async function generateQuestionsFromAPI(category: string, count: number = 10): P
 }
 
 // Main function to generate questions
-export async function generateQuestions(category: string, count: number = 10): Promise<Question[]> {
+export async function generateQuestions(category: string, count: number = 20): Promise<Question[]> {
   console.log("Generating questions for category:", category);
   
   try {
@@ -518,7 +519,15 @@ export async function generateQuestions(category: string, count: number = 10): P
     const generatedQuestions = await generateQuestionsFromAPI(category, count);
     console.log(`Generated ${generatedQuestions.length} questions from Gemini API for ${category}`);
     toast.success("تم توليد أسئلة جديدة بواسطة الذكاء الاصطناعي");
-    return generatedQuestions;
+    
+    // Distribute questions evenly for both teams
+    const totalQuestions = generatedQuestions.length;
+    if (totalQuestions < count) {
+      // If we got fewer questions than requested, we'll use what we have
+      return generatedQuestions;
+    }
+    
+    return generatedQuestions.slice(0, count);
     
   } catch (error) {
     console.error("Error with Gemini API, falling back to local questions:", error);

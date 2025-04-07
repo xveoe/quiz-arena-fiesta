@@ -12,7 +12,9 @@ import Intro from "@/components/Intro";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import { generateQuestions, categories, preGenerateQuestions } from "@/services/questionService";
 import Judge from "@/components/Judge";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel } from "lucide-react";
+import ManualQuestionForm from "@/components/ManualQuestionForm";
+import PunishmentWheel from "@/components/PunishmentWheel";
+import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -63,6 +65,11 @@ const Index = () => {
     doublePoints: [1, 1],
     skipQuestion: [1, 1]
   });
+  
+  // New state variables
+  const [showManualQuestionForm, setShowManualQuestionForm] = useState(false);
+  const [showPunishmentWheel, setShowPunishmentWheel] = useState(false);
+  const [losingTeamIndex, setLosingTeamIndex] = useState<number | null>(null);
   
   // Pre-generate questions when the app loads
   useEffect(() => {
@@ -133,6 +140,20 @@ const Index = () => {
     }
   };
 
+  const handleManualQuestionsGenerated = (manualQuestions: Question[]) => {
+    setQuestions(manualQuestions);
+    setGameStarted(true);
+    setCurrentTab("game");
+    setCurrentQuestionIndex(0);
+    setTimer(gameSetup.timePerQuestion);
+    setTimerActive(false);
+    setCurrentTeam(0);
+    setExcludedOptions([]);
+    setShowAnswer(false);
+    setShowManualQuestionForm(false);
+    toast.success("تم إعداد الأسئلة بنجاح!");
+  };
+
   const handleStartTimer = () => {
     setTimerActive(true);
     toast.info("بدأ العد التنازلي!");
@@ -179,10 +200,6 @@ const Index = () => {
       
       toast.error("إجابة خاطئة! ❌");
     }
-    
-    setTimeout(() => {
-      nextQuestion();
-    }, 2000);
   };
 
   const handleJudgeDecision = (isCorrect: boolean) => {
@@ -205,16 +222,18 @@ const Index = () => {
     } else {
       toast.error("الحكم رفض الإجابة! ❌");
     }
-    
-    setTimeout(() => {
-      nextQuestion();
-    }, 1500);
   };
 
   const nextQuestion = () => {
     if (currentQuestionIndex >= questions.length - 1) {
       setGameStarted(false);
       setCurrentTab("results");
+      
+      // Determine losing team for punishment wheel
+      if (teams[0].score !== teams[1].score) {
+        const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
+        setLosingTeamIndex(losingIndex);
+      }
       return;
     }
 
@@ -302,6 +321,7 @@ const Index = () => {
       { name: gameSetup.team2Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 }
     ]);
     setCurrentTab("setup");
+    setLosingTeamIndex(null);
   };
   
   const calculateTimeBonus = () => {
@@ -312,11 +332,33 @@ const Index = () => {
     return teams[teamIndex].streak >= 3 ? 1.5 : 1;
   };
 
+  const showPunishment = () => {
+    if (losingTeamIndex !== null) {
+      setShowPunishmentWheel(true);
+    } else {
+      toast.info("تعادل الفريقان، لا يوجد عقاب!");
+    }
+  };
+
   return (
     <>
       {showIntro && <Intro onIntroComplete={handleIntroComplete} />}
       
       {isLoading && <LoadingQuestions />}
+      
+      {showManualQuestionForm && (
+        <ManualQuestionForm 
+          onQuestionsGenerated={handleManualQuestionsGenerated}
+          onClose={() => setShowManualQuestionForm(false)}
+        />
+      )}
+      
+      {showPunishmentWheel && losingTeamIndex !== null && (
+        <PunishmentWheel 
+          teamName={teams[losingTeamIndex].name}
+          onClose={() => setShowPunishmentWheel(false)}
+        />
+      )}
 
       <div className="min-h-screen p-4 font-cairo">
         <div className="container mx-auto max-w-4xl">
@@ -433,12 +475,23 @@ const Index = () => {
                     </select>
                   </div>
                   
-                  <Button 
-                    onClick={handleStartGame} 
-                    className="w-full text-xl py-6 glow-effect luxury-button"
-                  >
-                    بدء اللعب
-                  </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <Button 
+                      onClick={handleStartGame} 
+                      className="text-xl py-6 glow-effect luxury-button"
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      توليد الأسئلة تلقائياً
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => setShowManualQuestionForm(true)}
+                      className="text-xl py-6 bg-gradient-to-r from-amber-800 to-amber-900 hover:from-amber-700 hover:to-amber-800 text-amber-100"
+                    >
+                      <Edit className="w-5 h-5 mr-2" />
+                      إضافة أسئلة يدوياً
+                    </Button>
+                  </div>
                 </div>
               </Card>
             </TabsContent>
@@ -607,12 +660,14 @@ const Index = () => {
                     )}
                   </Card>
                   
-                  {/* Add the Judge component */}
+                  {/* Add the Judge component with next question button */}
                   <Judge 
                     name={gameSetup.judgeName}
                     onApproveAnswer={() => handleJudgeDecision(true)}
                     onRejectAnswer={() => handleJudgeDecision(false)}
+                    onNextQuestion={nextQuestion}
                     isDisabled={!showAnswer}
+                    showAnswer={showAnswer}
                   />
 
                   <Button 
@@ -705,12 +760,23 @@ const Index = () => {
                     </div>
                   </div>
                   
-                  <Button 
-                    onClick={resetGame} 
-                    className="w-full luxury-button glow-effect py-6"
-                  >
-                    لعبة جديدة
-                  </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <Button 
+                      onClick={showPunishment}
+                      className="py-6 bg-gradient-to-r from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 text-purple-100"
+                    >
+                      <Gift className="w-5 h-5 mr-2" />
+                      <span>عجلة العقاب</span>
+                    </Button>
+                    
+                    <Button 
+                      onClick={resetGame} 
+                      className="py-6 luxury-button glow-effect"
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      <span>لعبة جديدة</span>
+                    </Button>
+                  </div>
                 </div>
               </Card>
             </TabsContent>

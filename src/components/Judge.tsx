@@ -1,16 +1,25 @@
 
 import React from 'react';
-import { Gavel, Star } from 'lucide-react';
+import { Gavel, Star, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface JudgeProps {
   name: string;
   onApproveAnswer: () => void;
   onRejectAnswer: () => void;
+  onNextQuestion: () => void;
   isDisabled: boolean;
+  showAnswer: boolean;
 }
 
-const Judge: React.FC<JudgeProps> = ({ name, onApproveAnswer, onRejectAnswer, isDisabled }) => {
+const Judge: React.FC<JudgeProps> = ({ 
+  name, 
+  onApproveAnswer, 
+  onRejectAnswer, 
+  onNextQuestion, 
+  isDisabled, 
+  showAnswer 
+}) => {
   return (
     <motion.div 
       className="luxury-card p-4 rounded-lg"
@@ -28,7 +37,7 @@ const Judge: React.FC<JudgeProps> = ({ name, onApproveAnswer, onRejectAnswer, is
         يحكم على إجابات اللاعبين ويمكنه منح النقاط أو رفضها
       </div>
       
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <button
           onClick={onApproveAnswer}
           disabled={isDisabled}
@@ -55,6 +64,16 @@ const Judge: React.FC<JudgeProps> = ({ name, onApproveAnswer, onRejectAnswer, is
           خطأ
         </button>
       </div>
+
+      {showAnswer && (
+        <button
+          onClick={onNextQuestion}
+          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center bg-gradient-to-r from-blue-900 to-blue-800 text-blue-300 hover:from-blue-800 hover:to-blue-700 transition-all duration-200"
+        >
+          <ArrowRight className="w-4 h-4" />
+          السؤال التالي
+        </button>
+      )}
     </motion.div>
   );
 };

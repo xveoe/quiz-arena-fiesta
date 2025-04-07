@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -439,7 +440,7 @@ const fallbackQuestions: Record<string, Question[]> = {
 };
 
 // Initialize Google Generative AI with API key
-const API_KEY = "AIzaSyBcjp9TbyXAyNWH_mywRZSYWSPlPGO5ZSA"; // This is a demo key for testing only
+const API_KEY = "AIzaSyDeh4J6gm-eln8JE_PpKt8qNtiUdjyTZYc"; // Using the provided API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 async function generateQuestionsFromAPI(category: string, count: number = 10): Promise<Question[]> {

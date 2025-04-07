@@ -77,20 +77,7 @@ const Intro: React.FC<IntroProps> = ({ onIntroComplete }) => {
               transition={{ duration: 2, fill: { delay: 2, duration: 1 } }}
             />
           </svg>
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 3, duration: 1 }}
-          >
-            <motion.div 
-              className="w-6 h-6 rounded-full bg-blue-300"
-              animate={{ 
-                boxShadow: ["0 0 0px rgba(191, 219, 254, 0.8)", "0 0 20px rgba(191, 219, 254, 0.8)", "0 0 0px rgba(191, 219, 254, 0.8)"],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.div>
+          {/* Removed the blue dot here */}
         </div>
       </motion.div>
       

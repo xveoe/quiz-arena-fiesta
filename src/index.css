@@ -108,15 +108,15 @@
   }
   
   .border-silver {
-    @apply border-zinc-300;
+    @apply border-zinc-700;
   }
   
   .luxury-card {
-    @apply bg-gradient-to-br from-zinc-900 to-black border border-zinc-700 shadow-lg shadow-black/30;
+    @apply bg-gradient-to-br from-zinc-900 to-black border border-zinc-700/50 shadow-lg shadow-black/30 backdrop-blur-sm;
   }
   
   .luxury-input {
-    @apply bg-zinc-800 border-zinc-700 text-silver focus:border-zinc-500 focus:ring-zinc-500;
+    @apply bg-zinc-800/90 border-zinc-700 text-silver focus:border-zinc-500 focus:ring-zinc-500;
   }
   
   .luxury-button {
@@ -185,5 +185,81 @@
     100% {
       transform: translateX(100%) translateY(100%) rotate(30deg);
     }
+  }
+  
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .blur-motion {
+    position: relative;
+  }
+  
+  .blur-motion::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    filter: blur(10px);
+    opacity: 0.7;
+    z-index: -1;
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .shine-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shine-effect::after {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 50%;
+    height: 300%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+    transform: rotate(25deg);
+    animation: shine 3s ease-in-out infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      left: -100%;
+      top: -100%;
+    }
+    100% {
+      left: 200%;
+      top: 200%;
+    }
+  }
+  
+  .motion-blur-transition {
+    transition: all 0.3s ease;
+    filter: blur(0);
+  }
+  
+  .motion-blur-transition:hover,
+  .motion-blur-transition:focus {
+    filter: blur(2px);
+  }
+  
+  .motion-blur-transition.active {
+    filter: blur(0);
   }
 }

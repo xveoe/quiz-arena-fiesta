@@ -15,7 +15,6 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
   const punishments = [
     'تمرين ضغط ١٠ مرات',
     'الوقوف بقدم واحدة لمدة ٥ دقائق',
-    'غناء أغنية أمام الجميع',
     'تقليد حيوان لمدة ٣٠ ثانية',
     'الركض في المكان لمدة دقيقة',
     'القفز ٢٠ مرة',
@@ -23,11 +22,13 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
     'رواية نكتة للجميع',
     'التصفيق بحماس لمدة ٣٠ ثانية',
     'تكرار جملة مضحكة ٥ مرات',
+    'وقوف على رؤوس الأصابع لمدة دقيقة',
   ];
 
   const [spinning, setSpinning] = useState(false);
   const [selectedPunishment, setSelectedPunishment] = useState<string | null>(null);
   const [rotationDegrees, setRotationDegrees] = useState(0);
+  const [finalPunishments, setFinalPunishments] = useState<string[]>([]);
   const wheelRef = useRef<HTMLDivElement>(null);
 
   const spinWheel = () => {
@@ -35,6 +36,7 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
     
     setSpinning(true);
     setSelectedPunishment(null);
+    setFinalPunishments([]);
     
     // Random rotation between 1800 and 3600 degrees (5-10 full spins) plus a bit more for the random segment
     const randomAdditionalAngle = Math.floor(Math.random() * 360);
@@ -49,7 +51,17 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
       const finalAngle = (randomAdditionalAngle) % 360;
       const selectedIndex = Math.floor(finalAngle / segmentSize);
       
-      setSelectedPunishment(punishments[selectedIndex]);
+      // Select the main punishment
+      const mainPunishment = punishments[selectedIndex];
+      
+      // Select a random second punishment that's different from the first
+      let secondIndex = Math.floor(Math.random() * punishments.length);
+      while (secondIndex === selectedIndex) {
+        secondIndex = Math.floor(Math.random() * punishments.length);
+      }
+      const secondPunishment = punishments[secondIndex];
+      
+      setFinalPunishments([mainPunishment, secondPunishment]);
       setSpinning(false);
       
       confetti({
@@ -58,6 +70,17 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
         origin: { y: 0.6 }
       });
     }, 5000); // Match this with the CSS animation duration
+  };
+
+  const choosePunishment = (punishment: string) => {
+    setSelectedPunishment(punishment);
+    
+    // Additional confetti effect when choosing final punishment
+    confetti({
+      particleCount: 150,
+      spread: 90,
+      origin: { y: 0.6 }
+    });
   };
 
   return (
@@ -126,14 +149,39 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
           </div>
           
           <div className="space-y-6">
-            {selectedPunishment ? (
+            {finalPunishments.length > 0 ? (
               <motion.div 
                 className="text-center p-4 rounded-lg bg-gradient-to-r from-purple-900/50 to-purple-800/50 border border-purple-700"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <h3 className="text-xl font-bold text-white mb-2">العقاب هو:</h3>
+                <h3 className="text-xl font-bold text-white mb-4">اختر العقاب:</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {finalPunishments.map((punishment, index) => (
+                    <button
+                      key={index}
+                      onClick={() => choosePunishment(punishment)}
+                      className={`
+                        p-3 rounded-lg border-2 transition-all
+                        ${selectedPunishment === punishment 
+                          ? 'bg-purple-700 border-purple-400 text-white'
+                          : 'bg-purple-950/70 border-purple-800/50 text-purple-200 hover:bg-purple-900/70'}
+                      `}
+                    >
+                      {punishment}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            ) : selectedPunishment ? (
+              <motion.div 
+                className="text-center p-4 rounded-lg bg-gradient-to-r from-purple-900/50 to-purple-800/50 border border-purple-700"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h3 className="text-xl font-bold text-white mb-2">العقاب النهائي هو:</h3>
                 <p className="text-2xl text-purple-200 font-bold">{selectedPunishment}</p>
               </motion.div>
             ) : (
@@ -143,7 +191,7 @@ const PunishmentWheel: React.FC<PunishmentWheelProps> = ({ teamName, onClose }) 
             <div className="flex justify-center">
               <Button
                 onClick={spinWheel}
-                disabled={spinning}
+                disabled={spinning || selectedPunishment !== null}
                 className="w-full md:w-auto text-lg py-6 px-8 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-700 to-purple-900 hover:from-purple-600 hover:to-purple-800 text-purple-100 disabled:opacity-50"
               >
                 <RotateCcw className={`w-5 h-5 ${spinning ? 'animate-spin' : ''}`} />

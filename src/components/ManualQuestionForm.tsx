@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Save, X } from 'lucide-react';
+import { PlusCircle, Save, X, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -183,13 +183,13 @@ const ManualQuestionForm: React.FC<ManualQuestionFormProps> = ({ onQuestionsGene
                       type="button"
                       onClick={() => handleCorrectAnswerSelect(optionIndex)}
                       className={`
-                        absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full
+                        absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center
                         ${correctOptionIndex === optionIndex 
-                          ? 'bg-green-500 text-white' 
+                          ? 'bg-green-600 text-white' 
                           : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}
                       `}
                     >
-                      {correctOptionIndex === optionIndex ? '✓' : ''}
+                      {correctOptionIndex === optionIndex ? <Check className="w-4 h-4" /> : ''}
                     </button>
                   </div>
                 ))}

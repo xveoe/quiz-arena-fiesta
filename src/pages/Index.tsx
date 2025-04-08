@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -122,7 +123,11 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      const generatedQuestions = await generateQuestions(selectedCategory, gameSetup.questionCount);
+      const generatedQuestions = await generateQuestions(
+        selectedCategory, 
+        gameSetup.questionCount,
+        gameSetup.difficulty
+      );
       if (generatedQuestions.length > 0) {
         setQuestions(generatedQuestions);
         setGameStarted(true);
@@ -461,14 +466,42 @@ const Index = () => {
                   
                   <div>
                     <label className="block text-sm font-medium mb-1 text-zinc-400">عدد الأسئلة</label>
-                    <Input
-                      type="number"
-                      min="5"
-                      max="20"
-                      value={gameSetup.questionCount}
-                      onChange={(e) => setGameSetup({...gameSetup, questionCount: parseInt(e.target.value) || 10})}
-                      className="text-center luxury-input"
+                    <div className="flex items-center">
+                      <Input
+                        type="number"
+                        min="5"
+                        max="30"
+                        value={gameSetup.questionCount}
+                        onChange={(e) => setGameSetup({...gameSetup, questionCount: parseInt(e.target.value) || 10})}
+                        className="text-center luxury-input"
+                      />
+                      <span className="mr-2 text-zinc-400">سؤال</span>
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-1">يمكنك اختيار من 5 إلى 30 سؤال</p>
+                  </div>
+                  
+                  <div>
+                    <label className="flex justify-between text-sm font-medium mb-1 text-zinc-400">
+                      <span>مستوى صعوبة الأسئلة</span>
+                      <span>
+                        {gameSetup.difficulty < 30 ? "سهل" : 
+                         gameSetup.difficulty > 70 ? "صعب" : "متوسط"}
+                      </span>
+                    </label>
+                    <Slider
+                      defaultValue={[50]}
+                      min={1}
+                      max={100}
+                      step={1}
+                      value={[gameSetup.difficulty]}
+                      onValueChange={(value) => setGameSetup({...gameSetup, difficulty: value[0]})}
+                      className="py-4"
                     />
+                    <div className="flex justify-between text-xs text-zinc-500">
+                      <span>سهل</span>
+                      <span>متوسط</span>
+                      <span>صعب</span>
+                    </div>
                   </div>
                   
                   <div>
@@ -513,7 +546,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Zap className="w-4 h-4 mr-2 text-yellow-500" />
                           <span className="text-white">مكافأة السلسلة</span>
-                          <p className="text-xs text-zinc-400 ml-2">تكافئ اللاعبين على الإجابات المتتالية الصحيحة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.streakBonus} 
@@ -525,7 +557,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Timer className="w-4 h-4 mr-2 text-blue-500" />
                           <span className="text-white">مكافأة الوقت</span>
-                          <p className="text-xs text-zinc-400 ml-2">إجابات أسرع = نقاط أكثر</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.timeBonus} 
@@ -537,7 +568,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Bell className="w-4 h-4 mr-2 text-purple-500" />
                           <span className="text-white">المؤثرات الصوتية</span>
-                          <p className="text-xs text-zinc-400 ml-2">تفعيل أصوات اللعبة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.soundEffects} 
@@ -549,7 +579,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
                           <span className="text-white">تأثيرات الاحتفال</span>
-                          <p className="text-xs text-zinc-400 ml-2">إضافة تأثيرات بصرية للإجابات الصحيحة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.confettiEffects} 
@@ -561,7 +590,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Gavel className="w-4 h-4 mr-2 text-red-500" />
                           <span className="text-white">وظيفة الحكم</span>
-                          <p className="text-xs text-zinc-400 ml-2">تمكين الحكم من منح النقاط</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.judgeFunctionality} 
@@ -573,7 +601,6 @@ const Index = () => {
                         <div className="flex items-center">
                           <Star className="w-4 h-4 mr-2 text-green-500" />
                           <span className="text-white">القدرات الخاصة</span>
-                          <p className="text-xs text-zinc-400 ml-2">استخدام وقت إضافي ونقاط مضاعفة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.powerUps} 

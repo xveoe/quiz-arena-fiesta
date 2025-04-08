@@ -78,19 +78,31 @@ function parseQuestions(text: string): Question[] {
 // المعاملات: 
 // - categoryId: معرف الفئة (مثلاً "general")
 // - count: عدد الأسئلة المطلوب توليدها
+// - difficulty: مستوى صعوبة الأسئلة (0-100)
 //
-export async function generateQuestions(categoryId: string, count: number): Promise<Question[]> {
-  // Check if we have cached questions for this category
-  if (questionCache[categoryId] && questionCache[categoryId].length >= count) {
-    console.log(`Using cached questions for ${categoryId}`);
-    return questionCache[categoryId].slice(0, count);
+export async function generateQuestions(categoryId: string, count: number, difficulty: number = 50): Promise<Question[]> {
+  // إنشاء مفتاح فريد للتخزين المؤقت يتضمن الفئة وعدد الأسئلة ومستوى الصعوبة
+  const cacheKey = `${categoryId}_${difficulty}`;
+  
+  // Check if we have cached questions for this category and difficulty
+  if (questionCache[cacheKey] && questionCache[cacheKey].length >= count) {
+    console.log(`Using cached questions for ${categoryId} with difficulty ${difficulty}`);
+    return questionCache[cacheKey].slice(0, count);
   }
 
   const categoryObj = categories.find((cat) => cat.id === categoryId);
   const category = categoryObj ? categoryObj.name : "معلومات عامة";
 
+  // تحديد مستوى الصعوبة في نص
+  let difficultyText = "متوسطة";
+  if (difficulty < 30) {
+    difficultyText = "سهلة";
+  } else if (difficulty > 70) {
+    difficultyText = "صعبة";
+  }
+
   // نص التوجيه (prompt) الذي سيتم إرساله إلى النموذج
-  const prompt = `أنشئ ${count} أسئلة اختيار من متعدد باللغة العربية في فئة ${category}. لكل سؤال، قدم 4 خيارات مختلفة وإجابة صحيحة واحدة مع التنسيق التالي:
+  const prompt = `أنشئ ${count} أسئلة اختيار من متعدد باللغة العربية في فئة ${category} بمستوى صعوبة ${difficultyText}. لكل سؤال، قدم 4 خيارات مختلفة وإجابة صحيحة واحدة مع التنسيق التالي:
 السؤال؟ | خيار1 | خيار2 | خيار3 | خيار4 | الإجابة الصحيحة`;
 
   // استخدام مفتاح API مباشرةً
@@ -129,7 +141,7 @@ export async function generateQuestions(categoryId: string, count: number): Prom
     }
     
     // Cache the generated questions
-    questionCache[categoryId] = parsedQuestions;
+    questionCache[cacheKey] = parsedQuestions;
     
     return parsedQuestions;
   } catch (error) {

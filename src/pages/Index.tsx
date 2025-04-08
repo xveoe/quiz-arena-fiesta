@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ import { generateQuestions, categories, preGenerateQuestions } from "@/services/
 import Judge from "@/components/Judge";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Bell, Zap } from "lucide-react";
+import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Bell, Zap, ArrowRight } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -67,12 +66,10 @@ const Index = () => {
     skipQuestion: [1, 1]
   });
   
-  // New state variables
   const [showManualQuestionForm, setShowManualQuestionForm] = useState(false);
   const [showPunishmentBox, setShowPunishmentBox] = useState(false);
   const [losingTeamIndex, setLosingTeamIndex] = useState<number | null>(null);
   
-  // Game features toggles
   const [gameFeatures, setGameFeatures] = useState({
     streakBonus: true,
     timeBonus: true,
@@ -81,11 +78,6 @@ const Index = () => {
     judgeFunctionality: true,
     powerUps: true
   });
-  
-  // Pre-generate questions when the app loads
-  useEffect(() => {
-    preGenerateQuestions();
-  }, []);
   
   const triggerConfetti = () => {
     if (gameFeatures.confettiEffects) {
@@ -185,23 +177,19 @@ const Index = () => {
         
         let pointsToAdd = 1;
         
-        // Apply time bonus if enabled
         let timeBonus = 0;
         if (gameFeatures.timeBonus) {
           timeBonus = Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10;
         }
         
-        // Apply streak bonus if enabled
         newTeams[currentTeam].streak += 1;
         const streakMultiplier = (gameFeatures.streakBonus && newTeams[currentTeam].streak >= 3) ? 1.5 : 1;
         
-        // Apply power-ups if enabled
         const doublePointsActive = gameFeatures.powerUps && powerUpsAvailable.doublePoints[currentTeam] < 1;
         const doubleMultiplier = doublePointsActive ? 2 : 1;
         
         pointsToAdd = (pointsToAdd + timeBonus) * streakMultiplier * doubleMultiplier;
         
-        // Round to 1 decimal place to prevent long numbers
         newTeams[currentTeam].score = Math.round((newTeams[currentTeam].score + pointsToAdd) * 10) / 10;
         newTeams[currentTeam].bonusPoints = Math.round((newTeams[currentTeam].bonusPoints + timeBonus) * 10) / 10;
         
@@ -230,7 +218,6 @@ const Index = () => {
         
         const pointsToAdd = 1;
         
-        // Round to 1 decimal place
         newTeams[currentTeam].score = Math.round((newTeams[currentTeam].score + pointsToAdd) * 10) / 10;
         
         return newTeams;
@@ -248,7 +235,6 @@ const Index = () => {
       setGameStarted(false);
       setCurrentTab("results");
       
-      // Determine losing team for punishment
       if (teams[0].score !== teams[1].score) {
         const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
         setLosingTeamIndex(losingIndex);
@@ -516,7 +502,6 @@ const Index = () => {
                     </select>
                   </div>
 
-                  {/* Game Features Section */}
                   <Card className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
                     <h3 className="text-lg font-bold text-center mb-3 text-silver flex items-center justify-center gap-2">
                       <Settings className="w-4 h-4" />
@@ -527,7 +512,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Zap className="w-4 h-4 mr-2 text-yellow-500" />
-                          <span className="text-sm">مكافأة السلسلة</span>
+                          <span className="text-white">مكافأة السلسلة</span>
+                          <p className="text-xs text-zinc-400 ml-2">تكافئ اللاعبين على الإجابات المتتالية الصحيحة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.streakBonus} 
@@ -538,7 +524,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Timer className="w-4 h-4 mr-2 text-blue-500" />
-                          <span className="text-sm">مكافأة الوقت</span>
+                          <span className="text-white">مكافأة الوقت</span>
+                          <p className="text-xs text-zinc-400 ml-2">إجابات أسرع = نقاط أكثر</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.timeBonus} 
@@ -549,7 +536,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Bell className="w-4 h-4 mr-2 text-purple-500" />
-                          <span className="text-sm">المؤثرات الصوتية</span>
+                          <span className="text-white">المؤثرات الصوتية</span>
+                          <p className="text-xs text-zinc-400 ml-2">تفعيل أصوات اللعبة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.soundEffects} 
@@ -560,7 +548,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
-                          <span className="text-sm">تأثيرات الاحتفال</span>
+                          <span className="text-white">تأثيرات الاحتفال</span>
+                          <p className="text-xs text-zinc-400 ml-2">إضافة تأثيرات بصرية للإجابات الصحيحة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.confettiEffects} 
@@ -571,7 +560,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Gavel className="w-4 h-4 mr-2 text-red-500" />
-                          <span className="text-sm">وظيفة الحكم</span>
+                          <span className="text-white">وظيفة الحكم</span>
+                          <p className="text-xs text-zinc-400 ml-2">تمكين الحكم من منح النقاط</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.judgeFunctionality} 
@@ -582,7 +572,8 @@ const Index = () => {
                       <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
                         <div className="flex items-center">
                           <Star className="w-4 h-4 mr-2 text-green-500" />
-                          <span className="text-sm">القدرات الخاصة</span>
+                          <span className="text-white">القدرات الخاصة</span>
+                          <p className="text-xs text-zinc-400 ml-2">استخدام وقت إضافي ونقاط مضاعفة</p>
                         </div>
                         <Switch 
                           checked={gameFeatures.powerUps} 
@@ -779,7 +770,6 @@ const Index = () => {
                     )}
                   </Card>
                   
-                  {/* Only show Judge if the feature is enabled */}
                   {gameFeatures.judgeFunctionality && (
                     <Judge 
                       name={gameSetup.judgeName}
@@ -791,7 +781,6 @@ const Index = () => {
                     />
                   )}
                   
-                  {/* Always show next question button if Judge is disabled */}
                   {!gameFeatures.judgeFunctionality && showAnswer && (
                     <motion.button
                       onClick={nextQuestion}

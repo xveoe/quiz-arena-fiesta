@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Gavel, Star, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Gavel, Star, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 

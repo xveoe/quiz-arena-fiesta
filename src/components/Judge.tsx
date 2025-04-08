@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Gavel, Star, ArrowRight } from 'lucide-react';
+import { Gavel, Star, ArrowRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface JudgeProps {
   name: string;
@@ -20,6 +21,20 @@ const Judge: React.FC<JudgeProps> = ({
   isDisabled, 
   showAnswer 
 }) => {
+  const handleApprove = () => {
+    toast.success("تم تصحيح الإجابة! 🎉", {
+      position: "top-center",
+    });
+    onApproveAnswer();
+  };
+
+  const handleReject = () => {
+    toast.error("تم رفض الإجابة! ❌", {
+      position: "top-center",
+    });
+    onRejectAnswer();
+  };
+
   return (
     <motion.div 
       className="luxury-card p-4 rounded-lg border border-zinc-800 backdrop-blur-sm"
@@ -39,7 +54,7 @@ const Judge: React.FC<JudgeProps> = ({
       
       <div className="grid grid-cols-2 gap-3 mb-3">
         <button
-          onClick={onApproveAnswer}
+          onClick={handleApprove}
           disabled={isDisabled}
           className={`
             flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center
@@ -61,12 +76,12 @@ const Judge: React.FC<JudgeProps> = ({
               }}
             />
           )}
-          <Star className="w-4 h-4" />
+          <ThumbsUp className="w-4 h-4" />
           تصحيح
         </button>
         
         <button
-          onClick={onRejectAnswer}
+          onClick={handleReject}
           disabled={isDisabled}
           className={`
             flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center
@@ -88,7 +103,7 @@ const Judge: React.FC<JudgeProps> = ({
               }}
             />
           )}
-          <Star className="w-4 h-4" />
+          <ThumbsDown className="w-4 h-4" />
           خطأ
         </button>
       </div>

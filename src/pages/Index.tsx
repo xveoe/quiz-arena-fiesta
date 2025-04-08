@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Intro from "@/components/Intro";
@@ -13,8 +14,8 @@ import LoadingQuestions from "@/components/LoadingQuestions";
 import { generateQuestions, categories, preGenerateQuestions } from "@/services/questionService";
 import Judge from "@/components/Judge";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
-import PunishmentWheel from "@/components/PunishmentWheel";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit } from "lucide-react";
+import PunishmentBox from "@/components/PunishmentBox";
+import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Bell, Zap } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -68,8 +69,18 @@ const Index = () => {
   
   // New state variables
   const [showManualQuestionForm, setShowManualQuestionForm] = useState(false);
-  const [showPunishmentWheel, setShowPunishmentWheel] = useState(false);
+  const [showPunishmentBox, setShowPunishmentBox] = useState(false);
   const [losingTeamIndex, setLosingTeamIndex] = useState<number | null>(null);
+  
+  // Game features toggles
+  const [gameFeatures, setGameFeatures] = useState({
+    streakBonus: true,
+    timeBonus: true,
+    soundEffects: true,
+    confettiEffects: true,
+    judgeFunctionality: true,
+    powerUps: true
+  });
   
   // Pre-generate questions when the app loads
   useEffect(() => {
@@ -77,11 +88,13 @@ const Index = () => {
   }, []);
   
   const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    if (gameFeatures.confettiEffects) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
   };
 
   const handleIntroComplete = () => {
@@ -172,12 +185,18 @@ const Index = () => {
         
         let pointsToAdd = 1;
         
-        const timeBonus = Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10;
+        // Apply time bonus if enabled
+        let timeBonus = 0;
+        if (gameFeatures.timeBonus) {
+          timeBonus = Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10;
+        }
         
+        // Apply streak bonus if enabled
         newTeams[currentTeam].streak += 1;
-        const streakMultiplier = newTeams[currentTeam].streak >= 3 ? 1.5 : 1;
+        const streakMultiplier = (gameFeatures.streakBonus && newTeams[currentTeam].streak >= 3) ? 1.5 : 1;
         
-        const doublePointsActive = powerUpsAvailable.doublePoints[currentTeam] < 1;
+        // Apply power-ups if enabled
+        const doublePointsActive = gameFeatures.powerUps && powerUpsAvailable.doublePoints[currentTeam] < 1;
         const doubleMultiplier = doublePointsActive ? 2 : 1;
         
         pointsToAdd = (pointsToAdd + timeBonus) * streakMultiplier * doubleMultiplier;
@@ -203,7 +222,7 @@ const Index = () => {
   };
 
   const handleJudgeDecision = (isCorrect: boolean) => {
-    if (!showAnswer) return;
+    if (!showAnswer || !gameFeatures.judgeFunctionality) return;
 
     if (isCorrect) {
       setTeams(prev => {
@@ -229,7 +248,7 @@ const Index = () => {
       setGameStarted(false);
       setCurrentTab("results");
       
-      // Determine losing team for punishment wheel
+      // Determine losing team for punishment
       if (teams[0].score !== teams[1].score) {
         const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
         setLosingTeamIndex(losingIndex);
@@ -247,7 +266,7 @@ const Index = () => {
   };
 
   const useJoker = () => {
-    if (excludedOptions.length > 0 || !gameStarted || showAnswer) return;
+    if (excludedOptions.length > 0 || !gameStarted || showAnswer || !gameFeatures.powerUps) return;
     
     const currentQuestion = questions[currentQuestionIndex];
     const correctAnswerIndex = currentQuestion.options.indexOf(currentQuestion.correctAnswer);
@@ -274,7 +293,7 @@ const Index = () => {
   };
   
   const usePowerUp = (powerUp: 'extraTime' | 'doublePoints' | 'skipQuestion') => {
-    if (!gameStarted || showAnswer) return;
+    if (!gameStarted || showAnswer || !gameFeatures.powerUps) return;
     
     if (powerUp === 'extraTime' && powerUpsAvailable.extraTime[currentTeam] > 0) {
       setTimer(prev => prev + 15);
@@ -325,19 +344,41 @@ const Index = () => {
   };
   
   const calculateTimeBonus = () => {
-    return Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10;
+    return gameFeatures.timeBonus ? Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10 : 0;
   };
 
   const getStreakMultiplier = (teamIndex: number) => {
-    return teams[teamIndex].streak >= 3 ? 1.5 : 1;
+    return (gameFeatures.streakBonus && teams[teamIndex].streak >= 3) ? 1.5 : 1;
   };
 
   const showPunishment = () => {
     if (losingTeamIndex !== null) {
-      setShowPunishmentWheel(true);
+      setShowPunishmentBox(true);
     } else {
       toast.info("تعادل الفريقان، لا يوجد عقاب!");
     }
+  };
+
+  const toggleFeature = (feature: keyof typeof gameFeatures) => {
+    setGameFeatures(prev => ({
+      ...prev,
+      [feature]: !prev[feature]
+    }));
+    
+    toast.info(`تم ${gameFeatures[feature] ? 'تعطيل' : 'تفعيل'} ${getFeatureName(feature)}`);
+  };
+  
+  const getFeatureName = (feature: keyof typeof gameFeatures): string => {
+    const featureNames: Record<keyof typeof gameFeatures, string> = {
+      streakBonus: "مكافأة السلسلة",
+      timeBonus: "مكافأة الوقت",
+      soundEffects: "المؤثرات الصوتية",
+      confettiEffects: "تأثيرات الاحتفال",
+      judgeFunctionality: "وظيفة الحكم",
+      powerUps: "القدرات الخاصة"
+    };
+    
+    return featureNames[feature];
   };
 
   return (
@@ -353,10 +394,10 @@ const Index = () => {
         />
       )}
       
-      {showPunishmentWheel && losingTeamIndex !== null && (
-        <PunishmentWheel 
+      {showPunishmentBox && losingTeamIndex !== null && (
+        <PunishmentBox 
           teamName={teams[losingTeamIndex].name}
-          onClose={() => setShowPunishmentWheel(false)}
+          onClose={() => setShowPunishmentBox(false)}
         />
       )}
 
@@ -474,6 +515,82 @@ const Index = () => {
                       ))}
                     </select>
                   </div>
+
+                  {/* Game Features Section */}
+                  <Card className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+                    <h3 className="text-lg font-bold text-center mb-3 text-silver flex items-center justify-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      مميزات اللعبة
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Zap className="w-4 h-4 mr-2 text-yellow-500" />
+                          <span className="text-sm">مكافأة السلسلة</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.streakBonus} 
+                          onCheckedChange={() => toggleFeature('streakBonus')}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Timer className="w-4 h-4 mr-2 text-blue-500" />
+                          <span className="text-sm">مكافأة الوقت</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.timeBonus} 
+                          onCheckedChange={() => toggleFeature('timeBonus')}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Bell className="w-4 h-4 mr-2 text-purple-500" />
+                          <span className="text-sm">المؤثرات الصوتية</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.soundEffects} 
+                          onCheckedChange={() => toggleFeature('soundEffects')}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
+                          <span className="text-sm">تأثيرات الاحتفال</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.confettiEffects} 
+                          onCheckedChange={() => toggleFeature('confettiEffects')}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Gavel className="w-4 h-4 mr-2 text-red-500" />
+                          <span className="text-sm">وظيفة الحكم</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.judgeFunctionality} 
+                          onCheckedChange={() => toggleFeature('judgeFunctionality')}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 mr-2 text-green-500" />
+                          <span className="text-sm">القدرات الخاصة</span>
+                        </div>
+                        <Switch 
+                          checked={gameFeatures.powerUps} 
+                          onCheckedChange={() => toggleFeature('powerUps')}
+                        />
+                      </div>
+                    </div>
+                  </Card>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <Button 
@@ -513,7 +630,7 @@ const Index = () => {
                         <h3 className="text-lg font-bold mb-1 text-silver">{team.name}</h3>
                         <div className="text-3xl font-bold text-zinc-300">
                           {team.score}
-                          {team.bonusPoints > 0 && (
+                          {team.bonusPoints > 0 && gameFeatures.timeBonus && (
                             <span className="text-sm text-zinc-400 ml-1">
                               (+{team.bonusPoints})
                             </span>
@@ -521,15 +638,15 @@ const Index = () => {
                         </div>
                         
                         <div className="flex items-center justify-center gap-1 text-sm mt-1 text-zinc-400">
-                          <span>سلسلة: {team.streak} {team.streak >= 3 && '🔥'}</span>
-                          {team.streak >= 3 && (
+                          <span>سلسلة: {team.streak} {gameFeatures.streakBonus && team.streak >= 3 && '🔥'}</span>
+                          {gameFeatures.streakBonus && team.streak >= 3 && (
                             <span className="text-zinc-300">(×{getStreakMultiplier(index)})</span>
                           )}
                         </div>
                         
                         <div className="text-sm mt-1 flex items-center justify-center gap-2 text-zinc-400">
                           <span>
-                            الجوكر: {team.jokers} {team.jokers > 0 && currentTeam === index && !showAnswer && (
+                            الجوكر: {team.jokers} {team.jokers > 0 && currentTeam === index && !showAnswer && gameFeatures.powerUps && (
                               <button 
                                 onClick={useJoker} 
                                 disabled={team.jokers <= 0 || excludedOptions.length > 0}
@@ -544,40 +661,42 @@ const Index = () => {
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
-                      disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
-                      onClick={() => usePowerUp('extraTime')}
-                      className="flex flex-col items-center py-2 h-auto luxury-button"
-                    >
-                      <Timer className="h-5 w-5 mb-1" />
-                      <span>وقت إضافي</span>
-                      <span className="text-xs mt-1">({powerUpsAvailable.extraTime[currentTeam]})</span>
-                    </Button>
-                    
-                    <Button
-                      variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
-                      disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
-                      onClick={() => usePowerUp('doublePoints')}
-                      className="flex flex-col items-center py-2 h-auto luxury-button"
-                    >
-                      <Star className="h-5 w-5 mb-1" />
-                      <span>نقاط مضاعفة</span>
-                      <span className="text-xs mt-1">({powerUpsAvailable.doublePoints[currentTeam]})</span>
-                    </Button>
-                    
-                    <Button
-                      variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
-                      disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
-                      onClick={() => usePowerUp('skipQuestion')}
-                      className="flex flex-col items-center py-2 h-auto luxury-button"
-                    >
-                      <Award className="h-5 w-5 mb-1" />
-                      <span>تخطي السؤال</span>
-                      <span className="text-xs mt-1">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
-                    </Button>
-                  </div>
+                  {gameFeatures.powerUps && (
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
+                        disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
+                        onClick={() => usePowerUp('extraTime')}
+                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                      >
+                        <Timer className="h-5 w-5 mb-1" />
+                        <span>وقت إضافي</span>
+                        <span className="text-xs mt-1">({powerUpsAvailable.extraTime[currentTeam]})</span>
+                      </Button>
+                      
+                      <Button
+                        variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
+                        disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
+                        onClick={() => usePowerUp('doublePoints')}
+                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                      >
+                        <Star className="h-5 w-5 mb-1" />
+                        <span>نقاط مضاعفة</span>
+                        <span className="text-xs mt-1">({powerUpsAvailable.doublePoints[currentTeam]})</span>
+                      </Button>
+                      
+                      <Button
+                        variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
+                        disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
+                        onClick={() => usePowerUp('skipQuestion')}
+                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                      >
+                        <Award className="h-5 w-5 mb-1" />
+                        <span>تخطي السؤال</span>
+                        <span className="text-xs mt-1">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
+                      </Button>
+                    </div>
+                  )}
 
                   <Card className="p-6 luxury-card">
                     <div className="flex justify-between items-center mb-4">
@@ -644,7 +763,7 @@ const Index = () => {
                           ))}
                         </div>
                         
-                        {timerActive && (
+                        {timerActive && gameFeatures.timeBonus && (
                           <div className="mt-4 text-center text-sm text-zinc-400">
                             نقاط الوقت: <span className="text-zinc-300">+{calculateTimeBonus()}</span>
                           </div>
@@ -660,15 +779,45 @@ const Index = () => {
                     )}
                   </Card>
                   
-                  {/* Add the Judge component with next question button */}
-                  <Judge 
-                    name={gameSetup.judgeName}
-                    onApproveAnswer={() => handleJudgeDecision(true)}
-                    onRejectAnswer={() => handleJudgeDecision(false)}
-                    onNextQuestion={nextQuestion}
-                    isDisabled={!showAnswer}
-                    showAnswer={showAnswer}
-                  />
+                  {/* Only show Judge if the feature is enabled */}
+                  {gameFeatures.judgeFunctionality && (
+                    <Judge 
+                      name={gameSetup.judgeName}
+                      onApproveAnswer={() => handleJudgeDecision(true)}
+                      onRejectAnswer={() => handleJudgeDecision(false)}
+                      onNextQuestion={nextQuestion}
+                      isDisabled={!showAnswer}
+                      showAnswer={showAnswer}
+                    />
+                  )}
+                  
+                  {/* Always show next question button if Judge is disabled */}
+                  {!gameFeatures.judgeFunctionality && showAnswer && (
+                    <motion.button
+                      onClick={nextQuestion}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="w-full py-3 px-4 rounded-lg text-center bg-gradient-to-r from-blue-900 to-blue-800 text-blue-300 hover:from-blue-800 hover:to-blue-700 transition-all duration-200 relative overflow-hidden"
+                    >
+                      <motion.div 
+                        className="absolute inset-0 bg-white/5"
+                        animate={{ 
+                          x: ["100%", "-100%"],
+                        }}
+                        transition={{ 
+                          repeat: Infinity,
+                          repeatType: "loop",
+                          duration: 1.5,
+                          ease: "linear"
+                        }}
+                      />
+                      <span className="flex items-center justify-center gap-2">
+                        <ArrowRight className="w-5 h-5" />
+                        السؤال التالي
+                      </span>
+                    </motion.button>
+                  )}
 
                   <Button 
                     onClick={resetGame} 
@@ -728,7 +877,7 @@ const Index = () => {
                           {team.score}
                         </div>
                         
-                        {team.bonusPoints > 0 && (
+                        {team.bonusPoints > 0 && gameFeatures.timeBonus && (
                           <div className="text-sm text-green-400 mb-2">
                             نقاط إضافية: +{team.bonusPoints}
                           </div>
@@ -753,12 +902,14 @@ const Index = () => {
                 </div>
                 
                 <div className="mt-8 space-y-4">
-                  <div className="flex justify-center">
-                    <div className="flex items-center gap-2 text-silver text-lg">
-                      <Gavel className="w-5 h-5 text-zinc-400" />
-                      <span>الحكم: {gameSetup.judgeName}</span>
+                  {gameFeatures.judgeFunctionality && (
+                    <div className="flex justify-center">
+                      <div className="flex items-center gap-2 text-silver text-lg">
+                        <Gavel className="w-5 h-5 text-zinc-400" />
+                        <span>الحكم: {gameSetup.judgeName}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <Button 
@@ -766,7 +917,7 @@ const Index = () => {
                       className="py-6 bg-gradient-to-r from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 text-purple-100"
                     >
                       <Gift className="w-5 h-5 mr-2" />
-                      <span>عجلة العقاب</span>
+                      <span>عرض العقاب</span>
                     </Button>
                     
                     <Button 

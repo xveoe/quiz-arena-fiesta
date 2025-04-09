@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Intro from "@/components/Intro";
 import LoadingQuestions from "@/components/LoadingQuestions";
-import { generateQuestions, categories, preGenerateQuestions, resetUsedQuestions, swapQuestion } from "@/services/questionService";
+import { generateQuestions, categories, resetUsedQuestions, swapQuestion } from "@/services/questionService";
 import Judge from "@/components/Judge";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
-import ThemeSelector, { ThemeType } from "@/components/ThemeSelector";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Zap, ArrowRight, RefreshCw } from 'lucide-react';
+import { ThemeType } from "@/components/ThemeSelector";
+import { Sparkles, Timer, Award, Star, Play, Gavel, Edit, Settings, Zap, ArrowRight } from 'lucide-react';
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -98,7 +98,6 @@ const Index = () => {
   
   const handleThemeChange = (theme: ThemeType) => {
     setCurrentTheme(theme);
-    // يمكن إضافة أي منطق إضافي عند تغيير الثيم هنا
   };
 
   useEffect(() => {
@@ -247,7 +246,14 @@ const Index = () => {
       if (wasAnsweredCorrectly) {
         setTeams(prev => {
           const newTeams = [...prev] as [Team, Team];
-          newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - 1) * 10) / 10);
+          // Deduct both the regular point and any time bonus points
+          const timeBonus = gameFeatures.timeBonus ? 
+            Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10 : 0;
+          const totalDeduction = 1 + timeBonus;
+          
+          newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - totalDeduction) * 10) / 10);
+          newTeams[currentTeam].bonusPoints = Math.max(0, Math.round((newTeams[currentTeam].bonusPoints - timeBonus) * 10) / 10);
+          
           return newTeams;
         });
       }
@@ -458,10 +464,6 @@ const Index = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="absolute top-0 right-2">
-              <ThemeSelector onThemeChange={handleThemeChange} />
-            </div>
-            
             <h1 className="text-3xl font-bold theme-text flex items-center justify-center gap-1 animate-silver-shine">
               <Sparkles className="w-6 h-6 theme-accent" />
               مسابقات المعرفة

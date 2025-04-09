@@ -32,6 +32,7 @@ interface ThemeSelectorProps {
   onThemeChange?: (theme: ThemeType) => void;
 }
 
+// This component is hidden but preserved for future use
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>('silver');
   const isMobile = useIsMobile();
@@ -62,33 +63,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
     toast.success(`تم تغيير الثيم إلى ${themes.find(t => t.id === themeId)?.name}`);
   };
   
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size={isMobile ? "icon" : "icon"}
-          className="theme-button theme-border w-8 h-8 p-0"
-        >
-          <Palette className="h-4 w-4 theme-text" />
-          <span className="sr-only">تغيير الثيم</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="theme-card border theme-border shadow-lg w-44">
-        {themes.map((theme) => (
-          <DropdownMenuItem
-            key={theme.id}
-            className={`flex items-center gap-2 cursor-pointer text-sm py-1.5 ${currentTheme === theme.id ? 'theme-selected-item' : ''}`}
-            onClick={() => changeTheme(theme.id)}
-          >
-            <span className="text-base">{theme.icon}</span>
-            <span>{theme.name}</span>
-            {currentTheme === theme.id && <span className="ml-auto">✓</span>}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  return null; // Component is hidden
 };
 
 export default ThemeSelector;

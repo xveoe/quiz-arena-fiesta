@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { BrainCircuit, Sparkles } from 'lucide-react';
+import { BrainCircuit, Sparkles, Brain } from 'lucide-react';
 
 const aiMessages = [
   "جاري تحليل الموضوع...",
@@ -25,7 +25,7 @@ const LoadingQuestions = () => {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center z-40 backdrop-blur-md theme-bg">
       <div className="w-full max-w-xs px-6 text-center">
-        {/* AI Logo Animation - Simplified for mobile */}
+        {/* Brain Logo Animation */}
         <motion.div
           className="mb-8 flex items-center justify-center"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -73,7 +73,7 @@ const LoadingQuestions = () => {
                 repeatType: "reverse" 
               }}
             >
-              <BrainCircuit className="w-12 h-12 theme-icon z-20" />
+              <Brain className="w-12 h-12 theme-icon z-20" />
               
               <motion.div 
                 className="absolute inset-0 flex items-center justify-center"

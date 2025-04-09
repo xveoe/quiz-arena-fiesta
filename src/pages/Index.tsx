@@ -79,7 +79,7 @@ const Index = () => {
     powerUps: true
   });
   
-  const [currentTheme, setCurrentTheme] = useState<ThemeType>('gold');
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>('silver');
   const [isRefreshingQuestion, setIsRefreshingQuestion] = useState(false);
   
   const triggerConfetti = () => {
@@ -781,4 +781,4 @@ const Index = () => {
                         className="flex flex-col items-center py-1 h-auto theme-border text-xs"
                         size="sm"
                       >
-                        <Award className="h-3 w-3 mb-0.5" />
+                        <Award className="h-3 w-3 mb-0.5"

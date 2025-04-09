@@ -11,11 +11,12 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Intro from "@/components/Intro";
 import LoadingQuestions from "@/components/LoadingQuestions";
-import { generateQuestions, categories, preGenerateQuestions } from "@/services/questionService";
+import { generateQuestions, categories, preGenerateQuestions, resetUsedQuestions, swapQuestion } from "@/services/questionService";
 import Judge from "@/components/Judge";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
-import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Bell, Zap, ArrowRight } from "lucide-react";
+import ThemeSelector, { ThemeType } from "@/components/ThemeSelector";
+import { Sparkles, ThumbsUp, ThumbsDown, Timer, Trophy, Gift, Medal, Award, Star, Play, Gavel, Plus, Edit, Settings, Zap, ArrowRight, RefreshCw } from 'lucide-react';
 import confetti from "canvas-confetti";
 
 interface Question {
@@ -74,11 +75,13 @@ const Index = () => {
   const [gameFeatures, setGameFeatures] = useState({
     streakBonus: true,
     timeBonus: true,
-    soundEffects: true,
     confettiEffects: true,
     judgeFunctionality: true,
     powerUps: true
   });
+  
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>('gold');
+  const [isRefreshingQuestion, setIsRefreshingQuestion] = useState(false);
   
   const triggerConfetti = () => {
     if (gameFeatures.confettiEffects) {
@@ -92,6 +95,11 @@ const Index = () => {
 
   const handleIntroComplete = () => {
     setShowIntro(false);
+  };
+  
+  const handleThemeChange = (theme: ThemeType) => {
+    setCurrentTheme(theme);
+    // يمكن إضافة أي منطق إضافي عند تغيير الثيم هنا
   };
 
   useEffect(() => {
@@ -123,6 +131,9 @@ const Index = () => {
     setIsLoading(true);
     
     try {
+      // مسح قائمة الأسئلة المستخدمة سابقاً عند بدء لعبة جديدة
+      resetUsedQuestions();
+      
       const generatedQuestions = await generateQuestions(
         selectedCategory, 
         gameSetup.questionCount,
@@ -231,6 +242,23 @@ const Index = () => {
       toast.success("الحكم صحح الإجابة! 🎉");
       triggerConfetti();
     } else {
+      // عند رفض الإجابة، قم بإرجاع النقطة المحتسبة
+      const lastAnsweredCorrectly = questions[currentQuestionIndex].correctAnswer === questions[currentQuestionIndex].options.find(
+        (_, i) => !excludedOptions.includes(i)
+      );
+      
+      if (lastAnsweredCorrectly) {
+        setTeams(prev => {
+          const newTeams = [...prev] as [Team, Team];
+          
+          const pointsToRemove = 1;
+          
+          newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - pointsToRemove) * 10) / 10);
+          
+          return newTeams;
+        });
+      }
+      
       toast.error("الحكم رفض الإجابة! ❌");
     }
   };
@@ -254,6 +282,36 @@ const Index = () => {
     setCurrentQuestionIndex(prev => prev + 1);
     setExcludedOptions([]);
     setShowAnswer(false);
+  };
+
+  const refreshCurrentQuestion = async () => {
+    if (!gameStarted || showAnswer || isRefreshingQuestion) return;
+    
+    setIsRefreshingQuestion(true);
+    
+    try {
+      const currentQuestion = questions[currentQuestionIndex];
+      const newQuestion = await swapQuestion(selectedCategory, currentQuestion, gameSetup.difficulty);
+      
+      if (newQuestion) {
+        const newQuestions = [...questions];
+        newQuestions[currentQuestionIndex] = newQuestion;
+        
+        setQuestions(newQuestions);
+        setTimer(gameSetup.timePerQuestion);
+        setTimerActive(false);
+        setExcludedOptions([]);
+        
+        toast.success("تم استبدال السؤال الحالي بنجاح");
+      } else {
+        toast.error("لم يتم العثور على سؤال بديل مناسب");
+      }
+    } catch (error) {
+      console.error("خطأ أثناء تبديل السؤال:", error);
+      toast.error("حدث خطأ أثناء تبديل السؤال");
+    } finally {
+      setIsRefreshingQuestion(false);
+    }
   };
 
   const useJoker = () => {
@@ -315,6 +373,7 @@ const Index = () => {
   };
 
   const resetGame = () => {
+    resetUsedQuestions();
     setGameStarted(false);
     setQuestions([]);
     setCurrentQuestionIndex(0);
@@ -363,13 +422,20 @@ const Index = () => {
     const featureNames: Record<keyof typeof gameFeatures, string> = {
       streakBonus: "مكافأة السلسلة",
       timeBonus: "مكافأة الوقت",
-      soundEffects: "المؤثرات الصوتية",
       confettiEffects: "تأثيرات الاحتفال",
       judgeFunctionality: "وظيفة الحكم",
       powerUps: "القدرات الخاصة"
     };
     
     return featureNames[feature];
+  };
+
+  // تعريف القدرات الخاصة
+  const powerUpsDescription = {
+    extraTime: "إضافة وقت: تضيف 15 ثانية إضافية إلى العد التنازلي.",
+    doublePoints: "نقاط مضاعفة: تضاعف النقاط التي ستحصل عليها إذا أجبت بشكل صحيح.",
+    skipQuestion: "تخطي السؤال: تتيح لك تخطي السؤال الحالي والانتقال للسؤال التالي.",
+    joker: "الجوكر: يحذف خيارين خاطئين من الاختيارات المتاحة."
   };
 
   return (
@@ -392,20 +458,24 @@ const Index = () => {
         />
       )}
 
-      <div className="min-h-screen p-4 font-cairo">
+      <div className={`min-h-screen p-4 font-cairo theme-bg transition-colors duration-300`}>
         <div className="container mx-auto max-w-4xl">
           <motion.header 
-            className="text-center my-6"
+            className="text-center my-6 relative"
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-silver flex items-center justify-center gap-2 animate-silver-shine">
-              <Sparkles className="w-8 h-8 text-zinc-400" />
+            <div className="absolute top-0 right-4">
+              <ThemeSelector onThemeChange={handleThemeChange} />
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold theme-text flex items-center justify-center gap-2 animate-silver-shine">
+              <Sparkles className="w-8 h-8 theme-accent" />
               مسابقات المعرفة
-              <Sparkles className="w-8 h-8 text-zinc-400" />
+              <Sparkles className="w-8 h-8 theme-accent" />
             </h1>
-            <p className="text-lg text-zinc-400 mt-2">تنافس، تعلم، استمتع</p>
+            <p className="text-lg theme-text opacity-70 mt-2">تنافس، تعلم، استمتع</p>
           </motion.header>
 
           <Tabs 
@@ -413,59 +483,59 @@ const Index = () => {
             onValueChange={setCurrentTab} 
             className="w-full"
           >
-            <TabsList className="grid grid-cols-3 mb-6 bg-zinc-900 border border-zinc-700">
-              <TabsTrigger value="setup" disabled={gameStarted} className="data-[state=active]:bg-zinc-800">الإعداد</TabsTrigger>
-              <TabsTrigger value="game" disabled={!gameStarted} className="data-[state=active]:bg-zinc-800">اللعبة</TabsTrigger>
-              <TabsTrigger value="results" disabled={currentTab !== "results"} className="data-[state=active]:bg-zinc-800">النتائج</TabsTrigger>
+            <TabsList className="grid grid-cols-3 mb-6 theme-card border theme-border">
+              <TabsTrigger value="setup" disabled={gameStarted} className="theme-text data-[state=active]:bg-opacity-20">الإعداد</TabsTrigger>
+              <TabsTrigger value="game" disabled={!gameStarted} className="theme-text data-[state=active]:bg-opacity-20">اللعبة</TabsTrigger>
+              <TabsTrigger value="results" disabled={currentTab !== "results"} className="theme-text data-[state=active]:bg-opacity-20">النتائج</TabsTrigger>
             </TabsList>
 
             <TabsContent value="setup" className="space-y-6">
-              <Card className="p-6 luxury-card">
-                <h2 className="text-2xl font-bold text-center mb-4 text-silver">إعداد المسابقة</h2>
+              <Card className="p-6 theme-card border theme-border">
+                <h2 className="text-2xl font-bold text-center mb-4 theme-text">إعداد المسابقة</h2>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-zinc-400">عدد اللاعبين في كل فريق</label>
+                    <label className="block text-sm font-medium mb-1 theme-text opacity-70">عدد اللاعبين في كل فريق</label>
                     <Input
                       type="number"
                       min="1"
                       max="10"
                       value={gameSetup.playerCount}
                       onChange={(e) => setGameSetup({...gameSetup, playerCount: parseInt(e.target.value) || 1})}
-                      className="text-center luxury-input"
+                      className="text-center theme-border theme-text"
                     />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1 text-zinc-400">اسم الفريق الأول</label>
+                      <label className="block text-sm font-medium mb-1 theme-text opacity-70">اسم الفريق الأول</label>
                       <Input
                         value={gameSetup.team1Name}
                         onChange={(e) => setGameSetup({...gameSetup, team1Name: e.target.value})}
-                        className="text-center luxury-input"
+                        className="text-center theme-border theme-text"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1 text-zinc-400">اسم الفريق الثاني</label>
+                      <label className="block text-sm font-medium mb-1 theme-text opacity-70">اسم الفريق الثاني</label>
                       <Input
                         value={gameSetup.team2Name}
                         onChange={(e) => setGameSetup({...gameSetup, team2Name: e.target.value})}
-                        className="text-center luxury-input"
+                        className="text-center theme-border theme-text"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-zinc-400">اسم الحكم</label>
+                    <label className="block text-sm font-medium mb-1 theme-text opacity-70">اسم الحكم</label>
                     <Input
                       value={gameSetup.judgeName}
                       onChange={(e) => setGameSetup({...gameSetup, judgeName: e.target.value})}
-                      className="text-center luxury-input"
+                      className="text-center theme-border theme-text"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-1 text-zinc-400">عدد الأسئلة</label>
+                    <label className="block text-sm font-medium mb-1 theme-text opacity-70">عدد الأسئلة</label>
                     <div className="flex items-center">
                       <Input
                         type="number"
@@ -473,15 +543,15 @@ const Index = () => {
                         max="30"
                         value={gameSetup.questionCount}
                         onChange={(e) => setGameSetup({...gameSetup, questionCount: parseInt(e.target.value) || 10})}
-                        className="text-center luxury-input"
+                        className="text-center theme-border theme-text"
                       />
-                      <span className="mr-2 text-zinc-400">سؤال</span>
+                      <span className="mr-2 theme-text">سؤال</span>
                     </div>
-                    <p className="text-xs text-zinc-500 mt-1">يمكنك اختيار من 5 إلى 30 سؤال</p>
+                    <p className="text-xs theme-text opacity-50 mt-1">يمكنك اختيار من 5 إلى 30 سؤال</p>
                   </div>
                   
                   <div>
-                    <label className="flex justify-between text-sm font-medium mb-1 text-zinc-400">
+                    <label className="flex justify-between text-sm font-medium mb-1 theme-text opacity-70">
                       <span>مستوى صعوبة الأسئلة</span>
                       <span>
                         {gameSetup.difficulty < 30 ? "سهل" : 
@@ -497,7 +567,7 @@ const Index = () => {
                       onValueChange={(value) => setGameSetup({...gameSetup, difficulty: value[0]})}
                       className="py-4"
                     />
-                    <div className="flex justify-between text-xs text-zinc-500">
+                    <div className="flex justify-between text-xs theme-text opacity-50">
                       <span>سهل</span>
                       <span>متوسط</span>
                       <span>صعب</span>
@@ -505,7 +575,7 @@ const Index = () => {
                   </div>
                   
                   <div>
-                    <label className="flex justify-between text-sm font-medium mb-1 text-zinc-400">
+                    <label className="flex justify-between text-sm font-medium mb-1 theme-text opacity-70">
                       <span>الوقت المخصص لكل سؤال</span>
                       <span>{gameSetup.timePerQuestion} ثانية</span>
                     </label>
@@ -521,9 +591,9 @@ const Index = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-zinc-400">اختر فئة الأسئلة</label>
+                    <label className="block text-sm font-medium mb-2 theme-text opacity-70">اختر فئة الأسئلة</label>
                     <select 
-                      className="w-full p-2 border rounded-md text-center luxury-input"
+                      className="w-full p-2 border rounded-md text-center theme-border theme-card theme-text"
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
                     >
@@ -535,17 +605,17 @@ const Index = () => {
                     </select>
                   </div>
 
-                  <Card className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-                    <h3 className="text-lg font-bold text-center mb-3 text-silver flex items-center justify-center gap-2">
+                  <Card className="p-4 theme-card border theme-border rounded-lg">
+                    <h3 className="text-lg font-bold text-center mb-3 theme-text flex items-center justify-center gap-2">
                       <Settings className="w-4 h-4" />
                       مميزات اللعبة
                     </h3>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                      <div className="flex items-center justify-between p-2 border theme-border rounded-lg theme-card bg-opacity-30">
                         <div className="flex items-center">
-                          <Zap className="w-4 h-4 mr-2 text-yellow-500" />
-                          <span className="text-white">مكافأة السلسلة</span>
+                          <Zap className="w-4 h-4 mr-2 theme-icon" />
+                          <span className="theme-text">مكافأة السلسلة</span>
                         </div>
                         <Switch 
                           checked={gameFeatures.streakBonus} 
@@ -553,10 +623,10 @@ const Index = () => {
                         />
                       </div>
                       
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                      <div className="flex items-center justify-between p-2 border theme-border rounded-lg theme-card bg-opacity-30">
                         <div className="flex items-center">
-                          <Timer className="w-4 h-4 mr-2 text-blue-500" />
-                          <span className="text-white">مكافأة الوقت</span>
+                          <Timer className="w-4 h-4 mr-2 theme-icon" />
+                          <span className="theme-text">مكافأة الوقت</span>
                         </div>
                         <Switch 
                           checked={gameFeatures.timeBonus} 
@@ -564,21 +634,10 @@ const Index = () => {
                         />
                       </div>
                       
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                      <div className="flex items-center justify-between p-2 border theme-border rounded-lg theme-card bg-opacity-30">
                         <div className="flex items-center">
-                          <Bell className="w-4 h-4 mr-2 text-purple-500" />
-                          <span className="text-white">المؤثرات الصوتية</span>
-                        </div>
-                        <Switch 
-                          checked={gameFeatures.soundEffects} 
-                          onCheckedChange={() => toggleFeature('soundEffects')}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
-                        <div className="flex items-center">
-                          <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
-                          <span className="text-white">تأثيرات الاحتفال</span>
+                          <Sparkles className="w-4 h-4 mr-2 theme-icon" />
+                          <span className="theme-text">تأثيرات الاحتفال</span>
                         </div>
                         <Switch 
                           checked={gameFeatures.confettiEffects} 
@@ -586,10 +645,10 @@ const Index = () => {
                         />
                       </div>
                       
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                      <div className="flex items-center justify-between p-2 border theme-border rounded-lg theme-card bg-opacity-30">
                         <div className="flex items-center">
-                          <Gavel className="w-4 h-4 mr-2 text-red-500" />
-                          <span className="text-white">وظيفة الحكم</span>
+                          <Gavel className="w-4 h-4 mr-2 theme-icon" />
+                          <span className="theme-text">وظيفة الحكم</span>
                         </div>
                         <Switch 
                           checked={gameFeatures.judgeFunctionality} 
@@ -597,10 +656,10 @@ const Index = () => {
                         />
                       </div>
                       
-                      <div className="flex items-center justify-between p-2 border border-zinc-800 rounded-lg bg-zinc-900/30">
+                      <div className="flex items-center justify-between p-2 border theme-border rounded-lg theme-card bg-opacity-30">
                         <div className="flex items-center">
-                          <Star className="w-4 h-4 mr-2 text-green-500" />
-                          <span className="text-white">القدرات الخاصة</span>
+                          <Star className="w-4 h-4 mr-2 theme-icon" />
+                          <span className="theme-text">القدرات الخاصة</span>
                         </div>
                         <Switch 
                           checked={gameFeatures.powerUps} 
@@ -608,12 +667,24 @@ const Index = () => {
                         />
                       </div>
                     </div>
+                    
+                    {gameFeatures.powerUps && (
+                      <div className="mt-4 p-3 border theme-border rounded-lg theme-bg bg-opacity-50">
+                        <h4 className="text-sm font-bold mb-2 theme-text">القدرات الخاصة المتاحة:</h4>
+                        <ul className="text-xs space-y-1 theme-text opacity-80">
+                          <li>• {powerUpsDescription.extraTime}</li>
+                          <li>• {powerUpsDescription.doublePoints}</li>
+                          <li>• {powerUpsDescription.skipQuestion}</li>
+                          <li>• {powerUpsDescription.joker}</li>
+                        </ul>
+                      </div>
+                    )}
                   </Card>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <Button 
                       onClick={handleStartGame} 
-                      className="text-xl py-6 glow-effect luxury-button"
+                      className="text-xl py-6 theme-button theme-text"
                     >
                       <Play className="w-5 h-5 mr-2" />
                       توليد الأسئلة تلقائياً
@@ -621,7 +692,7 @@ const Index = () => {
                     
                     <Button 
                       onClick={() => setShowManualQuestionForm(true)}
-                      className="text-xl py-6 bg-gradient-to-r from-amber-800 to-amber-900 hover:from-amber-700 hover:to-amber-800 text-amber-100"
+                      className="text-xl py-6 theme-button theme-text"
                     >
                       <Edit className="w-5 h-5 mr-2" />
                       إضافة أسئلة يدوياً
@@ -643,32 +714,32 @@ const Index = () => {
                     {teams.map((team, index) => (
                       <Card 
                         key={index} 
-                        className={`p-4 luxury-card ${currentTeam === index ? 'glow-effect border-zinc-400' : ''}`}
+                        className={`p-4 theme-card border theme-border ${currentTeam === index ? 'ring-2 ring-inset ring-offset-2 theme-border' : ''}`}
                       >
-                        <h3 className="text-lg font-bold mb-1 text-silver">{team.name}</h3>
-                        <div className="text-3xl font-bold text-zinc-300">
+                        <h3 className="text-lg font-bold mb-1 theme-text">{team.name}</h3>
+                        <div className="text-3xl font-bold theme-text">
                           {team.score}
                           {team.bonusPoints > 0 && gameFeatures.timeBonus && (
-                            <span className="text-sm text-zinc-400 ml-1">
+                            <span className="text-sm theme-text opacity-70 ml-1">
                               (+{team.bonusPoints})
                             </span>
                           )}
                         </div>
                         
-                        <div className="flex items-center justify-center gap-1 text-sm mt-1 text-zinc-400">
+                        <div className="flex items-center justify-center gap-1 text-sm mt-1 theme-text opacity-70">
                           <span>سلسلة: {team.streak} {gameFeatures.streakBonus && team.streak >= 3 && '🔥'}</span>
                           {gameFeatures.streakBonus && team.streak >= 3 && (
-                            <span className="text-zinc-300">(×{getStreakMultiplier(index)})</span>
+                            <span className="theme-text">× {getStreakMultiplier(index)}</span>
                           )}
                         </div>
                         
-                        <div className="text-sm mt-1 flex items-center justify-center gap-2 text-zinc-400">
+                        <div className="text-sm mt-1 flex items-center justify-center gap-2 theme-text opacity-70">
                           <span>
                             الجوكر: {team.jokers} {team.jokers > 0 && currentTeam === index && !showAnswer && gameFeatures.powerUps && (
                               <button 
                                 onClick={useJoker} 
                                 disabled={team.jokers <= 0 || excludedOptions.length > 0}
-                                className="underline text-zinc-300"
+                                className="underline theme-text"
                               >
                                 استخدم
                               </button>
@@ -685,7 +756,7 @@ const Index = () => {
                         variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
                         disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
                         onClick={() => usePowerUp('extraTime')}
-                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                        className="flex flex-col items-center py-2 h-auto theme-border"
                       >
                         <Timer className="h-5 w-5 mb-1" />
                         <span>وقت إضافي</span>
@@ -696,7 +767,7 @@ const Index = () => {
                         variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
                         disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
                         onClick={() => usePowerUp('doublePoints')}
-                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                        className="flex flex-col items-center py-2 h-auto theme-border"
                       >
                         <Star className="h-5 w-5 mb-1" />
                         <span>نقاط مضاعفة</span>
@@ -707,7 +778,7 @@ const Index = () => {
                         variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
                         disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
                         onClick={() => usePowerUp('skipQuestion')}
-                        className="flex flex-col items-center py-2 h-auto luxury-button"
+                        className="flex flex-col items-center py-2 h-auto theme-border"
                       >
                         <Award className="h-5 w-5 mb-1" />
                         <span>تخطي السؤال</span>
@@ -716,33 +787,48 @@ const Index = () => {
                     </div>
                   )}
 
-                  <Card className="p-6 luxury-card">
+                  <Card className="p-6 theme-card border theme-border">
                     <div className="flex justify-between items-center mb-4">
-                      <div className="text-sm text-zinc-400">
+                      <div className="text-sm theme-text opacity-70">
                         سؤال {currentQuestionIndex + 1} من {questions.length}
                       </div>
-                      <div className="text-xl font-bold text-silver">
+                      <div className="text-xl font-bold theme-text">
                         دور: {teams[currentTeam].name}
                       </div>
                       <div className={`
                         text-xl font-bold rounded-full w-12 h-12 flex items-center justify-center
-                        ${!timerActive ? 'bg-zinc-800 text-silver' : 
+                        ${!timerActive ? 'bg-opacity-30 theme-border theme-text' : 
                            timer <= 10 ? 'bg-red-900/30 text-red-300 animate-pulse' : 
-                           'bg-zinc-800 text-silver'}
+                           'bg-opacity-30 theme-border theme-text'}
                       `}>
                         {timer}
                       </div>
                     </div>
 
-                    <h3 className="text-2xl font-bold text-center my-6 leading-relaxed text-silver">
-                      {questions[currentQuestionIndex].question}
-                    </h3>
+                    <div className="flex justify-center items-center">
+                      <h3 className="text-2xl font-bold text-center my-6 leading-relaxed theme-text">
+                        {questions[currentQuestionIndex].question}
+                      </h3>
+                      
+                      {!showAnswer && !timerActive && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={refreshCurrentQuestion}
+                          disabled={isRefreshingQuestion}
+                          className="ml-2 theme-border"
+                          title="استبدل هذا السؤال"
+                        >
+                          <RefreshCw className={`h-4 w-4 theme-icon ${isRefreshingQuestion ? 'animate-spin' : ''}`} />
+                        </Button>
+                      )}
+                    </div>
                     
                     {!timerActive && !showAnswer && (
                       <div className="mb-6">
                         <Button 
                           onClick={handleStartTimer}
-                          className="w-full py-4 flex items-center justify-center gap-2 bg-gradient-to-r from-green-800 to-green-900 hover:from-green-700 hover:to-green-800 text-green-100"
+                          className="w-full py-4 flex items-center justify-center gap-2 theme-button theme-text"
                         >
                           <Play className="w-5 h-5" />
                           <span className="text-lg">بدء الوقت</span>
@@ -760,16 +846,16 @@ const Index = () => {
                               disabled={excludedOptions.includes(index) || timer === 0 || !timerActive}
                               className={`
                                 p-4 rounded-lg text-center text-lg transition-all relative overflow-hidden
-                                ${!timerActive ? 'bg-zinc-900 text-zinc-600' : excludedOptions.includes(index) 
-                                  ? 'bg-zinc-900 text-zinc-600 line-through' 
-                                  : 'bg-zinc-800 hover:bg-zinc-700 text-silver'
+                                ${!timerActive ? 'bg-opacity-30 theme-card theme-text opacity-60' : excludedOptions.includes(index) 
+                                  ? 'bg-opacity-30 theme-card theme-text opacity-60 line-through' 
+                                  : 'theme-card hover:bg-opacity-50 theme-text'
                                 }
                               `}
                               whileHover={{ scale: (!timerActive || excludedOptions.includes(index)) ? 1 : 1.02 }}
                             >
                               {!excludedOptions.includes(index) && timerActive && (
                                 <motion.div 
-                                  className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-zinc-500 to-zinc-300"
+                                  className="absolute bottom-0 left-0 right-0 h-1 theme-progress"
                                   initial={{ scaleX: 1 }}
                                   animate={{ scaleX: timer / gameSetup.timePerQuestion }}
                                   transition={{ duration: 0.5 }}
@@ -782,15 +868,15 @@ const Index = () => {
                         </div>
                         
                         {timerActive && gameFeatures.timeBonus && (
-                          <div className="mt-4 text-center text-sm text-zinc-400">
-                            نقاط الوقت: <span className="text-zinc-300">+{calculateTimeBonus()}</span>
+                          <div className="mt-4 text-center text-sm theme-text opacity-70">
+                            نقاط الوقت: <span className="theme-text">+{calculateTimeBonus()}</span>
                           </div>
                         )}
                       </>
                     ) : (
                       <div className="mt-6 space-y-6">
-                        <div className="text-center text-xl mb-4 text-silver">الإجابة الصحيحة:</div>
-                        <div className="bg-zinc-800 p-4 rounded-lg text-center text-xl font-bold text-green-300 border border-zinc-600 glow-effect">
+                        <div className="text-center text-xl mb-4 theme-text">الإجابة الصحيحة:</div>
+                        <div className="theme-card p-4 rounded-lg text-center text-xl font-bold theme-text border theme-border ring-2 ring-offset-2 ring-offset-transparent theme-border">
                           {questions[currentQuestionIndex].correctAnswer}
                         </div>
                       </div>
@@ -814,7 +900,7 @@ const Index = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="w-full py-3 px-4 rounded-lg text-center bg-gradient-to-r from-blue-900 to-blue-800 text-blue-300 hover:from-blue-800 hover:to-blue-700 transition-all duration-200 relative overflow-hidden"
+                      className="w-full py-3 px-4 rounded-lg text-center theme-button theme-text relative overflow-hidden"
                     >
                       <motion.div 
                         className="absolute inset-0 bg-white/5"
@@ -838,7 +924,7 @@ const Index = () => {
                   <Button 
                     onClick={resetGame} 
                     variant="outline" 
-                    className="w-full luxury-button"
+                    className="w-full theme-border theme-text"
                   >
                     إنهاء اللعبة
                   </Button>
@@ -847,11 +933,11 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="results">
-              <Card className="p-6 luxury-card">
-                <h2 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2 text-silver">
-                  <Trophy className="w-6 h-6 text-zinc-400" />
+              <Card className="p-6 theme-card border theme-border">
+                <h2 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2 theme-text">
+                  <Trophy className="w-6 h-6 theme-icon" />
                   نتائج المسابقة
-                  <Trophy className="w-6 h-6 text-zinc-400" />
+                  <Trophy className="w-6 h-6 theme-icon" />
                 </h2>
                 
                 <div className="grid grid-cols-2 gap-8 text-center mb-8">
@@ -865,12 +951,12 @@ const Index = () => {
                       <motion.div 
                         key={index} 
                         className={`
-                          p-6 rounded-lg relative overflow-hidden
+                          p-6 rounded-lg relative overflow-hidden theme-card
                           ${isTie 
-                            ? 'bg-blue-950/30 border border-blue-800/50' 
+                            ? 'border theme-border' 
                             : isWinner
-                              ? 'bg-gradient-to-br from-amber-950/30 to-yellow-900/30 border-2 border-yellow-700/50' 
-                              : 'bg-gray-900/30 border border-gray-800/50'
+                              ? 'border-2 theme-border' 
+                              : 'border theme-border opacity-80'
                           }
                         `}
                         animate={isWinner ? {
@@ -884,29 +970,29 @@ const Index = () => {
                             animate={{ rotate: [0, 10, 0, -10, 0] }}
                             transition={{ duration: 2, repeat: Infinity }}
                           >
-                            <Medal className="w-10 h-10 text-yellow-500" />
+                            <Medal className="w-10 h-10 theme-icon" />
                           </motion.div>
                         )}
                         
-                        <h3 className="text-xl font-bold mb-3 text-silver">{team.name}</h3>
-                        <div className="text-5xl font-bold mb-3 text-silver">
+                        <h3 className="text-xl font-bold mb-3 theme-text">{team.name}</h3>
+                        <div className="text-5xl font-bold mb-3 theme-text">
                           {team.score}
                         </div>
                         
                         {team.bonusPoints > 0 && gameFeatures.timeBonus && (
-                          <div className="text-sm text-green-400 mb-2">
+                          <div className="text-sm theme-text opacity-70 mb-2">
                             نقاط إضافية: +{team.bonusPoints}
                           </div>
                         )}
                         
-                        <div className="text-lg text-silver">
+                        <div className="text-lg theme-text">
                           {isTie 
                             ? 'تعادل 🤝' 
                             : isWinner 
                               ? (
                                 <div className="flex items-center justify-center gap-1">
                                   <span>فائز!</span>
-                                  <Sparkles className="w-5 h-5 text-yellow-500" />
+                                  <Sparkles className="w-5 h-5 theme-icon" />
                                 </div>
                               )
                               : 'خاسر'
@@ -920,8 +1006,8 @@ const Index = () => {
                 <div className="mt-8 space-y-4">
                   {gameFeatures.judgeFunctionality && (
                     <div className="flex justify-center">
-                      <div className="flex items-center gap-2 text-silver text-lg">
-                        <Gavel className="w-5 h-5 text-zinc-400" />
+                      <div className="flex items-center gap-2 theme-text text-lg">
+                        <Gavel className="w-5 h-5 theme-icon" />
                         <span>الحكم: {gameSetup.judgeName}</span>
                       </div>
                     </div>
@@ -930,7 +1016,7 @@ const Index = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <Button 
                       onClick={showPunishment}
-                      className="py-6 bg-gradient-to-r from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 text-purple-100"
+                      className="py-6 theme-button theme-text"
                     >
                       <Gift className="w-5 h-5 mr-2" />
                       <span>عرض العقاب</span>
@@ -938,7 +1024,7 @@ const Index = () => {
                     
                     <Button 
                       onClick={resetGame} 
-                      className="py-6 luxury-button glow-effect"
+                      className="py-6 theme-button theme-text"
                     >
                       <Play className="w-5 h-5 mr-2" />
                       <span>لعبة جديدة</span>

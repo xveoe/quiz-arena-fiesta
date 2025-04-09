@@ -45,45 +45,83 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Theme colors */
+    --theme-primary: 0 0% 15%;
+    --theme-secondary: 0 0% 20%;
+    --theme-accent: 210 40% 96.1%;
+    --theme-text: 222.2 84% 4.9%;
+    --theme-border: 214.3 31.8% 91.4%;
+    --theme-background: 0 0% 100%;
+    --theme-card: 0 0% 100%;
+    --theme-button: 210 40% 96.1%;
+    --theme-glow: 45 100% 70%;
+    --theme-progress: 45 100% 50%;
+    --theme-icon: 45 100% 50%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  /* Gold theme */
+  [data-theme="gold"] {
+    --theme-primary: 45 70% 40%;
+    --theme-secondary: 45 60% 30%;
+    --theme-accent: 45 80% 50%;
+    --theme-text: 0 0% 10%;
+    --theme-border: 45 70% 40%;
+    --theme-background: linear-gradient(to bottom right, #141414, #1a1a1a);
+    --theme-card: linear-gradient(to bottom right, #1c1c1c, #242424);
+    --theme-button: 45 70% 40%;
+    --theme-glow: 45 100% 50%;
+    --theme-progress: 45 100% 50%;
+    --theme-icon: 45 100% 60%;
+    --theme-selected: rgba(255, 215, 0, 0.2);
+  }
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 95%;
+  /* Light theme */
+  [data-theme="light"] {
+    --theme-primary: 210 20% 90%;
+    --theme-secondary: 210 15% 80%;
+    --theme-accent: 210 30% 70%;
+    --theme-text: 210 50% 10%;
+    --theme-border: 210 30% 80%;
+    --theme-background: linear-gradient(to bottom right, #ffffff, #f5f5f5);
+    --theme-card: linear-gradient(to bottom right, #ffffff, #fafafa);
+    --theme-button: 210 20% 90%;
+    --theme-glow: 210 50% 70%;
+    --theme-progress: 210 70% 50%;
+    --theme-icon: 210 70% 50%;
+    --theme-selected: rgba(200, 220, 240, 0.3);
+  }
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
+  /* Dark theme */
+  [data-theme="dark"] {
+    --theme-primary: 220 10% 20%;
+    --theme-secondary: 220 10% 15%;
+    --theme-accent: 220 70% 40%;
+    --theme-text: 220 20% 90%;
+    --theme-border: 220 20% 30%;
+    --theme-background: linear-gradient(to bottom right, #0f0f10, #18181a);
+    --theme-card: linear-gradient(to bottom right, #1a1a1c, #222224);
+    --theme-button: 220 10% 30%;
+    --theme-glow: 220 70% 50%;
+    --theme-progress: 220 70% 50%;
+    --theme-icon: 220 70% 60%;
+    --theme-selected: rgba(70, 90, 120, 0.3);
+  }
 
-    --primary: 0 0% 15%;
-    --primary-foreground: 0 0% 95%;
-
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 90%;
-
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 90%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 80%;
-
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 0% 15%;
-    --sidebar-primary-foreground: 0 0% 95%;
-    --sidebar-accent: 0 0% 20%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 0 0% 80%;
+  /* Blood theme */
+  [data-theme="blood"] {
+    --theme-primary: 0 70% 40%;
+    --theme-secondary: 0 60% 30%;
+    --theme-accent: 0 80% 50%;
+    --theme-text: 0 20% 90%;
+    --theme-border: 0 70% 40%;
+    --theme-background: linear-gradient(to bottom right, #1a0000, #1a0a0a);
+    --theme-card: linear-gradient(to bottom right, #240000, #2a0909);
+    --theme-button: 0 70% 40%;
+    --theme-glow: 0 100% 50%;
+    --theme-progress: 0 100% 50%;
+    --theme-icon: 0 100% 60%;
+    --theme-selected: rgba(200, 0, 0, 0.3);
   }
 }
 
@@ -261,5 +299,46 @@
   
   .motion-blur-transition.active {
     filter: blur(0);
+  }
+  
+  /* Theme-based utilities */
+  .theme-bg {
+    background: var(--theme-background);
+  }
+  
+  .theme-card {
+    background: var(--theme-card);
+  }
+  
+  .theme-text {
+    color: hsl(var(--theme-text));
+  }
+  
+  .theme-border {
+    border-color: hsl(var(--theme-border));
+  }
+  
+  .theme-button {
+    background-color: hsl(var(--theme-button));
+  }
+  
+  .theme-accent {
+    color: hsl(var(--theme-accent));
+  }
+  
+  .theme-glow {
+    background-color: hsl(var(--theme-glow));
+  }
+  
+  .theme-progress {
+    background-color: hsl(var(--theme-progress));
+  }
+  
+  .theme-icon {
+    color: hsl(var(--theme-icon));
+  }
+  
+  .theme-selected-item {
+    background-color: var(--theme-selected);
   }
 }

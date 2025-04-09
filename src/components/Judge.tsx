@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Gavel, Star, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Gavel, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -38,27 +38,27 @@ const Judge: React.FC<JudgeProps> = ({
 
   return (
     <motion.div 
-      className="luxury-card p-4 rounded-lg border border-zinc-800 backdrop-blur-sm"
+      className="luxury-card p-3 rounded-lg border border-zinc-800 backdrop-blur-sm"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-center gap-2 mb-3">
-        <Gavel className="w-5 h-5 text-zinc-400" />
-        <h3 className="text-xl font-bold text-silver animate-silver-shine">الحكم: {name}</h3>
-        <Gavel className="w-5 h-5 text-zinc-400" />
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <Gavel className="w-4 h-4 text-zinc-400" />
+        <h3 className="text-lg font-bold text-silver animate-silver-shine">الحكم: {name}</h3>
+        <Gavel className="w-4 h-4 text-zinc-400" />
       </div>
       
-      <div className="text-sm text-zinc-400 mb-3 text-center">
+      <div className="text-xs text-zinc-400 mb-2 text-center">
         يحكم على إجابات اللاعبين ويمكنه منح النقاط أو رفضها
       </div>
       
-      <div className="grid grid-cols-2 gap-3 mb-3">
+      <div className="grid grid-cols-2 gap-2 mb-2">
         <button
           onClick={handleApprove}
           disabled={isDisabled}
           className={`
-            flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center
+            flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-center text-sm
             ${isDisabled ? 'bg-zinc-800 text-zinc-600' : 'bg-gradient-to-r from-green-900 to-green-800 text-green-300 hover:from-green-800 hover:to-green-700'}
             transition-all duration-200 relative overflow-hidden
           `}
@@ -77,7 +77,7 @@ const Judge: React.FC<JudgeProps> = ({
               }}
             />
           )}
-          <ThumbsUp className="w-4 h-4" />
+          <ThumbsUp className="w-3 h-3" />
           تصحيح
         </button>
         
@@ -85,7 +85,7 @@ const Judge: React.FC<JudgeProps> = ({
           onClick={handleReject}
           disabled={isDisabled}
           className={`
-            flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center
+            flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-center text-sm
             ${isDisabled ? 'bg-zinc-800 text-zinc-600' : 'bg-gradient-to-r from-red-900 to-red-800 text-red-300 hover:from-red-800 hover:to-red-700'}
             transition-all duration-200 relative overflow-hidden
           `}
@@ -104,7 +104,7 @@ const Judge: React.FC<JudgeProps> = ({
               }}
             />
           )}
-          <ThumbsDown className="w-4 h-4" />
+          <ThumbsDown className="w-3 h-3" />
           خطأ
         </button>
       </div>
@@ -115,7 +115,7 @@ const Judge: React.FC<JudgeProps> = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-center bg-gradient-to-r from-blue-900 to-blue-800 text-blue-300 hover:from-blue-800 hover:to-blue-700 transition-all duration-200 relative overflow-hidden"
+          className="w-full flex items-center justify-center gap-1 py-1.5 px-2 rounded-lg text-center text-sm bg-gradient-to-r from-blue-900 to-blue-800 text-blue-300 hover:from-blue-800 hover:to-blue-700 transition-all duration-200 relative overflow-hidden"
         >
           <motion.div 
             className="absolute inset-0 bg-white/5"
@@ -129,7 +129,7 @@ const Judge: React.FC<JudgeProps> = ({
               ease: "linear"
             }}
           />
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-3 h-3" />
           السؤال التالي
         </motion.button>
       )}

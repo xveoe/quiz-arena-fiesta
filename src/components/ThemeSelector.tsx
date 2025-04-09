@@ -67,23 +67,23 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
-          size={isMobile ? "sm" : "icon"} 
-          className="theme-button theme-border"
+          size={isMobile ? "icon" : "icon"}
+          className="theme-button theme-border w-8 h-8 p-0"
         >
-          <Palette className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} theme-text`} />
+          <Palette className="h-4 w-4 theme-text" />
           <span className="sr-only">تغيير الثيم</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="theme-card border theme-border shadow-lg">
+      <DropdownMenuContent align="end" className="theme-card border theme-border shadow-lg w-44">
         {themes.map((theme) => (
           <DropdownMenuItem
             key={theme.id}
-            className={`flex items-center gap-2 cursor-pointer ${currentTheme === theme.id ? 'theme-selected-item' : ''}`}
+            className={`flex items-center gap-2 cursor-pointer text-sm py-1.5 ${currentTheme === theme.id ? 'theme-selected-item' : ''}`}
             onClick={() => changeTheme(theme.id)}
           >
-            <span className="text-lg">{theme.icon}</span>
+            <span className="text-base">{theme.icon}</span>
             <span>{theme.name}</span>
-            {currentTheme === theme.id && <span className="ml-2">✓</span>}
+            {currentTheme === theme.id && <span className="ml-auto">✓</span>}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

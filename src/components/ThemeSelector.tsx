@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Palette } from 'lucide-react';
 import { toast } from "sonner";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // تعريف الثيمات المتاحة
-export type ThemeType = 'gold' | 'light' | 'dark' | 'blood';
+export type ThemeType = 'silver' | 'gold' | 'light' | 'dark' | 'blood';
 
 interface ThemeOption {
   id: ThemeType;
@@ -20,6 +21,7 @@ interface ThemeOption {
 }
 
 const themes: ThemeOption[] = [
+  { id: 'silver', name: 'فضي', icon: '🔗' },
   { id: 'gold', name: 'ذهبي', icon: '✨' },
   { id: 'light', name: 'أبيض', icon: '☀️' },
   { id: 'dark', name: 'أسود', icon: '🌙' },
@@ -31,7 +33,8 @@ interface ThemeSelectorProps {
 }
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
-  const [currentTheme, setCurrentTheme] = useState<ThemeType>('gold');
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>('silver');
+  const isMobile = useIsMobile();
   
   // استرجاع الثيم المحفوظ عند التحميل
   useEffect(() => {
@@ -40,6 +43,12 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
       setCurrentTheme(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
       if (onThemeChange) onThemeChange(savedTheme);
+    } else {
+      // تعيين الثيم الفضي كافتراضي
+      setCurrentTheme('silver');
+      document.documentElement.setAttribute('data-theme', 'silver');
+      localStorage.setItem('theme', 'silver');
+      if (onThemeChange) onThemeChange('silver');
     }
   }, [onThemeChange]);
   
@@ -56,8 +65,12 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onThemeChange }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="theme-button theme-border">
-          <Palette className="h-5 w-5 theme-text" />
+        <Button 
+          variant="outline" 
+          size={isMobile ? "sm" : "icon"} 
+          className="theme-button theme-border"
+        >
+          <Palette className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'} theme-text`} />
           <span className="sr-only">تغيير الثيم</span>
         </Button>
       </DropdownMenuTrigger>

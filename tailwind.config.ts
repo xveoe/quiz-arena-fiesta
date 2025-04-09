@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -13,14 +12,25 @@ export default {
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: {
+				DEFAULT: '1rem',
+				sm: '1.5rem',
+				md: '2rem'
+			},
 			screens: {
+				sm: '640px',
+				md: '768px',
+				lg: '1024px',
+				xl: '1280px',
 				'2xl': '1400px'
 			}
 		},
 		extend: {
 			fontFamily: {
 				cairo: ['Cairo', 'sans-serif'],
+			},
+			screens: {
+				'xs': '360px',
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -126,6 +136,16 @@ export default {
 						transform: 'rotate(0) scale(1)',
 						opacity: '1'
 					}
+				},
+				'mobile-fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
@@ -134,7 +154,8 @@ export default {
 				'fade-in': 'fade-in 0.8s ease-in-out',
 				'zoom-in': 'zoom-in 1s ease-in-out',
 				'slide-up': 'slide-up 1s ease-in-out',
-				'rotate-in': 'rotate-in 1s ease-in-out'
+				'rotate-in': 'rotate-in 1s ease-in-out',
+				'mobile-fade-in': 'mobile-fade-in 0.4s ease-out'
 			}
 		}
 	},

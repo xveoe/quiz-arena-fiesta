@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
@@ -58,6 +57,22 @@
     --theme-glow: 45 100% 70%;
     --theme-progress: 45 100% 50%;
     --theme-icon: 45 100% 50%;
+  }
+
+  /* Silver theme - Default */
+  [data-theme="silver"] {
+    --theme-primary: 220 10% 60%;
+    --theme-secondary: 220 10% 45%;
+    --theme-accent: 220 15% 65%;
+    --theme-text: 0 0% 15%;
+    --theme-border: 220 15% 70%;
+    --theme-background: linear-gradient(to bottom right, #e6e6e6, #d1d1d1);
+    --theme-card: linear-gradient(to bottom right, #f0f0f0, #e0e0e0);
+    --theme-button: 220 10% 60%;
+    --theme-glow: 220 20% 70%;
+    --theme-progress: 220 30% 60%;
+    --theme-icon: 220 30% 50%;
+    --theme-selected: rgba(180, 185, 190, 0.3);
   }
 
   /* Gold theme */
@@ -133,6 +148,16 @@
 
   body {
     @apply bg-gradient-to-b from-black to-zinc-900 text-silver dark:text-silver min-h-screen;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Mobile optimizations */
+  html, body {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
   }
 }
 
@@ -340,5 +365,30 @@
   
   .theme-selected-item {
     background-color: var(--theme-selected);
+  }
+  
+  /* Responsive utilities */
+  .mobile-padding {
+    @apply px-3 py-2 sm:px-4 sm:py-3;
+  }
+  
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-heading {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+  
+  .mobile-container {
+    @apply w-full max-w-[450px] mx-auto px-3;
+  }
+  
+  .mobile-button {
+    @apply text-sm py-2 px-3 sm:text-base sm:py-2 sm:px-4;
+  }
+  
+  .mobile-input {
+    @apply text-sm p-2 sm:text-base sm:p-3;
   }
 }

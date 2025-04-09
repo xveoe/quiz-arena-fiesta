@@ -781,4 +781,4 @@ const Index = () => {
                         className="flex flex-col items-center py-1 h-auto theme-border text-xs"
                         size="sm"
                       >
-                        <Award className="h-3 w-3 mb-0.5"
+                        <Award className="h-3 w-3 mb-0.5" />

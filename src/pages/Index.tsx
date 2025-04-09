@@ -130,7 +130,6 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      // مسح قائمة الأسئلة المستخدمة سابقاً عند بدء لعبة جديدة
       resetUsedQuestions();
       
       const generatedQuestions = await generateQuestions(
@@ -233,7 +232,6 @@ const Index = () => {
     );
 
     if (isCorrect) {
-      // إذا كان الحكم يقرر أن الإجابة صحيحة
       setTeams(prev => {
         const newTeams = [...prev] as [Team, Team];
         const pointsToAdd = 1;
@@ -246,12 +244,9 @@ const Index = () => {
         triggerConfetti();
       }
     } else {
-      // إذا كان الحكم يقرر أن الإجابة خاطئة
       if (wasAnsweredCorrectly) {
-        // إذا كانت الإجابة المختارة هي الصحيحة فعلاً، لكن الحكم رفضها
         setTeams(prev => {
           const newTeams = [...prev] as [Team, Team];
-          // نقوم بسحب النقطة المحتسبة من الإجابة الصحيحة
           newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - 1) * 10) / 10);
           return newTeams;
         });
@@ -428,7 +423,6 @@ const Index = () => {
     return featureNames[feature];
   };
 
-  // تعريف القدرات الخاصة
   const powerUpsDescription = {
     extraTime: "إضافة وقت: تضيف 15 ثانية إضافية إلى العد التنازلي.",
     doublePoints: "نقاط مضاعفة: تضاعف النقاط التي ستحصل عليها إذا أجبت بشكل صحيح.",
@@ -781,4 +775,24 @@ const Index = () => {
                         className="flex flex-col items-center py-1 h-auto theme-border text-xs"
                         size="sm"
                       >
-                        <Award className="h-3 w-3 mb-0.5"
+                        <Award className="h-3 w-3 mb-0.5" />
+                        <span>تخطي السؤال</span>
+                        <span className="text-[10px] mt-0.5">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
+                      </Button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="results">
+              {/* Results content would go here */}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Index;

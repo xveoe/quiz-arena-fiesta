@@ -43,7 +43,7 @@ const LoadingQuestions = () => {
               transition={{ 
                 duration: 3, 
                 repeat: Infinity,
-                repeatType: "reverse" 
+                repeatType: "reverse" as const
               }}
             />
             
@@ -78,7 +78,7 @@ const LoadingQuestions = () => {
               transition={{ 
                 duration: 3, 
                 repeat: Infinity,
-                repeatType: "reverse" 
+                repeatType: "reverse" as const
               }}
             >
               <Brain className="w-14 h-14 text-blue-400/90 z-20" />

@@ -82,7 +82,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
       transition: { 
         duration: 2, 
         repeat: Infinity,
-        repeatType: "reverse" 
+        repeatType: "reverse" as const
       }
     },
     pulse: {
@@ -148,7 +148,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
               transition={{ 
                 duration: 2, 
                 repeat: Infinity,
-                repeatType: "reverse" 
+                repeatType: "reverse" as const
               }}
             />
             

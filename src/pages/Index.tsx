@@ -905,7 +905,7 @@ const Index = () => {
   );
 
   if (showIntro) {
-    return <Intro onComplete={handleIntroComplete} />;
+    return <Intro onIntroComplete={handleIntroComplete} />;
   }
 
   return (

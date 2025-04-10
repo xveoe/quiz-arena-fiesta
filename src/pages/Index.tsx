@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,8 @@ import {
   ChevronDown,
   Trophy,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  X
 } from 'lucide-react';
 import confetti from "canvas-confetti";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -58,27 +60,27 @@ const transitionVariants = [
   { // اتجاه لأعلى
     initial: { y: 500, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: -500, opacity: 0 }
+    exit: { y: -500, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لأسفل
     initial: { y: -500, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: 500, opacity: 0 }
+    exit: { y: 500, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لليمين
     initial: { x: -500, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: 500, opacity: 0 }
+    exit: { x: 500, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لليسار
     initial: { x: 500, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: -500, opacity: 0 }
+    exit: { x: -500, opacity: 0, transition: { duration: 0.2 } }
   },
   { // ظهور وتلاشي مع تكبير وتصغير
     initial: { scale: 0.8, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 1.2, opacity: 0 }
+    exit: { scale: 1.2, opacity: 0, transition: { duration: 0.2 } }
   }
 ];
 
@@ -481,6 +483,20 @@ const Index = () => {
     setGameView('teams');
   };
   
+  const endGame = () => {
+    if (!gameStarted) return;
+    
+    if (window.confirm("هل أنت متأكد من إنهاء اللعبة؟ سيتم العودة إلى شاشة النتائج.")) {
+      setGameStarted(false);
+      setCurrentTab("results");
+      
+      if (teams[0].score !== teams[1].score) {
+        const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
+        setLosingTeamIndex(losingIndex);
+      }
+    }
+  };
+  
   const calculateTimeBonus = () => {
     return gameFeatures.timeBonus ? Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10 : 0;
   };
@@ -550,63 +566,9 @@ const Index = () => {
                 <span className="text-yellow-400">× {getStreakMultiplier(index)}</span>
               )}
             </div>
-            
-            <div className="text-xs mt-0.5 flex items-center justify-center gap-1 text-gray-400">
-              <span>
-                الجوكر: {team.jokers} {team.jokers > 0 && currentTeam === index && !showAnswer && gameFeatures.powerUps && (
-                  <button 
-                    onClick={useJoker} 
-                    disabled={team.jokers <= 0 || excludedOptions.length > 0}
-                    className="underline text-blue-400"
-                  >
-                    استخدم
-                  </button>
-                )}
-              </span>
-            </div>
           </Card>
         ))}
       </div>
-
-      {gameFeatures.powerUps && (
-        <div className="grid grid-cols-3 gap-1">
-          <Button
-            variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
-            disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
-            onClick={() => usePowerUp('extraTime')}
-            className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
-            size="sm"
-          >
-            <Timer className="h-3 w-3 mb-0.5" />
-            <span>وقت إضافي</span>
-            <span className="text-[10px] mt-0.5">({powerUpsAvailable.extraTime[currentTeam]})</span>
-          </Button>
-          
-          <Button
-            variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
-            disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
-            onClick={() => usePowerUp('doublePoints')}
-            className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
-            size="sm"
-          >
-            <Star className="h-3 w-3 mb-0.5" />
-            <span>نقاط مضاعفة</span>
-            <span className="text-[10px] mt-0.5">({powerUpsAvailable.doublePoints[currentTeam]})</span>
-          </Button>
-          
-          <Button
-            variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
-            disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
-            onClick={() => usePowerUp('skipQuestion')}
-            className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
-            size="sm"
-          >
-            <Award className="h-3 w-3 mb-0.5" />
-            <span>تخطي السؤال</span>
-            <span className="text-[10px] mt-0.5">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
-          </Button>
-        </div>
-      )}
 
       <div className="flex flex-col space-y-2">
         <Button 
@@ -630,6 +592,13 @@ const Index = () => {
             <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
           </Button>
         )}
+        
+        <Button 
+          onClick={endGame}
+          className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600"
+        >
+          <X className="w-4 h-4 ml-2" /> إنهاء اللعبة
+        </Button>
       </div>
     </div>
   );
@@ -716,6 +685,58 @@ const Index = () => {
           </div>
         </div>
         
+        {gameFeatures.powerUps && (
+          <div className="grid grid-cols-3 gap-1 mb-3">
+            <Button
+              variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
+              disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
+              onClick={() => usePowerUp('extraTime')}
+              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              size="sm"
+            >
+              <Timer className="h-3 w-3 mb-0.5" />
+              <span>وقت إضافي</span>
+              <span className="text-[10px] mt-0.5">({powerUpsAvailable.extraTime[currentTeam]})</span>
+            </Button>
+            
+            <Button
+              variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
+              disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
+              onClick={() => usePowerUp('doublePoints')}
+              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              size="sm"
+            >
+              <Star className="h-3 w-3 mb-0.5" />
+              <span>نقاط مضاعفة</span>
+              <span className="text-[10px] mt-0.5">({powerUpsAvailable.doublePoints[currentTeam]})</span>
+            </Button>
+            
+            <Button
+              variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
+              disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
+              onClick={() => usePowerUp('skipQuestion')}
+              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              size="sm"
+            >
+              <Award className="h-3 w-3 mb-0.5" />
+              <span>تخطي السؤال</span>
+              <span className="text-[10px] mt-0.5">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
+            </Button>
+          </div>
+        )}
+        
+        <div className="flex items-center justify-center mb-3">
+          <Button 
+            onClick={useJoker} 
+            disabled={teams[currentTeam].jokers <= 0 || excludedOptions.length > 0 || showAnswer || !gameFeatures.powerUps}
+            className="py-1 px-3 h-auto text-xs border-gray-700 bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-blue-200"
+            size="sm"
+          >
+            <Zap className="h-3 w-3 mr-1" />
+            استخدام الجوكر ({teams[currentTeam].jokers})
+          </Button>
+        </div>
+        
         <Card className="p-3 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
           <h4 className="text-base font-bold mb-3 text-center text-gray-100">
             {currentQuestion.question}
@@ -786,4 +807,307 @@ const Index = () => {
       <Card className="p-4 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
         <div className="text-center mb-4">
           <div className="mb-2">
-            <span className="text-sm
+            <span className="text-sm text-gray-400">يمكن للحكم</span>
+            <h3 className="text-lg font-bold text-amber-300">{gameSetup.judgeName}</h3>
+            <span className="text-sm text-gray-400">التدخل وتغيير نتيجة الإجابة:</span>
+          </div>
+          
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <Button 
+              onClick={() => handleJudgeDecision(true)}
+              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-green-800 to-green-700 hover:from-green-700 hover:to-green-600 text-green-100"
+            >
+              <ThumbsUp className="w-4 h-4" />
+              <span>تصحيح الإجابة</span>
+            </Button>
+            
+            <Button 
+              onClick={() => handleJudgeDecision(false)}
+              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-red-100"
+            >
+              <ThumbsDown className="w-4 h-4" />
+              <span>رفض الإجابة</span>
+            </Button>
+          </div>
+          
+          <div className="mt-6">
+            <Button 
+              onClick={nextQuestion}
+              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600"
+            >
+              {currentQuestionIndex >= questions.length - 1 ? (
+                <>انتهت الأسئلة - عرض النتائج</>
+              ) : (
+                <>تخطي قرار الحكم والانتقال للسؤال التالي <ChevronLeft className="mr-1 w-4 h-4" /></>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+
+  // مكون عرض نتائج اللعبة
+  const ResultsView = () => (
+    <div className="text-center space-y-6 p-4">
+      <div className="flex flex-col items-center justify-center mb-4">
+        <Trophy className="w-12 h-12 text-yellow-500 mb-2" />
+        <h2 className="text-2xl font-bold text-silver mb-1">نتائج المسابقة</h2>
+        <p className="text-gray-400">انتهت المباراة! إليكم النتائج النهائية</p>
+      </div>
+      
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          {teams.map((team, index) => (
+            <Card key={index} className={`p-4 ${
+              teams[0].score !== teams[1].score 
+              ? (teams[0].score > teams[1].score ? index === 0 : index === 1) 
+                ? 'bg-gradient-to-b from-amber-900/30 to-amber-800/30 border-amber-700/50' 
+                : 'bg-gradient-to-b from-gray-800 to-gray-900 border-gray-700'
+              : 'bg-gradient-to-b from-blue-900/30 to-blue-800/30 border-blue-700/50'
+            }`}>
+              <h3 className="font-bold text-base mb-2">{team.name}</h3>
+              <div className="text-3xl font-bold mb-2">{team.score}</div>
+              {teams[0].score !== teams[1].score && (
+                (teams[0].score > teams[1].score ? index === 0 : index === 1) ? (
+                  <div className="text-amber-500 text-sm flex items-center justify-center">
+                    <Trophy className="w-4 h-4 mr-1" /> الفائز
+                  </div>
+                ) : (
+                  <div className="text-red-500 text-sm">الخاسر</div>
+                )
+              )}
+            </Card>
+          ))}
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          {losingTeamIndex !== null && (
+            <Button 
+              onClick={showPunishment}
+              className="w-full py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white"
+            >
+              <Award className="w-4 h-4 ml-2" />
+              عرض عقاب الفريق الخاسر
+            </Button>
+          )}
+          
+          <Button 
+            onClick={resetGame}
+            className="w-full py-3 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white"
+          >
+            <RefreshCw className="w-4 h-4 ml-2" />
+            بدء لعبة جديدة
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (showIntro) {
+    return <Intro onComplete={handleIntroComplete} />;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-950 text-gray-200 pb-6">
+      <header className="py-4 px-4 bg-gradient-to-r from-gray-800 to-gray-900 shadow-md">
+        <div className="max-w-screen-sm mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-silver text-center flex-1">مسابقة تحدي المعرفة</h1>
+        </div>
+      </header>
+
+      <main className="flex-1 p-4 max-w-screen-sm mx-auto w-full">
+        <Tabs value={currentTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-4 shadow-xl">
+            <TabsTrigger value="setup" disabled={gameStarted}>الإعدادات</TabsTrigger>
+            <TabsTrigger value="game" disabled={!gameStarted}>اللعبة</TabsTrigger>
+            <TabsTrigger value="results" disabled={gameStarted && currentQuestionIndex < questions.length - 1}>النتائج</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="setup" className="space-y-4 mt-2">
+            <Card className="p-4 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
+              <h2 className="text-lg font-bold mb-4 text-silver">إعدادات اللعبة</h2>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الفريق الأول</label>
+                  <Input 
+                    type="text" 
+                    value={gameSetup.team1Name}
+                    onChange={(e) => setGameSetup({...gameSetup, team1Name: e.target.value})}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الفريق الثاني</label>
+                  <Input 
+                    type="text" 
+                    value={gameSetup.team2Name}
+                    onChange={(e) => setGameSetup({...gameSetup, team2Name: e.target.value})}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الحكم</label>
+                  <Input 
+                    type="text" 
+                    value={gameSetup.judgeName}
+                    onChange={(e) => setGameSetup({...gameSetup, judgeName: e.target.value})}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                    عدد الأسئلة: {gameSetup.questionCount}
+                  </label>
+                  <Slider 
+                    value={[gameSetup.questionCount]} 
+                    min={5}
+                    max={20}
+                    step={1}
+                    onValueChange={(value) => setGameSetup({...gameSetup, questionCount: value[0]})}
+                    className="py-2"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                    مستوى الصعوبة: {gameSetup.difficulty === 1 ? 'سهل' : gameSetup.difficulty === 100 ? 'صعب' : 'متوسط'}
+                  </label>
+                  <Slider 
+                    value={[gameSetup.difficulty]} 
+                    min={1}
+                    max={100}
+                    step={1}
+                    onValueChange={(value) => setGameSetup({...gameSetup, difficulty: value[0]})}
+                    className="py-2"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                    وقت السؤال: {gameSetup.timePerQuestion} ثانية
+                  </label>
+                  <Slider 
+                    value={[gameSetup.timePerQuestion]} 
+                    min={20}
+                    max={90}
+                    step={5}
+                    onValueChange={(value) => setGameSetup({...gameSetup, timePerQuestion: value[0]})}
+                    className="py-2"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-1">تصنيف الأسئلة</label>
+                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                    {categories.map((category) => (
+                      <Button
+                        key={category.id}
+                        variant={selectedCategory === category.id ? "default" : "outline"}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`text-xs h-10 ${selectedCategory === category.id ? 'bg-blue-700 text-white border-blue-600' : 'bg-gray-800 border-gray-700'}`}
+                      >
+                        {category.name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="pt-2">
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">الميزات المفعلة</h3>
+                  <div className="space-y-2">
+                    {Object.entries(gameFeatures).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-300">{getFeatureName(key as keyof typeof gameFeatures)}</span>
+                        <Switch 
+                          checked={value}
+                          onCheckedChange={() => toggleFeature(key as keyof typeof gameFeatures)} 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Card>
+            
+            <div className="flex space-x-2 rtl:space-x-reverse">
+              <Button 
+                onClick={handleStartGame} 
+                disabled={isLoading}
+                className="w-3/4 py-6 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white"
+              >
+                {isLoading ? (
+                  <>جاري توليد الأسئلة <RefreshCw className="w-4 h-4 mr-2 animate-spin" /></>
+                ) : (
+                  <>بدء اللعبة <Play className="w-4 h-4 mr-2" /></>
+                )}
+              </Button>
+              
+              <Button 
+                onClick={() => setShowManualQuestionForm(true)} 
+                className="w-1/4 py-6 bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 text-white"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="game" className="space-y-4 mt-2">
+            <AnimatePresence mode="wait">
+              {isLoading && (
+                <motion.div 
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <LoadingQuestions />
+                </motion.div>
+              )}
+              
+              {!isLoading && gameStarted && (
+                <motion.div 
+                  key={`${gameView}-${currentQuestionIndex}-${transitionType}`}
+                  initial={transitionVariants[transitionType].initial}
+                  animate={transitionVariants[transitionType].animate}
+                  exit={transitionVariants[transitionType].exit}
+                  transition={{ duration: 0.3 }}
+                >
+                  {gameView === 'teams' && <TeamsView />}
+                  {gameView === 'question' && showQuestion && <QuestionView />}
+                  {gameView === 'judge' && <JudgeView />}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </TabsContent>
+
+          <TabsContent value="results" className="mt-2">
+            <ResultsView />
+          </TabsContent>
+        </Tabs>
+      </main>
+
+      <AnimatePresence>
+        {showManualQuestionForm && (
+          <ManualQuestionForm 
+            onClose={() => setShowManualQuestionForm(false)}
+            onQuestionsGenerated={handleManualQuestionsGenerated}
+          />
+        )}
+        
+        {showPunishmentBox && (
+          <PunishmentBox 
+            teamName={teams[losingTeamIndex!].name} 
+            onClose={() => setShowPunishmentBox(false)} 
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default Index;

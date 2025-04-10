@@ -14,15 +14,15 @@ interface PunishmentBoxProps {
 const PunishmentBox: React.FC<PunishmentBoxProps> = ({ teamName, onClose }) => {
   const punishments = [
     'تمرين ضغط ١٠ مرات',
-    'الوقوف بقدم واحدة لمدة دقيقة',
-    'تقليد حيوان لمدة ٣٠ ثانية',
-    'الركض في المكان لمدة دقيقة',
-    'القفز ٢٠ مرة',
-    'تقليد شخصية مشهورة',
-    'رواية نكتة للجميع',
-    'التصفيق بحماس لمدة ٣٠ ثانية',
-    'تكرار جملة مضحكة ٥ مرات',
-    'وقوف على رؤوس الأصابع لمدة دقيقة',
+    'الوقوف على أصابع القدمين لمدة دقيقة',
+    'تمرين القرفصاء ١٥ مرة',
+    'تمرين المعدة ٨ مرات',
+    'الوقوف بقدم واحدة لمدة ٣٠ ثانية',
+    'تمرين الضغط بيد واحدة ٥ مرات',
+    'تمرين التمديد للأمام ٦ مرات',
+    'عد من ٥٠ إلى ١ بالعكس',
+    'الثبات بوضعية الكوبرا لمدة ١٥ ثانية',
+    'الوقوف على شكل حرف T لمدة ٣٠ ثانية',
   ];
 
   const [selectedPunishment, setSelectedPunishment] = useState<string | null>(null);
@@ -51,13 +51,14 @@ const PunishmentBox: React.FC<PunishmentBoxProps> = ({ teamName, onClose }) => {
       className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
     >
       <motion.div 
         className="w-full max-w-2xl"
         initial={{ scale: 0.8, y: 30 }}
         animate={{ scale: 1, y: 0 }}
-        transition={{ type: "spring", duration: 0.6 }}
+        transition={{ type: "spring", duration: 0.5 }}
+        exit={{ scale: 0.8, y: 30, transition: { duration: 0.2 } }}
       >
         <Card className="p-6 luxury-card relative overflow-hidden">
           <button

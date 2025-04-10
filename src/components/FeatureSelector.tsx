@@ -22,7 +22,7 @@ interface FeatureSelectorProps {
     judgeFunctionality: boolean;
     powerUps: boolean;
   };
-  toggleFeature: (feature: keyof typeof gameFeatures) => void;
+  toggleFeature: (feature: keyof FeatureSelectorProps["gameFeatures"]) => void;
   onComplete: () => void;
 }
 

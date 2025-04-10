@@ -15,6 +15,10 @@ import Judge from "@/components/Judge";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
 import { ThemeType } from "@/components/ThemeSelector";
+import SetupSteps from "@/components/SetupSteps";
+import FeatureSelector from "@/components/FeatureSelector";
+import EnhancedLoadingScreen from "@/components/EnhancedLoadingScreen";
+
 import { 
   Sparkles, 
   Timer, 
@@ -58,29 +62,29 @@ interface Team {
 // تعريف أنواع الانتقالات المختلفة
 const transitionVariants = [
   { // اتجاه لأعلى
-    initial: { y: 500, opacity: 0 },
+    initial: { y: 300, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: -500, opacity: 0, transition: { duration: 0.2 } }
+    exit: { y: -300, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لأسفل
-    initial: { y: -500, opacity: 0 },
+    initial: { y: -300, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: 500, opacity: 0, transition: { duration: 0.2 } }
+    exit: { y: 300, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لليمين
-    initial: { x: -500, opacity: 0 },
+    initial: { x: -300, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: 500, opacity: 0, transition: { duration: 0.2 } }
+    exit: { x: 300, opacity: 0, transition: { duration: 0.2 } }
   },
   { // اتجاه لليسار
-    initial: { x: 500, opacity: 0 },
+    initial: { x: 300, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: -500, opacity: 0, transition: { duration: 0.2 } }
+    exit: { x: -300, opacity: 0, transition: { duration: 0.2 } }
   },
   { // ظهور وتلاشي مع تكبير وتصغير
-    initial: { scale: 0.8, opacity: 0 },
+    initial: { scale: 0.9, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 1.2, opacity: 0, transition: { duration: 0.2 } }
+    exit: { scale: 1.1, opacity: 0, transition: { duration: 0.2 } }
   }
 ];
 
@@ -137,6 +141,9 @@ const Index = () => {
   const [showQuestion, setShowQuestion] = useState(false); // للتحكم في ظهور السؤال
   const [gameView, setGameView] = useState<'teams' | 'question' | 'judge'>('teams');
   
+  // إضافة حالات الإعداد متعددة الخطوات
+  const [setupStep, setSetupStep] = useState<'settings' | 'features' | 'loading'>('settings');
+  
   // تغيير نوع الانتقال بشكل عشوائي
   const changeTransitionType = () => {
     const newType = Math.floor(Math.random() * transitionVariants.length);
@@ -189,6 +196,15 @@ const Index = () => {
     }
   }, [gameStarted, questions]);
 
+  const handleAdvanceSetup = () => {
+    if (setupStep === 'settings') {
+      setSetupStep('features');
+    } else if (setupStep === 'features') {
+      setSetupStep('loading');
+      handleStartGame();
+    }
+  };
+
   const handleStartGame = async () => {
     setIsLoading(true);
     
@@ -202,8 +218,6 @@ const Index = () => {
         gameSetup.difficulty
       );
       
-      console.log("Generated questions:", generatedQuestions);
-      
       if (generatedQuestions.length > 0) {
         setQuestions(generatedQuestions);
         setGameStarted(true);
@@ -215,15 +229,26 @@ const Index = () => {
         setExcludedOptions([]);
         setShowAnswer(false);
         setGameView('teams');
-        toast.success("تم توليد الأسئلة بنجاح!");
+        setTimeout(() => {
+          toast.success("تم توليد الأسئلة بنجاح!");
+        }, 500);
       } else {
-        toast.error("حدث خطأ في توليد الأسئلة");
+        setSetupStep('settings');
+        setTimeout(() => {
+          toast.error("حدث خطأ في توليد الأسئلة");
+        }, 500);
       }
     } catch (error) {
-      toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
+      setSetupStep('settings');
+      setTimeout(() => {
+        toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
+      }, 500);
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+        setSetupStep('settings');
+      }, 1000); // إعطاء وقت لمشاهدة شاشة التحميل
     }
   };
 
@@ -362,7 +387,7 @@ const Index = () => {
       setShowAnswer(false);
       setGameView('teams'); // العودة إلى شاشة الفرق أولاً
       setShowQuestion(true);
-    }, 500); // انتظر 500 مللي ثانية للانتقال
+    }, 300); // تسريع وقت الانتقال
   };
 
   const refreshCurrentQuestion = async () => {
@@ -391,7 +416,7 @@ const Index = () => {
           setShowQuestion(true);
           
           toast.success("تم استبدال السؤال الحالي بنجاح");
-        }, 500);
+        }, 300);
       } else {
         toast.error("لم يتم العثور على سؤال بديل مناسب");
       }
@@ -481,6 +506,7 @@ const Index = () => {
     setCurrentTab("setup");
     setLosingTeamIndex(null);
     setGameView('teams');
+    setSetupStep('settings');
   };
   
   const endGame = () => {
@@ -546,59 +572,84 @@ const Index = () => {
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 text-center">
         {teams.map((team, index) => (
-          <Card 
-            key={index} 
-            className={`p-2.5 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700 ${currentTeam === index ? 'ring-1 ring-inset ring-offset-1 ring-blue-400' : ''}`}
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.3 }}
           >
-            <h3 className="text-sm font-bold mb-0.5 text-gray-200">{team.name}</h3>
-            <div className="text-2xl font-bold text-gray-100">
-              {team.score}
-              {team.bonusPoints > 0 && gameFeatures.timeBonus && (
-                <span className="text-xs text-gray-300 opacity-70 ml-1">
-                  (+{team.bonusPoints})
-                </span>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-center gap-1 text-xs mt-0.5 text-gray-400">
-              <span>سلسلة: {team.streak} {gameFeatures.streakBonus && team.streak >= 3 && '🔥'}</span>
-              {gameFeatures.streakBonus && team.streak >= 3 && (
-                <span className="text-yellow-400">× {getStreakMultiplier(index)}</span>
-              )}
-            </div>
-          </Card>
+            <Card 
+              className={`p-2.5 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-gray-700/50 shadow-lg 
+                ${currentTeam === index ? 'ring-1 ring-inset ring-offset-1 ring-blue-400' : ''}`}
+            >
+              <h3 className="text-sm font-bold mb-0.5 text-gray-200">{team.name}</h3>
+              <div className="text-2xl font-bold text-gray-100">
+                {team.score}
+                {team.bonusPoints > 0 && gameFeatures.timeBonus && (
+                  <span className="text-xs text-gray-300 opacity-70 ml-1">
+                    (+{team.bonusPoints})
+                  </span>
+                )}
+              </div>
+              
+              <div className="flex items-center justify-center gap-1 text-xs mt-0.5 text-gray-400">
+                <span>سلسلة: {team.streak} {gameFeatures.streakBonus && team.streak >= 3 && '🔥'}</span>
+                {gameFeatures.streakBonus && team.streak >= 3 && (
+                  <span className="text-yellow-400">× {getStreakMultiplier(index)}</span>
+                )}
+              </div>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
       <div className="flex flex-col space-y-2">
-        <Button 
-          onClick={() => {
-            changeTransitionType();
-            setGameView('question');
-          }}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600"
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
         >
-          <Brain className="w-4 h-4 ml-2" /> عرض السؤال
-        </Button>
-        
-        {showAnswer && gameFeatures.judgeFunctionality && (
           <Button 
             onClick={() => {
               changeTransitionType();
-              setGameView('judge');
+              setGameView('question');
             }}
-            className="w-full bg-gradient-to-r from-amber-600 to-amber-700 text-white hover:from-amber-500 hover:to-amber-600"
+            className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-500 hover:to-blue-600 shadow-md shadow-blue-900/20"
           >
-            <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
+            <Brain className="w-4 h-4 ml-2" /> عرض السؤال
           </Button>
+        </motion.div>
+        
+        {showAnswer && gameFeatures.judgeFunctionality && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <Button 
+              onClick={() => {
+                changeTransitionType();
+                setGameView('judge');
+              }}
+              className="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white hover:from-amber-500 hover:to-amber-600 shadow-md shadow-amber-900/20"
+            >
+              <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
+            </Button>
+          </motion.div>
         )}
         
-        <Button 
-          onClick={endGame}
-          className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600"
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
         >
-          <X className="w-4 h-4 ml-2" /> إنهاء اللعبة
-        </Button>
+          <Button 
+            onClick={endGame}
+            className="w-full py-3 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600 shadow-md shadow-red-900/20"
+          >
+            <X className="w-4 h-4 ml-2" /> إنهاء اللعبة
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
@@ -619,7 +670,7 @@ const Index = () => {
               changeTransitionType();
               setGameView('teams');
             }} 
-            className="flex items-center text-xs text-gray-400 hover:text-white"
+            className="flex items-center text-xs text-gray-400 hover:text-white transition-colors"
           >
             <ChevronRight className="w-4 h-4 ml-1" /> العودة
           </button>
@@ -636,21 +687,23 @@ const Index = () => {
         </div>
         
         <div className="relative">
-          <div className={`absolute top-0 right-0 w-full h-1 bg-gray-700 rounded-full overflow-hidden`}>
-            <div 
-              className={`h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-1000 ease-linear`}
-              style={{ 
-                width: `${(timer / gameSetup.timePerQuestion) * 100}%`, 
-                transition: timerActive ? 'width 1s linear' : 'none' 
+          <div className={`absolute top-0 right-0 w-full h-1.5 bg-gray-700/50 rounded-full overflow-hidden`}>
+            <motion.div 
+              className={`h-full bg-gradient-to-r from-green-500 to-blue-500`}
+              animate={{ width: `${timerActive ? 0 : (timer / gameSetup.timePerQuestion) * 100}%` }}
+              initial={{ width: `${(timer / gameSetup.timePerQuestion) * 100}%` }}
+              transition={{ 
+                duration: timerActive ? gameSetup.timePerQuestion : 0, 
+                ease: "linear" 
               }}
             />
           </div>
           
-          <div className="flex justify-between items-center mt-2">
+          <div className="flex justify-between items-center mt-2.5">
             <button 
               onClick={refreshCurrentQuestion} 
               disabled={isRefreshingQuestion || showAnswer}
-              className="text-xs text-blue-400 hover:text-blue-300 disabled:text-gray-600 flex items-center"
+              className="text-xs text-blue-400 hover:text-blue-300 disabled:text-gray-600 flex items-center transition-colors"
             >
               <RefreshCw className={`w-3 h-3 mr-1 ${isRefreshingQuestion ? 'animate-spin' : ''}`} />
               تبديل
@@ -666,7 +719,7 @@ const Index = () => {
                   variant="outline"
                   onClick={handleStartTimer}
                   disabled={timerActive || showAnswer}
-                  className="py-0 h-6 text-xs border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900"
+                  className="py-0 h-6 text-xs border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800"
                 >
                   <Timer className="w-3 h-3 ml-1" />
                   ابدأ
@@ -686,12 +739,12 @@ const Index = () => {
         </div>
         
         {gameFeatures.powerUps && (
-          <div className="grid grid-cols-3 gap-1 mb-3">
+          <div className="grid grid-cols-4 gap-1 mb-3">
             <Button
               variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
               disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
               onClick={() => usePowerUp('extraTime')}
-              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              className="flex flex-col items-center py-1 h-auto border-gray-700/60 text-xs bg-gradient-to-r from-gray-800/80 to-gray-900/80 hover:from-gray-700/80 hover:to-gray-800/80"
               size="sm"
             >
               <Timer className="h-3 w-3 mb-0.5" />
@@ -703,7 +756,7 @@ const Index = () => {
               variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
               disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
               onClick={() => usePowerUp('doublePoints')}
-              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              className="flex flex-col items-center py-1 h-auto border-gray-700/60 text-xs bg-gradient-to-r from-gray-800/80 to-gray-900/80 hover:from-gray-700/80 hover:to-gray-800/80"
               size="sm"
             >
               <Star className="h-3 w-3 mb-0.5" />
@@ -715,29 +768,28 @@ const Index = () => {
               variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
               disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
               onClick={() => usePowerUp('skipQuestion')}
-              className="flex flex-col items-center py-1 h-auto border-gray-700 text-xs bg-gradient-to-r from-gray-800 to-gray-900"
+              className="flex flex-col items-center py-1 h-auto border-gray-700/60 text-xs bg-gradient-to-r from-gray-800/80 to-gray-900/80 hover:from-gray-700/80 hover:to-gray-800/80"
               size="sm"
             >
               <Award className="h-3 w-3 mb-0.5" />
               <span>تخطي السؤال</span>
               <span className="text-[10px] mt-0.5">({powerUpsAvailable.skipQuestion[currentTeam]})</span>
             </Button>
+            
+            <Button 
+              onClick={useJoker} 
+              disabled={teams[currentTeam].jokers <= 0 || excludedOptions.length > 0 || showAnswer || !gameFeatures.powerUps}
+              className="flex flex-col items-center py-1 h-auto text-xs border-gray-700/60 bg-gradient-to-r from-blue-900/90 to-blue-800/90 hover:from-blue-800/90 hover:to-blue-700/90 text-blue-200"
+              size="sm"
+            >
+              <Zap className="h-3 w-3 mb-0.5" />
+              <span>جوكر</span>
+              <span className="text-[10px] mt-0.5">({teams[currentTeam].jokers})</span>
+            </Button>
           </div>
         )}
         
-        <div className="flex items-center justify-center mb-3">
-          <Button 
-            onClick={useJoker} 
-            disabled={teams[currentTeam].jokers <= 0 || excludedOptions.length > 0 || showAnswer || !gameFeatures.powerUps}
-            className="py-1 px-3 h-auto text-xs border-gray-700 bg-gradient-to-r from-blue-900 to-blue-800 hover:from-blue-800 hover:to-blue-700 text-blue-200"
-            size="sm"
-          >
-            <Zap className="h-3 w-3 mr-1" />
-            استخدام الجوكر ({teams[currentTeam].jokers})
-          </Button>
-        </div>
-        
-        <Card className="p-3 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
+        <Card className="p-3 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-gray-700/50 shadow-lg">
           <h4 className="text-base font-bold mb-3 text-center text-gray-100">
             {currentQuestion.question}
           </h4>
@@ -752,10 +804,10 @@ const Index = () => {
                   justify-start text-right py-3 transition-all
                   ${excludedOptions.includes(index) ? 'opacity-30 bg-gray-900' : ''}
                   ${showAnswer && option === currentQuestion.correctAnswer 
-                    ? 'bg-green-700 hover:bg-green-600 text-white border-green-600' 
+                    ? 'bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white border-green-600 shadow-md shadow-green-900/30' 
                     : showAnswer && !excludedOptions.includes(index)
-                    ? 'bg-red-800 hover:bg-red-700 text-white border-red-700'
-                    : 'bg-gradient-to-r from-gray-700 to-gray-800 border-gray-600 hover:from-gray-600 hover:to-gray-700'}
+                    ? 'bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-white border-red-700 shadow-md shadow-red-900/30'
+                    : 'bg-gradient-to-r from-gray-700/90 to-gray-800/90 border-gray-600/60 hover:from-gray-600/90 hover:to-gray-700/90'}
                 `}
               >
                 <span className="flex-1">{option}</span>
@@ -771,7 +823,7 @@ const Index = () => {
           <div className="flex justify-center">
             <Button 
               onClick={nextQuestion}
-              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600"
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-900/30"
             >
               {currentQuestionIndex >= questions.length - 1 ? (
                 <>انتهت الأسئلة - عرض النتائج</>
@@ -794,7 +846,7 @@ const Index = () => {
             changeTransitionType();
             setGameView('teams');
           }} 
-          className="flex items-center text-xs text-gray-400 hover:text-white"
+          className="flex items-center text-xs text-gray-400 hover:text-white transition-colors"
         >
           <ChevronRight className="w-4 h-4 ml-1" /> العودة
         </button>
@@ -804,7 +856,7 @@ const Index = () => {
         <div className="w-8"></div>
       </div>
       
-      <Card className="p-4 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
+      <Card className="p-4 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-gray-700/50 shadow-lg">
         <div className="text-center mb-4">
           <div className="mb-2">
             <span className="text-sm text-gray-400">يمكن للحكم</span>
@@ -815,7 +867,7 @@ const Index = () => {
           <div className="mt-4 grid grid-cols-2 gap-2">
             <Button 
               onClick={() => handleJudgeDecision(true)}
-              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-green-800 to-green-700 hover:from-green-700 hover:to-green-600 text-green-100"
+              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-green-800 to-green-700 hover:from-green-700 hover:to-green-600 text-green-100 shadow-md shadow-green-900/30"
             >
               <ThumbsUp className="w-4 h-4" />
               <span>تصحيح الإجابة</span>
@@ -823,7 +875,7 @@ const Index = () => {
             
             <Button 
               onClick={() => handleJudgeDecision(false)}
-              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-red-100"
+              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-red-100 shadow-md shadow-red-900/30"
             >
               <ThumbsDown className="w-4 h-4" />
               <span>رفض الإجابة</span>
@@ -833,7 +885,7 @@ const Index = () => {
           <div className="mt-6">
             <Button 
               onClick={nextQuestion}
-              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600"
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-900/30"
             >
               {currentQuestionIndex >= questions.length - 1 ? (
                 <>انتهت الأسئلة - عرض النتائج</>
@@ -849,59 +901,98 @@ const Index = () => {
 
   // مكون عرض نتائج اللعبة
   const ResultsView = () => (
-    <div className="text-center space-y-6 p-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="text-center space-y-6 p-4"
+    >
       <div className="flex flex-col items-center justify-center mb-4">
-        <Trophy className="w-12 h-12 text-yellow-500 mb-2" />
-        <h2 className="text-2xl font-bold text-silver mb-1">نتائج المسابقة</h2>
-        <p className="text-gray-400">انتهت المباراة! إليكم النتائج النهائية</p>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500 flex items-center justify-center shadow-lg shadow-yellow-500/30 mb-3">
+            <Trophy className="w-8 h-8 text-white" />
+          </div>
+        </motion.div>
+        
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent mb-1">نتائج المسابقة</h2>
+          <p className="text-gray-400">انتهت المباراة! إليكم النتائج النهائية</p>
+        </motion.div>
       </div>
       
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           {teams.map((team, index) => (
-            <Card key={index} className={`p-4 ${
-              teams[0].score !== teams[1].score 
-              ? (teams[0].score > teams[1].score ? index === 0 : index === 1) 
-                ? 'bg-gradient-to-b from-amber-900/30 to-amber-800/30 border-amber-700/50' 
-                : 'bg-gradient-to-b from-gray-800 to-gray-900 border-gray-700'
-              : 'bg-gradient-to-b from-blue-900/30 to-blue-800/30 border-blue-700/50'
-            }`}>
-              <h3 className="font-bold text-base mb-2">{team.name}</h3>
-              <div className="text-3xl font-bold mb-2">{team.score}</div>
-              {teams[0].score !== teams[1].score && (
-                (teams[0].score > teams[1].score ? index === 0 : index === 1) ? (
-                  <div className="text-amber-500 text-sm flex items-center justify-center">
-                    <Trophy className="w-4 h-4 mr-1" /> الفائز
-                  </div>
-                ) : (
-                  <div className="text-red-500 text-sm">الخاسر</div>
-                )
-              )}
-            </Card>
+            <motion.div
+              key={index}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 + (index * 0.1) }}
+            >
+              <Card className={`p-4 transition-all duration-300 ${
+                teams[0].score !== teams[1].score 
+                ? (teams[0].score > teams[1].score ? index === 0 : index === 1) 
+                  ? 'bg-gradient-to-b from-amber-900/30 to-amber-800/30 border-amber-700/50 shadow-lg shadow-amber-900/20' 
+                  : 'bg-gradient-to-b from-gray-800/90 to-gray-900/95 border-gray-700/50'
+                : 'bg-gradient-to-b from-blue-900/30 to-blue-800/30 border-blue-700/50 shadow-lg shadow-blue-900/20'
+              }`}>
+                <h3 className="font-bold text-base mb-2">{team.name}</h3>
+                <div className="text-3xl font-bold mb-2">{team.score}</div>
+                {teams[0].score !== teams[1].score && (
+                  (teams[0].score > teams[1].score ? index === 0 : index === 1) ? (
+                    <div className="text-amber-500 text-sm flex items-center justify-center">
+                      <Trophy className="w-4 h-4 mr-1" /> الفائز
+                    </div>
+                  ) : (
+                    <div className="text-red-500 text-sm">الخاسر</div>
+                  )
+                )}
+              </Card>
+            </motion.div>
           ))}
         </div>
         
         <div className="flex flex-col gap-3">
           {losingTeamIndex !== null && (
-            <Button 
-              onClick={showPunishment}
-              className="w-full py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white"
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <Award className="w-4 h-4 ml-2" />
-              عرض عقاب الفريق الخاسر
-            </Button>
+              <Button 
+                onClick={showPunishment}
+                className="w-full py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg shadow-purple-900/30"
+              >
+                <Award className="w-4 h-4 ml-2" />
+                عرض عقاب الفريق الخاسر
+              </Button>
+            </motion.div>
           )}
           
-          <Button 
-            onClick={resetGame}
-            className="w-full py-3 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white"
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
           >
-            <RefreshCw className="w-4 h-4 ml-2" />
-            بدء لعبة جديدة
-          </Button>
+            <Button 
+              onClick={resetGame}
+              className="w-full py-3 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-900/30"
+            >
+              <RefreshCw className="w-4 h-4 ml-2" />
+              بدء لعبة جديدة
+            </Button>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   if (showIntro) {
@@ -909,10 +1000,17 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-gray-950 text-gray-200 pb-6">
-      <header className="py-4 px-4 bg-gradient-to-r from-gray-800 to-gray-900 shadow-md">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 text-gray-200 pb-6">
+      <header className="py-4 px-4 bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-black/40">
         <div className="max-w-screen-sm mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-silver text-center flex-1">مسابقة تحدي المعرفة</h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent text-center flex-1"
+          >
+            مسابقة تحدي المعرفة
+          </motion.h1>
         </div>
       </header>
 
@@ -924,136 +1022,56 @@ const Index = () => {
             <TabsTrigger value="results" disabled={gameStarted && currentQuestionIndex < questions.length - 1}>النتائج</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="setup" className="space-y-4 mt-2">
-            <Card className="p-4 bg-gradient-to-b from-gray-800 to-gray-900 border border-gray-700">
-              <h2 className="text-lg font-bold mb-4 text-silver">إعدادات اللعبة</h2>
+          <TabsContent value="setup" className="mt-2">
+            <AnimatePresence mode="wait">
+              {setupStep === 'settings' && (
+                <motion.div
+                  key="settings"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <SetupSteps 
+                    gameSetup={gameSetup}
+                    setGameSetup={setGameSetup}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    onComplete={() => setSetupStep('features')}
+                  />
+                </motion.div>
+              )}
               
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الفريق الأول</label>
-                  <Input 
-                    type="text" 
-                    value={gameSetup.team1Name}
-                    onChange={(e) => setGameSetup({...gameSetup, team1Name: e.target.value})}
-                    className="bg-gray-800 border-gray-700"
+              {setupStep === 'features' && (
+                <motion.div
+                  key="features"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <FeatureSelector 
+                    gameFeatures={gameFeatures}
+                    toggleFeature={toggleFeature}
+                    onComplete={() => setSetupStep('loading')}
                   />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الفريق الثاني</label>
-                  <Input 
-                    type="text" 
-                    value={gameSetup.team2Name}
-                    onChange={(e) => setGameSetup({...gameSetup, team2Name: e.target.value})}
-                    className="bg-gray-800 border-gray-700"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">اسم الحكم</label>
-                  <Input 
-                    type="text" 
-                    value={gameSetup.judgeName}
-                    onChange={(e) => setGameSetup({...gameSetup, judgeName: e.target.value})}
-                    className="bg-gray-800 border-gray-700"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
-                    عدد الأسئلة: {gameSetup.questionCount}
-                  </label>
-                  <Slider 
-                    value={[gameSetup.questionCount]} 
-                    min={5}
-                    max={20}
-                    step={1}
-                    onValueChange={(value) => setGameSetup({...gameSetup, questionCount: value[0]})}
-                    className="py-2"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
-                    مستوى الصعوبة: {gameSetup.difficulty === 1 ? 'سهل' : gameSetup.difficulty === 100 ? 'صعب' : 'متوسط'}
-                  </label>
-                  <Slider 
-                    value={[gameSetup.difficulty]} 
-                    min={1}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => setGameSetup({...gameSetup, difficulty: value[0]})}
-                    className="py-2"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
-                    وقت السؤال: {gameSetup.timePerQuestion} ثانية
-                  </label>
-                  <Slider 
-                    value={[gameSetup.timePerQuestion]} 
-                    min={20}
-                    max={90}
-                    step={5}
-                    onValueChange={(value) => setGameSetup({...gameSetup, timePerQuestion: value[0]})}
-                    className="py-2"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">تصنيف الأسئلة</label>
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-                    {categories.map((category) => (
-                      <Button
-                        key={category.id}
-                        variant={selectedCategory === category.id ? "default" : "outline"}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`text-xs h-10 ${selectedCategory === category.id ? 'bg-blue-700 text-white border-blue-600' : 'bg-gray-800 border-gray-700'}`}
-                      >
-                        {category.name}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="pt-2">
-                  <h3 className="text-sm font-medium text-gray-400 mb-2">الميزات المفعلة</h3>
-                  <div className="space-y-2">
-                    {Object.entries(gameFeatures).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">{getFeatureName(key as keyof typeof gameFeatures)}</span>
-                        <Switch 
-                          checked={value}
-                          onCheckedChange={() => toggleFeature(key as keyof typeof gameFeatures)} 
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-            
-            <div className="flex space-x-2 rtl:space-x-reverse">
-              <Button 
-                onClick={handleStartGame} 
-                disabled={isLoading}
-                className="w-3/4 py-6 bg-gradient-to-r from-blue-700 to-blue-800 hover:from-blue-600 hover:to-blue-700 text-white"
-              >
-                {isLoading ? (
-                  <>جاري توليد الأسئلة <RefreshCw className="w-4 h-4 mr-2 animate-spin" /></>
-                ) : (
-                  <>بدء اللعبة <Play className="w-4 h-4 mr-2" /></>
-                )}
-              </Button>
+                </motion.div>
+              )}
               
-              <Button 
-                onClick={() => setShowManualQuestionForm(true)} 
-                className="w-1/4 py-6 bg-gradient-to-r from-green-700 to-green-800 hover:from-green-600 hover:to-green-700 text-white"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            </div>
+              {setupStep === 'loading' && (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <EnhancedLoadingScreen 
+                    onComplete={() => setSetupStep('settings')}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </TabsContent>
 
           <TabsContent value="game" className="space-y-4 mt-2">
@@ -1075,7 +1093,7 @@ const Index = () => {
                   initial={transitionVariants[transitionType].initial}
                   animate={transitionVariants[transitionType].animate}
                   exit={transitionVariants[transitionType].exit}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                 >
                   {gameView === 'teams' && <TeamsView />}
                   {gameView === 'question' && showQuestion && <QuestionView />}

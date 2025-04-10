@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,7 +58,6 @@ interface Team {
   bonusPoints: number;
 }
 
-// تعريف أنواع الانتقالات المختلفة
 const transitionVariants = [
   { // اتجاه لأعلى
     initial: { y: 300, opacity: 0 },
@@ -141,10 +139,8 @@ const Index = () => {
   const [showQuestion, setShowQuestion] = useState(false); // للتحكم في ظهور السؤال
   const [gameView, setGameView] = useState<'teams' | 'question' | 'judge'>('teams');
   
-  // إضافة حالات الإعداد متعددة الخطوات
   const [setupStep, setSetupStep] = useState<'settings' | 'features' | 'loading'>('settings');
   
-  // تغيير نوع الانتقال بشكل عشوائي
   const changeTransitionType = () => {
     const newType = Math.floor(Math.random() * transitionVariants.length);
     setTransitionType(newType);
@@ -189,7 +185,6 @@ const Index = () => {
     return () => clearInterval(countdown);
   }, [timer, gameStarted, showAnswer, timerActive]);
 
-  // تأكد من أن السؤال يظهر عند بدء اللعبة
   useEffect(() => {
     if (gameStarted && questions.length > 0) {
       setShowQuestion(true);
@@ -201,7 +196,9 @@ const Index = () => {
       setSetupStep('features');
     } else if (setupStep === 'features') {
       setSetupStep('loading');
-      handleStartGame();
+      setTimeout(() => {
+        handleStartGame();
+      }, 500);
     }
   };
 
@@ -209,7 +206,6 @@ const Index = () => {
     setIsLoading(true);
     
     try {
-      // مسح قائمة الأسئلة المستخدمة عند بدء لعبة جديدة
       resetUsedQuestions();
       
       const generatedQuestions = await generateQuestions(
@@ -247,8 +243,10 @@ const Index = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-        setSetupStep('settings');
-      }, 1000); // إعطاء وقت لمشاهدة شاشة التحميل
+        if (questions.length > 0) {
+          setSetupStep('settings');
+        }
+      }, 2000);
     }
   };
 
@@ -326,7 +324,6 @@ const Index = () => {
     );
 
     if (isCorrect) {
-      // إذا كان الحكم يقرر أن الإجابة صحيحة
       setTeams(prev => {
         const newTeams = [...prev] as [Team, Team];
         const pointsToAdd = 1;
@@ -339,12 +336,9 @@ const Index = () => {
         triggerConfetti();
       }
     } else {
-      // إذا كان الحكم يقرر أن الإجابة خاطئة
       if (wasAnsweredCorrectly) {
-        // إذا كانت الإجابة المختارة هي الصحيحة فعلاً، لكن الحكم رفضها
         setTeams(prev => {
           const newTeams = [...prev] as [Team, Team];
-          // نقوم بسحب النقطة المحتسبة والمكافأة أيضًا
           const timeBonus = gameFeatures.timeBonus ? 
             Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10 : 0;
           const totalDeduction = 1 + timeBonus;
@@ -374,10 +368,8 @@ const Index = () => {
 
     setCurrentTeam(prev => (prev === 0 ? 1 : 0));
     
-    // تغيير نوع الانتقال بشكل عشوائي للسؤال التالي
     changeTransitionType();
     
-    // إخفاء السؤال أولاً ثم إظهار السؤال الجديد
     setShowQuestion(false);
     setTimeout(() => {
       setTimer(gameSetup.timePerQuestion);
@@ -385,9 +377,9 @@ const Index = () => {
       setCurrentQuestionIndex(prev => prev + 1);
       setExcludedOptions([]);
       setShowAnswer(false);
-      setGameView('teams'); // العودة إلى شاشة الفرق أولاً
+      setGameView('teams');
       setShowQuestion(true);
-    }, 300); // تسريع وقت الانتقال
+    }, 300);
   };
 
   const refreshCurrentQuestion = async () => {
@@ -400,10 +392,8 @@ const Index = () => {
       const newQuestion = await swapQuestion(selectedCategory, currentQuestion, gameSetup.difficulty);
       
       if (newQuestion) {
-        // تغيير نوع الانتقال بشكل عشوائي
         changeTransitionType();
         
-        // إخفاء السؤال ثم تحديثه
         setShowQuestion(false);
         setTimeout(() => {
           const newQuestions = [...questions];
@@ -567,7 +557,6 @@ const Index = () => {
     joker: "الجوكر: يحذف خيارين خاطئين من الاختيارات المتاحة."
   };
 
-  // هذا مكون فرعي لعرض الفرق وحالة اللعبة
   const TeamsView = () => (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 text-center">
@@ -654,7 +643,6 @@ const Index = () => {
     </div>
   );
 
-  // هذا مكون فرعي لعرض السؤال الحالي
   const QuestionView = () => {
     if (!questions || questions.length === 0 || currentQuestionIndex >= questions.length) {
       return <div className="text-center text-red-500">لم يتم العثور على أسئلة</div>;
@@ -837,7 +825,6 @@ const Index = () => {
     );
   };
 
-  // مكون فرعي لعرض قسم الحكم
   const JudgeView = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -899,7 +886,6 @@ const Index = () => {
     </div>
   );
 
-  // مكون عرض نتائج اللعبة
   const ResultsView = () => (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -923,7 +909,7 @@ const Index = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent mb-1">نتائج المسابقة</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-1">نتائج المسابقة</h2>
           <p className="text-gray-400">انتهت المباراة! إليكم النتائج النهائية</p>
         </motion.div>
       </div>

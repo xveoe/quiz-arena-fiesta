@@ -14,14 +14,17 @@ const aiMessages = [
 interface EnhancedLoadingScreenProps {
   onComplete?: () => void;
   simulateLoading?: boolean;
+  duration?: number;
 }
 
 const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({ 
   onComplete,
-  simulateLoading = true 
+  simulateLoading = true,
+  duration = 15000 // Default 15 seconds, can be adjusted
 }) => {
   const [messageIndex, setMessageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [loadingComplete, setLoadingComplete] = useState(false);
 
   useEffect(() => {
     const messageInterval = setInterval(() => {
@@ -34,7 +37,6 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
   useEffect(() => {
     if (!simulateLoading) return;
     
-    const duration = 15000; // 15 seconds total
     const interval = 50; // Update every 50ms
     const steps = duration / interval;
     const increment = 100 / steps;
@@ -52,6 +54,9 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
       
       if (currentProgress >= 100) {
         clearInterval(progressInterval);
+        setLoadingComplete(true);
+        
+        // Only call onComplete if it's provided
         if (onComplete) {
           setTimeout(() => {
             onComplete();
@@ -61,10 +66,69 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
     }, interval);
     
     return () => clearInterval(progressInterval);
-  }, [onComplete, simulateLoading]);
+  }, [onComplete, simulateLoading, duration]);
+
+  // Enhanced visual effects for the brain icon
+  const brainEffects = {
+    glow: {
+      animate: { 
+        boxShadow: [
+          "0 0 15px rgba(59, 130, 246, 0.3)",
+          "0 0 30px rgba(59, 130, 246, 0.5)",
+          "0 0 15px rgba(59, 130, 246, 0.3)"
+        ],
+        scale: [1, 1.05, 1]
+      },
+      transition: { 
+        duration: 2, 
+        repeat: Infinity,
+        repeatType: "reverse" 
+      }
+    },
+    pulse: {
+      animate: { opacity: [0.7, 1, 0.7] },
+      transition: { duration: 1.5, repeat: Infinity }
+    },
+    orbit: {
+      fast: {
+        animate: { rotate: 360 },
+        transition: { duration: 15, repeat: Infinity, ease: "linear" }
+      },
+      slow: {
+        animate: { rotate: -360 },
+        transition: { duration: 20, repeat: Infinity, ease: "linear" }
+      }
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center z-40 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+      {/* Particle effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-blue-500/10"
+            style={{
+              width: Math.random() * 30 + 5,
+              height: Math.random() * 30 + 5,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: [0, 1, 1.2, 1],
+              opacity: [0, 0.5, 0.3, 0]
+            }}
+            transition={{ 
+              duration: Math.random() * 4 + 3,
+              repeat: Infinity,
+              delay: Math.random() * 5
+            }}
+          />
+        ))}
+      </div>
+      
       <div className="w-full max-w-xs px-6 text-center">
         {/* Brain Logo Animation - Enhanced */}
         <motion.div
@@ -91,16 +155,14 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
             {/* Multiple rotating orbits for enhanced brain effect */}
             <motion.div
               className="absolute inset-0"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              {...brainEffects.orbit.fast}
             >
               <div className="w-full h-full rounded-full border border-dashed border-blue-400/50" />
             </motion.div>
             
             <motion.div
               className="absolute inset-0"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              {...brainEffects.orbit.slow}
             >
               <div className="w-full h-full rounded-full border-2 border-dotted border-indigo-400/30" />
             </motion.div>
@@ -108,26 +170,13 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
             {/* Main brain icon */}
             <motion.div
               className="relative z-10 w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-gray-800 to-gray-700 shadow-2xl"
-              animate={{ 
-                scale: [1, 1.05, 1],
-                boxShadow: [
-                  "0 0 15px rgba(134, 142, 213, 0.3)",
-                  "0 0 30px rgba(134, 142, 213, 0.5)",
-                  "0 0 15px rgba(134, 142, 213, 0.3)"
-                ]
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                repeatType: "reverse" 
-              }}
+              {...brainEffects.glow}
             >
               <Brain className="w-14 h-14 text-blue-400/90 z-20" />
               
               <motion.div 
                 className="absolute inset-0 flex items-center justify-center"
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
+                {...brainEffects.pulse}
               >
                 <Sparkles className="w-8 h-8 text-indigo-300/70" />
               </motion.div>

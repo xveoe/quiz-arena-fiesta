@@ -26,7 +26,6 @@ interface FeatureSelectorProps {
   onComplete: () => void;
 }
 
-// Changed to use a simple Record instead of referencing gameFeatures
 const getFeatureName = (feature: string): string => {
   const featureNames: Record<string, string> = {
     streakBonus: "مكافأة السلسلة",

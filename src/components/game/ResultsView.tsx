@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Award, RefreshCw } from 'lucide-react';
+import { Trophy, Award, RefreshCw, Users, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Team {
   name: string;
@@ -27,6 +28,25 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   showPunishment,
   resetGame
 }) => {
+  const [showPunishmentOptions, setShowPunishmentOptions] = useState(false);
+
+  const handleShowPunishment = () => {
+    setShowPunishmentOptions(true);
+  };
+
+  const handleChoosePunishment = () => {
+    setShowPunishmentOptions(false);
+    showPunishment();
+  };
+
+  const handleAllowWinnerChoose = () => {
+    setShowPunishmentOptions(false);
+    toast.success("يمكن للفريق الفائز اختيار العقوبة المناسبة!", {
+      position: "top-center",
+      duration: 5000
+    });
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -88,19 +108,46 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         </div>
         
         <div className="flex flex-col gap-3">
-          {losingTeamIndex !== null && (
+          {losingTeamIndex !== null && !showPunishmentOptions && (
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <Button 
-                onClick={showPunishment}
+                onClick={handleShowPunishment}
                 className="w-full py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg shadow-purple-900/30"
               >
                 <Award className="w-4 h-4 ml-2" />
-                عرض عقاب الفريق الخاسر
+                عرض خيارات العقاب للفريق الخاسر
               </Button>
+            </motion.div>
+          )}
+          
+          {showPunishmentOptions && (
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 p-4 rounded-lg border border-indigo-700/50 mb-2"
+            >
+              <h3 className="text-lg font-medium text-white mb-3">اختر طريقة تحديد العقاب:</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button 
+                  onClick={handleChoosePunishment}
+                  className="py-3 bg-gradient-to-r from-purple-700 to-purple-800 hover:from-purple-600 hover:to-purple-700 text-white shadow-md"
+                >
+                  <Users className="w-4 h-4 ml-2" />
+                  عقاب من قائمة العقوبات
+                </Button>
+                <Button 
+                  onClick={handleAllowWinnerChoose}
+                  className="py-3 bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-600 hover:to-amber-700 text-white shadow-md"
+                >
+                  <Sparkles className="w-4 h-4 ml-2" />
+                  الفريق الفائز يختار العقاب
+                </Button>
+              </div>
             </motion.div>
           )}
           

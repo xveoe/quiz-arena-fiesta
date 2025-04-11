@@ -54,6 +54,13 @@ const Index = () => {
     setShowIntro(false);
   };
 
+  // Prevent going back to main menu when the game is loaded
+  useEffect(() => {
+    if (gameState.gameStarted && gameState.questions.length > 0) {
+      gameState.setCurrentTab("game");
+    }
+  }, [gameState.gameStarted, gameState.questions.length]);
+
   if (showIntro) {
     return <Intro onIntroComplete={handleIntroComplete} />;
   }
@@ -96,7 +103,7 @@ const Index = () => {
                     setGameSetup={gameState.setGameSetup}
                     selectedCategory={gameState.selectedCategory}
                     setSelectedCategory={gameState.setSelectedCategory}
-                    onComplete={() => gameState.setGameSetup('features')}
+                    onComplete={() => gameState.setSetupStep('features')}
                   />
                 </motion.div>
               )}
@@ -112,7 +119,7 @@ const Index = () => {
                   <FeatureSelector 
                     gameFeatures={gameState.gameFeatures}
                     toggleFeature={gameState.toggleFeature}
-                    onComplete={() => gameState.setGameSetup('loading')}
+                    onComplete={() => gameState.setSetupStep('loading')}
                   />
                 </motion.div>
               )}
@@ -126,7 +133,7 @@ const Index = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <EnhancedLoadingScreen 
-                    onComplete={() => gameState.setGameSetup('settings')}
+                    onComplete={gameState.handleStartGame}
                   />
                 </motion.div>
               )}

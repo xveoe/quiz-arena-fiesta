@@ -75,7 +75,11 @@ const useGameState = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [timerActive, setTimerActive] = useState(false);
-  const [powerUpsAvailable, setPowerUpsAvailable] = useState({
+  const [powerUpsAvailable, setPowerUpsAvailable] = useState<{
+    extraTime: [number, number];
+    doublePoints: [number, number];
+    skipQuestion: [number, number];
+  }>({
     extraTime: [2, 2],
     doublePoints: [1, 1],
     skipQuestion: [1, 1]
@@ -487,9 +491,21 @@ const useGameState = () => {
     }
   };
 
+  // Fixed the setter type issues by making this function accept the proper type
+  const setGameSetupValue = (newValue: SetupStep | Partial<GameSetup>) => {
+    if (typeof newValue === 'string') {
+      setSetupStep(newValue as SetupStep);
+    } else {
+      setGameSetup(prevState => ({
+        ...prevState,
+        ...newValue
+      }));
+    }
+  };
+
   return {
     gameSetup,
-    setGameSetup,
+    setGameSetup: setGameSetupValue,
     gameFeatures,
     currentTab,
     setCurrentTab,
@@ -517,6 +533,7 @@ const useGameState = () => {
     showQuestion,
     gameView,
     setupStep,
+    setSetupStep,
     changeTransitionType,
     triggerConfetti,
     handleStartGame,

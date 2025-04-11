@@ -33,7 +33,7 @@ const Timer: React.FC<TimerProps> = ({
           animate={{ width: `${timerActive ? 0 : (timer / timePerQuestion) * 100}%` }}
           initial={{ width: `${(timer / timePerQuestion) * 100}%` }}
           transition={{ 
-            duration: timerActive ? timePerQuestion : 0, 
+            duration: timerActive ? timer : 0, 
             ease: "linear" 
           }}
         />

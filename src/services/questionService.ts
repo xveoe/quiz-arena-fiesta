@@ -178,8 +178,8 @@ export async function generateQuestions(categoryId: string, count: number, diffi
 أخرج النتائج بالتنسيق التالي فقط (قسم كل حقل بعلامة |):
 السؤال؟ | الخيار الأول | الخيار الثاني | الخيار الثالث | الخيار الرابع | الإجابة الصحيحة`;
 
-  // استخدام مفتاح API مباشرةً
-  const apiKey = "AIzaSyAO2VNgxFr3Yk0y0eCADWd1FCzmz1rGXB0";
+  // استخدام مفتاح API مباشرةً - Updated API key
+  const apiKey = "AIzaSyA9ENzzy5XKee0y19g__eqazFzO7A__Ddg";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   // إعداد الـ payload

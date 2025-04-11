@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -491,7 +490,6 @@ const useGameState = () => {
     }
   };
 
-  // Fixed the setter type issues by making this function accept the proper type
   const setGameSetupValue = (newValue: SetupStep | Partial<GameSetup>) => {
     if (typeof newValue === 'string') {
       setSetupStep(newValue as SetupStep);

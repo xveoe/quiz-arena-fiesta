@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -54,7 +53,6 @@ const Index = () => {
     setShowIntro(false);
   };
 
-  // Prevent going back to main menu when the game is loaded
   useEffect(() => {
     if (gameState.gameStarted && gameState.questions.length > 0) {
       gameState.setCurrentTab("game");
@@ -100,7 +98,7 @@ const Index = () => {
                 >
                   <SetupSteps 
                     gameSetup={gameState.gameSetup}
-                    setGameSetup={gameState.setGameSetup}
+                    setGameSetup={(value) => gameState.setGameSetup(value)}
                     selectedCategory={gameState.selectedCategory}
                     setSelectedCategory={gameState.setSelectedCategory}
                     onComplete={() => gameState.setSetupStep('features')}

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
 import { ArrowRight, Settings, Users, Zap } from 'lucide-react';
 import { categories } from "@/services/questionService";
+import { GameSetup } from "@/hooks/useGameState";
 
 interface SetupStepsProps {
   gameSetup: {
@@ -18,15 +18,7 @@ interface SetupStepsProps {
     timePerQuestion: number;
     judgeName: string;
   };
-  setGameSetup: React.Dispatch<React.SetStateAction<{
-    playerCount: number;
-    team1Name: string;
-    team2Name: string;
-    questionCount: number;
-    difficulty: number;
-    timePerQuestion: number;
-    judgeName: string;
-  }>>;
+  setGameSetup: (value: Partial<GameSetup>) => void;
   selectedCategory: string;
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
   onComplete: () => void;

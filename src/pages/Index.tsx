@@ -196,9 +196,7 @@ const Index = () => {
       setSetupStep('features');
     } else if (setupStep === 'features') {
       setSetupStep('loading');
-      setTimeout(() => {
-        handleStartGame();
-      }, 500);
+      handleStartGame();
     }
   };
 
@@ -225,28 +223,20 @@ const Index = () => {
         setExcludedOptions([]);
         setShowAnswer(false);
         setGameView('teams');
-        setTimeout(() => {
-          toast.success("تم توليد الأسئلة بنجاح!");
-        }, 500);
+        toast.success("تم توليد الأسئلة بنجاح!");
       } else {
         setSetupStep('settings');
-        setTimeout(() => {
-          toast.error("حدث خطأ في توليد الأسئلة");
-        }, 500);
+        toast.error("حدث خطأ في توليد الأسئلة");
       }
     } catch (error) {
       setSetupStep('settings');
-      setTimeout(() => {
-        toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
-      }, 500);
+      toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
       console.error(error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-        if (questions.length > 0) {
-          setSetupStep('settings');
-        }
-      }, 2000);
+      setIsLoading(false);
+      if (questions.length > 0) {
+        setSetupStep('settings');
+      }
     }
   };
 

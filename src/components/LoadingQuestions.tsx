@@ -43,7 +43,7 @@ const LoadingQuestions = () => {
               transition={{ 
                 duration: 3, 
                 repeat: Infinity,
-                repeatType: "reverse" as const
+                repeatType: "reverse"
               }}
             />
             
@@ -78,7 +78,7 @@ const LoadingQuestions = () => {
               transition={{ 
                 duration: 3, 
                 repeat: Infinity,
-                repeatType: "reverse" as const
+                repeatType: "reverse"
               }}
             >
               <Brain className="w-14 h-14 text-blue-400/90 z-20" />
@@ -86,7 +86,7 @@ const LoadingQuestions = () => {
               <motion.div 
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration:.5, repeat: Infinity }}
+                transition={{ duration: 0.5, repeat: Infinity }}
               >
                 <Sparkles className="w-8 h-8 text-indigo-300/70" />
               </motion.div>

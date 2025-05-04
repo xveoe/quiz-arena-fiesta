@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { QuestionMark, Settings, Trophy, Menu } from "lucide-react";
+import { HelpCircle, Settings, Trophy, Menu } from "lucide-react";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
@@ -103,7 +103,7 @@ const Index = () => {
               disabled={!gameState.gameStarted}
               className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
-              <QuestionMark className="w-4 h-4 ml-2" />
+              <HelpCircle className="w-4 h-4 ml-2" />
               اللعبة
             </TabsTrigger>
             <TabsTrigger 

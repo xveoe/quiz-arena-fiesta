@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft, RefreshCw, TimerReset, ShieldAlert } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RefreshCw } from 'lucide-react';
 import PowerUps from './PowerUps';
 import QuestionTimer from './Timer';
 
@@ -79,32 +79,32 @@ const QuestionView: React.FC<QuestionViewProps> = ({
   setGameView
 }) => {
   if (!questions || questions.length === 0 || currentQuestionIndex >= questions.length) {
-    return <div className="text-center text-red-400">لم يتم العثور على أسئلة</div>;
+    return <div className="text-center text-red-500">لم يتم العثور على أسئلة</div>;
   }
   
   const currentQuestion = questions[currentQuestionIndex];
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center justify-between mb-2">
         <button 
           onClick={() => {
             changeTransitionType();
             setGameView('teams');
           }} 
-          className="flex items-center text-xs text-indigo-300 hover:text-indigo-200 transition-colors"
+          className="flex items-center text-sm text-blue-500 hover:text-blue-600 transition-colors"
         >
           <ChevronRight className="w-4 h-4 ml-1" /> العودة
         </button>
         
-        <div className="text-center px-4 py-1.5 bg-indigo-900/50 rounded-full border border-indigo-700/30">
-          <span className="text-xs text-indigo-300 ml-1">دور</span>
-          <span className="text-sm font-bold text-indigo-200">{teams[currentTeam].name}</span>
+        <div className="text-center px-4 py-1.5 bg-blue-50 rounded-full border border-blue-100">
+          <span className="text-xs text-blue-600 ml-1">دور</span>
+          <span className="text-sm font-medium text-blue-700">{teams[currentTeam].name}</span>
         </div>
         
-        <div className="flex items-center gap-1 px-3 py-1 bg-gray-800/50 rounded-full">
-          <span className="text-xs text-gray-300">سؤال</span>
-          <span className="text-sm font-bold text-gray-200">{currentQuestionIndex + 1}/{questions.length}</span>
+        <div className="flex items-center gap-1 px-3 py-1 bg-gray-50 rounded-full border border-gray-100">
+          <span className="text-xs text-gray-500">سؤال</span>
+          <span className="text-sm font-medium text-gray-700">{currentQuestionIndex + 1}/{questions.length}</span>
         </div>
       </div>
       
@@ -118,7 +118,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
         gameFeatures={gameFeatures}
       />
       
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-2">
         <motion.button 
           onClick={refreshCurrentQuestion} 
           disabled={isRefreshingQuestion || showAnswer}
@@ -127,8 +127,8 @@ const QuestionView: React.FC<QuestionViewProps> = ({
           className={`
             px-3 py-1.5 rounded-lg flex items-center gap-1.5 
             ${isRefreshingQuestion || showAnswer 
-              ? 'bg-gray-700/40 text-gray-500 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-purple-600/80 to-indigo-600/80 text-white hover:from-purple-500/80 hover:to-indigo-500/80 shadow-md'}
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+              : 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-sm'}
             transition-all duration-200
           `}
         >
@@ -148,21 +148,9 @@ const QuestionView: React.FC<QuestionViewProps> = ({
         gameFeatures={gameFeatures}
       />
       
-      <Card className="p-4 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-indigo-700/30 shadow-xl shadow-indigo-900/20 overflow-hidden relative">
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-tr from-indigo-600/5 to-purple-600/5 z-0"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            repeatType: 'reverse',
-          }}
-        />
-        
+      <Card className="modern-card p-5 border border-blue-100">
         <motion.h4 
-          className="text-base font-bold mb-4 text-center text-gray-100 relative z-10"
+          className="text-lg font-bold mb-6 text-center text-gray-800"
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -170,7 +158,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
           {currentQuestion.question}
         </motion.h4>
         
-        <div className="grid grid-cols-1 gap-2 relative z-10">
+        <div className="grid grid-cols-1 gap-3">
           {currentQuestion.options.map((option, index) => (
             <motion.div
               key={index}
@@ -182,18 +170,18 @@ const QuestionView: React.FC<QuestionViewProps> = ({
                 onClick={() => handleAnswerSelect(option)}
                 disabled={showAnswer || excludedOptions.includes(index)}
                 className={`
-                  w-full justify-start text-right py-3 transition-all
-                  ${excludedOptions.includes(index) ? 'opacity-30 bg-gray-900' : ''}
+                  w-full justify-start text-right py-3 px-4 transition-all rounded-xl
+                  ${excludedOptions.includes(index) ? 'opacity-50 bg-gray-100 text-gray-400' : ''}
                   ${showAnswer && option === currentQuestion.correctAnswer 
-                    ? 'bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 text-white border-green-600 shadow-lg shadow-green-900/30' 
+                    ? 'bg-green-500 hover:bg-green-600 text-white border-green-400' 
                     : showAnswer && !excludedOptions.includes(index)
-                    ? 'bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-white border-red-700 shadow-lg shadow-red-900/30'
-                    : 'bg-gradient-to-r from-gray-700/90 to-gray-800/90 border-indigo-500/20 hover:from-indigo-700/40 hover:to-indigo-800/40 text-gray-200'}
+                    ? 'bg-red-500 hover:bg-red-600 text-white border-red-400'
+                    : 'bg-white hover:bg-gray-50 border border-gray-200 text-gray-700'}
                 `}
               >
                 <span className="flex-1">{option}</span>
                 {showAnswer && option === currentQuestion.correctAnswer && (
-                  <span className="text-green-300">✓</span>
+                  <span className="text-white">✓</span>
                 )}
               </Button>
             </motion.div>
@@ -210,7 +198,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
         >
           <Button 
             onClick={nextQuestion}
-            className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 shadow-lg shadow-indigo-900/30"
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white shadow-sm shadow-blue-500/20 rounded-xl"
           >
             {currentQuestionIndex >= questions.length - 1 ? (
               <>انتهت الأسئلة - عرض النتائج</>

@@ -48,7 +48,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-5">
-        <Card className="bg-white shadow-md border-gray-100 overflow-hidden">
+        <Card className="modern-card overflow-hidden p-4">
           <TeamScore teams={teams} currentTeam={currentTeam} gameFeatures={gameFeatures} />
         </Card>
 
@@ -64,7 +64,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
                 changeTransitionType();
                 setGameView('question');
               }}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white shadow-sm rounded-xl transition-all duration-300"
+              className="w-full py-3 modern-button hover-scale rounded-xl"
             >
               <Brain className="w-4 h-4 ml-2" /> عرض السؤال
             </Button>
@@ -82,7 +82,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
                   changeTransitionType();
                   setGameView('judge');
                 }}
-                className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white shadow-sm rounded-xl transition-all duration-300"
+                className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white shadow-sm shadow-amber-500/20 rounded-xl transition-all duration-300"
               >
                 <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
               </Button>
@@ -95,12 +95,12 @@ const TeamsView: React.FC<TeamsViewProps> = ({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.3 }}
-        className="mt-auto pt-8"
+        className="w-full mt-auto pt-8"
       >
         <Button 
           onClick={endGame}
           variant="outline"
-          className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-800 border border-gray-200 rounded-xl transition-all duration-300"
+          className="w-full py-2 modern-button-outline hover-scale rounded-xl"
         >
           <X className="w-4 h-4 ml-2" /> إنهاء اللعبة
         </Button>

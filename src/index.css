@@ -1,4 +1,6 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +17,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 220 9% 15%;
+    --primary: 217 91.2% 59.8%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -34,7 +36,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -44,99 +46,6 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Theme colors */
-    --theme-primary: 0 0% 15%;
-    --theme-secondary: 0 0% 20%;
-    --theme-accent: 210 40% 96.1%;
-    --theme-text: 222.2 84% 4.9%;
-    --theme-border: 214.3 31.8% 91.4%;
-    --theme-background: 0 0% 100%;
-    --theme-card: 0 0% 100%;
-    --theme-button: 210 40% 96.1%;
-    --theme-glow: 45 100% 70%;
-    --theme-progress: 45 100% 50%;
-    --theme-icon: 45 100% 50%;
-  }
-
-  /* Silver theme - Default */
-  [data-theme="silver"] {
-    --theme-primary: 220 10% 60%;
-    --theme-secondary: 220 10% 45%;
-    --theme-accent: 220 15% 65%;
-    --theme-text: 0 0% 15%;
-    --theme-border: 220 15% 70%;
-    --theme-background: linear-gradient(to bottom right, #e6e6e6, #d1d1d1);
-    --theme-card: linear-gradient(to bottom right, #f0f0f0, #e0e0e0);
-    --theme-button: 220 10% 60%;
-    --theme-glow: 220 20% 70%;
-    --theme-progress: 220 30% 60%;
-    --theme-icon: 220 30% 50%;
-    --theme-selected: rgba(180, 185, 190, 0.3);
-  }
-
-  /* Gold theme */
-  [data-theme="gold"] {
-    --theme-primary: 45 70% 40%;
-    --theme-secondary: 45 60% 30%;
-    --theme-accent: 45 80% 50%;
-    --theme-text: 0 0% 10%;
-    --theme-border: 45 70% 40%;
-    --theme-background: linear-gradient(to bottom right, #141414, #1a1a1a);
-    --theme-card: linear-gradient(to bottom right, #1c1c1c, #242424);
-    --theme-button: 45 70% 40%;
-    --theme-glow: 45 100% 50%;
-    --theme-progress: 45 100% 50%;
-    --theme-icon: 45 100% 60%;
-    --theme-selected: rgba(255, 215, 0, 0.2);
-  }
-
-  /* Light theme */
-  [data-theme="light"] {
-    --theme-primary: 210 20% 90%;
-    --theme-secondary: 210 15% 80%;
-    --theme-accent: 210 30% 70%;
-    --theme-text: 210 50% 10%;
-    --theme-border: 210 30% 80%;
-    --theme-background: linear-gradient(to bottom right, #ffffff, #f5f5f5);
-    --theme-card: linear-gradient(to bottom right, #ffffff, #fafafa);
-    --theme-button: 210 20% 90%;
-    --theme-glow: 210 50% 70%;
-    --theme-progress: 210 70% 50%;
-    --theme-icon: 210 70% 50%;
-    --theme-selected: rgba(200, 220, 240, 0.3);
-  }
-
-  /* Dark theme */
-  [data-theme="dark"] {
-    --theme-primary: 220 10% 20%;
-    --theme-secondary: 220 10% 15%;
-    --theme-accent: 220 70% 40%;
-    --theme-text: 220 20% 90%;
-    --theme-border: 220 20% 30%;
-    --theme-background: linear-gradient(to bottom right, #0f0f10, #18181a);
-    --theme-card: linear-gradient(to bottom right, #1a1a1c, #222224);
-    --theme-button: 220 10% 30%;
-    --theme-glow: 220 70% 50%;
-    --theme-progress: 220 70% 50%;
-    --theme-icon: 220 70% 60%;
-    --theme-selected: rgba(70, 90, 120, 0.3);
-  }
-
-  /* Blood theme */
-  [data-theme="blood"] {
-    --theme-primary: 0 70% 40%;
-    --theme-secondary: 0 60% 30%;
-    --theme-accent: 0 80% 50%;
-    --theme-text: 0 20% 90%;
-    --theme-border: 0 70% 40%;
-    --theme-background: linear-gradient(to bottom right, #1a0000, #1a0a0a);
-    --theme-card: linear-gradient(to bottom right, #240000, #2a0909);
-    --theme-button: 0 70% 40%;
-    --theme-glow: 0 100% 50%;
-    --theme-progress: 0 100% 50%;
-    --theme-icon: 0 100% 60%;
-    --theme-selected: rgba(200, 0, 0, 0.3);
   }
 }
 
@@ -147,7 +56,7 @@
   }
 
   body {
-    @apply bg-gradient-to-b from-black to-zinc-900 text-silver dark:text-silver min-h-screen;
+    @apply bg-white text-gray-800 min-h-screen;
     width: 100%;
     max-width: 100vw;
     overflow-x: hidden;
@@ -162,40 +71,54 @@
 }
 
 @layer utilities {
-  .text-silver {
-    @apply text-zinc-300;
+  .text-balance {
+    text-wrap: balance;
   }
   
-  .bg-silver {
-    @apply bg-zinc-300;
+  .modern-card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-md transition-all duration-300;
   }
   
-  .border-silver {
-    @apply border-zinc-700;
+  .modern-input {
+    @apply bg-white border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300;
   }
   
-  .luxury-card {
-    @apply bg-gradient-to-br from-zinc-900 to-black border border-zinc-700/50 shadow-lg shadow-black/30 backdrop-blur-sm;
+  .modern-button {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-xl shadow-sm shadow-blue-500/20 transition-all duration-300;
   }
   
-  .luxury-input {
-    @apply bg-zinc-800/90 border-zinc-700 text-silver focus:border-zinc-500 focus:ring-zinc-500;
+  .modern-button-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2 rounded-xl shadow-sm transition-all duration-300;
   }
   
-  .luxury-button {
-    @apply bg-gradient-to-r from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 text-silver;
+  .modern-button-outline {
+    @apply bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium px-4 py-2 rounded-xl shadow-sm transition-all duration-300;
   }
   
-  .glow-effect {
-    @apply relative;
+  .soft-shadow {
+    @apply shadow-[0_4px_20px_-5px_rgba(0,0,0,0.1)];
   }
   
-  .glow-effect::after {
-    @apply content-[''] absolute -inset-0.5 bg-gradient-to-r from-zinc-400 to-zinc-700 rounded-lg blur opacity-30 -z-10 transition-opacity duration-200;
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-[1.02];
   }
   
-  .glow-effect:hover::after {
-    @apply opacity-50;
+  .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .slide-in {
+    animation: slideIn 0.4s ease-out forwards;
+  }
+  
+  @keyframes slideIn {
+    0% { transform: translateX(20px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
   }
   
   .pulse-animation {
@@ -205,48 +128,17 @@
   @keyframes pulse {
     0% {
       transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.7);
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
     }
     
     70% {
       transform: scale(1);
-      box-shadow: 0 0 0 10px rgba(192, 192, 192, 0);
+      box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
     }
     
     100% {
       transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(192, 192, 192, 0);
-    }
-  }
-  
-  .animate-silver-shine {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .animate-silver-shine::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    transform: rotate(30deg);
-    animation: silverShine 3s infinite;
-  }
-  
-  @keyframes silverShine {
-    0% {
-      transform: translateX(-100%) translateY(-100%) rotate(30deg);
-    }
-    100% {
-      transform: translateX(100%) translateY(100%) rotate(30deg);
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
     }
   }
   
@@ -257,114 +149,6 @@
   
   .scrollbar-none::-webkit-scrollbar {
     display: none;
-  }
-  
-  .blur-motion {
-    position: relative;
-  }
-  
-  .blur-motion::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: inherit;
-    filter: blur(10px);
-    opacity: 0.7;
-    z-index: -1;
-  }
-  
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .shine-effect {
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .shine-effect::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 50%;
-    height: 300%;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 100%
-    );
-    transform: rotate(25deg);
-    animation: shine 3s ease-in-out infinite;
-  }
-  
-  @keyframes shine {
-    0% {
-      left: -100%;
-      top: -100%;
-    }
-    100% {
-      left: 200%;
-      top: 200%;
-    }
-  }
-  
-  .motion-blur-transition {
-    transition: all 0.3s ease;
-    filter: blur(0);
-  }
-  
-  .motion-blur-transition:hover,
-  .motion-blur-transition:focus {
-    filter: blur(2px);
-  }
-  
-  .motion-blur-transition.active {
-    filter: blur(0);
-  }
-  
-  /* Theme-based utilities */
-  .theme-bg {
-    background: var(--theme-background);
-  }
-  
-  .theme-card {
-    background: var(--theme-card);
-  }
-  
-  .theme-text {
-    color: hsl(var(--theme-text));
-  }
-  
-  .theme-border {
-    border-color: hsl(var(--theme-border));
-  }
-  
-  .theme-button {
-    background-color: hsl(var(--theme-button));
-  }
-  
-  .theme-accent {
-    color: hsl(var(--theme-accent));
-  }
-  
-  .theme-glow {
-    background-color: hsl(var(--theme-glow));
-  }
-  
-  .theme-progress {
-    background-color: hsl(var(--theme-progress));
-  }
-  
-  .theme-icon {
-    color: hsl(var(--theme-icon));
-  }
-  
-  .theme-selected-item {
-    background-color: var(--theme-selected);
   }
   
   /* Responsive utilities */
@@ -391,4 +175,37 @@
   .mobile-input {
     @apply text-sm p-2 sm:text-base sm:p-3;
   }
+}
+
+/* Additional modern UI classes */
+.glass-effect {
+  @apply backdrop-blur-lg bg-white/80 border border-white/40 shadow-lg;
+}
+
+.nav-link {
+  @apply px-3 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300;
+}
+
+.nav-link.active {
+  @apply bg-blue-50 text-blue-600 font-medium;
+}
+
+.content-section {
+  @apply p-6 bg-white rounded-2xl shadow-sm border border-gray-100 mb-6;
+}
+
+.heading-xl {
+  @apply text-2xl sm:text-3xl font-bold text-gray-800 mb-4;
+}
+
+.heading-lg {
+  @apply text-xl sm:text-2xl font-bold text-gray-800 mb-3;
+}
+
+.heading-md {
+  @apply text-lg sm:text-xl font-semibold text-gray-800 mb-2;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent;
 }

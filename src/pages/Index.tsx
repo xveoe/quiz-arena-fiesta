@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Intro from "@/components/Intro";
+import { QuestionMark, Settings, Trophy, Menu } from "lucide-react";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
@@ -61,30 +61,59 @@ const Index = () => {
   }, [gameState.gameStarted, gameState.questions.length]);
 
   if (showIntro) {
-    return <Intro onIntroComplete={handleIntroComplete} />;
+    return null;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 text-gray-200 pb-6">
-      <header className="py-4 px-4 bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-black/40">
-        <div className="max-w-screen-sm mx-auto flex justify-between items-center">
+    <div className="min-h-screen flex flex-col bg-white text-gray-800">
+      <header className="py-4 px-6 bg-white shadow-sm border-b border-gray-100">
+        <div className="max-w-screen-md mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <Menu className="w-5 h-5 text-gray-600 mr-3" />
+          </div>
+          
           <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent text-center flex-1"
+            className="text-xl font-bold text-gradient text-center"
           >
             تحدي المعرفة
           </motion.h1>
+          
+          <div className="flex items-center">
+            <Settings className="w-5 h-5 text-gray-600 ml-2" />
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 p-4 max-w-screen-sm mx-auto w-full">
+      <main className="flex-1 p-6 max-w-screen-md mx-auto w-full">
         <Tabs value={gameState.currentTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4 shadow-xl">
-            <TabsTrigger value="setup" disabled={gameState.gameStarted}>الإعدادات</TabsTrigger>
-            <TabsTrigger value="game" disabled={!gameState.gameStarted}>اللعبة</TabsTrigger>
-            <TabsTrigger value="results" disabled={gameState.gameStarted && gameState.currentQuestionIndex < gameState.questions.length - 1}>النتائج</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 rounded-xl p-1">
+            <TabsTrigger 
+              value="setup" 
+              disabled={gameState.gameStarted}
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Settings className="w-4 h-4 ml-2" />
+              الإعدادات
+            </TabsTrigger>
+            <TabsTrigger 
+              value="game" 
+              disabled={!gameState.gameStarted}
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <QuestionMark className="w-4 h-4 ml-2" />
+              اللعبة
+            </TabsTrigger>
+            <TabsTrigger 
+              value="results" 
+              disabled={gameState.gameStarted && gameState.currentQuestionIndex < gameState.questions.length - 1}
+              className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Trophy className="w-4 h-4 ml-2" />
+              النتائج
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="setup" className="mt-2">
@@ -92,10 +121,11 @@ const Index = () => {
               {gameState.setupStep === 'settings' && (
                 <motion.div
                   key="settings"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
+                  className="fade-in"
                 >
                   <SetupSteps 
                     gameSetup={gameState.gameSetup}
@@ -110,10 +140,11 @@ const Index = () => {
               {gameState.setupStep === 'features' && (
                 <motion.div
                   key="features"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
+                  className="fade-in"
                 >
                   <FeatureSelector 
                     gameFeatures={gameState.gameFeatures}
@@ -126,10 +157,11 @@ const Index = () => {
               {gameState.setupStep === 'loading' && (
                 <motion.div
                   key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
+                  className="fade-in"
                 >
                   <EnhancedLoadingScreen 
                     onComplete={gameState.handleStartGame}

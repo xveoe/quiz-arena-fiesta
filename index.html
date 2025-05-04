@@ -19,24 +19,65 @@
 
     <link rel="icon" type="image/svg+xml" href="/goat.svg" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     
     <style>
       :root {
         --primary-color: #3b82f6;
         --primary-hover: #2563eb;
+        --background: #ffffff;
+        --card-bg: #fafafa;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05);
+        --radius-lg: 1rem;
+        --radius-xl: 1.25rem;
+        --radius-2xl: 1.5rem;
       }
       
       body {
-        font-family: 'Cairo', sans-serif;
-        background-color: #f8fafc;
+        font-family: 'Cairo', 'Poppins', sans-serif;
+        background-color: var(--background);
+        color: var(--text-primary);
+        line-height: 1.6;
       }
       
       * {
         scroll-behavior: smooth;
+        transition: all 0.2s ease-in-out;
       }
       
       .app-shadow {
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .hover-scale {
+        transition: transform 0.2s ease;
+      }
+      
+      .hover-scale:hover {
+        transform: scale(1.02);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+
+      .slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+      }
+      
+      @keyframes slideIn {
+        0% { transform: translateX(20px); opacity: 0; }
+        100% { transform: translateX(0); opacity: 1; }
       }
     </style>
   </head>

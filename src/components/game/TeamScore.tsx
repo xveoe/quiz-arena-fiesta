@@ -30,7 +30,7 @@ const TeamScore: React.FC<TeamScoreProps> = ({ teams, currentTeam, gameFeatures 
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3 text-center">
+    <div className="grid grid-cols-2 gap-4 text-center">
       {teams.map((team, index) => (
         <motion.div
           key={index}
@@ -39,23 +39,22 @@ const TeamScore: React.FC<TeamScoreProps> = ({ teams, currentTeam, gameFeatures 
           transition={{ delay: index * 0.1, duration: 0.3 }}
         >
           <Card 
-            className={`p-2.5 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-gray-700/50 shadow-lg 
-              ${currentTeam === index ? 'ring-1 ring-inset ring-offset-1 ring-blue-400' : ''}`}
+            className={`p-4 bg-white/80 border ${currentTeam === index ? 'border-blue-200 ring-2 ring-blue-100' : 'border-gray-100'} rounded-xl shadow-sm transition-all duration-300`}
           >
-            <h3 className="text-sm font-bold mb-0.5 text-gray-200">{team.name}</h3>
-            <div className="text-2xl font-bold text-gray-100">
+            <h3 className="text-base font-bold mb-1 text-gray-800">{team.name}</h3>
+            <div className="text-3xl font-bold text-blue-600">
               {team.score}
               {team.bonusPoints > 0 && gameFeatures.timeBonus && (
-                <span className="text-xs text-gray-300 opacity-70 ml-1">
+                <span className="text-xs text-gray-500 opacity-90 ml-1">
                   (+{team.bonusPoints})
                 </span>
               )}
             </div>
             
-            <div className="flex items-center justify-center gap-1 text-xs mt-0.5 text-gray-400">
+            <div className="flex items-center justify-center gap-1 text-xs mt-1 text-gray-500">
               <span>سلسلة: {team.streak} {gameFeatures.streakBonus && team.streak >= 3 && '🔥'}</span>
               {gameFeatures.streakBonus && team.streak >= 3 && (
-                <span className="text-yellow-400">× {getStreakMultiplier(index)}</span>
+                <span className="text-amber-500">× {getStreakMultiplier(index)}</span>
               )}
             </div>
           </Card>

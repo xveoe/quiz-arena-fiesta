@@ -41,10 +41,6 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
   const handleAllowWinnerChoose = () => {
     setShowPunishmentOptions(false);
-    toast.success("يمكن للفريق الفائز اختيار العقوبة المناسبة!", {
-      position: "top-center",
-      duration: 5000
-    });
   };
 
   return (

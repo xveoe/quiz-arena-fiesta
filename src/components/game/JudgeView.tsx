@@ -2,13 +2,15 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ThumbsUp, ThumbsDown, MinusCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface JudgeViewProps {
   gameSetup: {
     judgeName: string;
   };
   handleJudgeDecision: (isCorrect: boolean) => void;
+  handleJudgeDeductPoints: (points: number) => void;
   nextQuestion: () => void;
   currentQuestionIndex: number;
   questions: any[];
@@ -19,12 +21,15 @@ interface JudgeViewProps {
 const JudgeView: React.FC<JudgeViewProps> = ({
   gameSetup,
   handleJudgeDecision,
+  handleJudgeDeductPoints,
   nextQuestion,
   currentQuestionIndex,
   questions,
   changeTransitionType,
   setGameView
 }) => {
+  const [showDeductOptions, setShowDeductOptions] = React.useState(false);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -67,6 +72,47 @@ const JudgeView: React.FC<JudgeViewProps> = ({
               <ThumbsDown className="w-4 h-4" />
               <span>رفض الإجابة</span>
             </Button>
+          </div>
+          
+          <div className="mt-2">
+            <Button 
+              onClick={() => setShowDeductOptions(!showDeductOptions)}
+              className="w-full flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600 text-amber-100 shadow-md shadow-amber-900/30"
+            >
+              <MinusCircle className="w-4 h-4" />
+              <span>خصم نقاط لسوء السلوك</span>
+            </Button>
+            
+            {showDeductOptions && (
+              <motion.div 
+                className="grid grid-cols-3 gap-2 mt-2"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button 
+                  variant="outline"
+                  onClick={() => handleJudgeDeductPoints(0.5)}
+                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
+                >
+                  -0.5 نقطة
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleJudgeDeductPoints(1)}
+                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
+                >
+                  -1 نقطة
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => handleJudgeDeductPoints(2)}
+                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
+                >
+                  -2 نقطة
+                </Button>
+              </motion.div>
+            )}
           </div>
           
           <div className="mt-6">

@@ -1,10 +1,11 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
-import { ArrowRight, Settings, Users, Zap } from 'lucide-react';
+import { ArrowRight, Settings, Layers } from 'lucide-react';
 import { categories } from "@/services/questionService";
 import { GameSetup } from "@/hooks/useGameState";
 
@@ -19,8 +20,8 @@ interface SetupStepsProps {
     judgeName: string;
   };
   setGameSetup: (value: Partial<GameSetup>) => void;
-  selectedCategory: string;
-  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  selectedCategories: string[];
+  toggleCategory: (categoryId: string) => void;
   onComplete: () => void;
 }
 
@@ -40,8 +41,8 @@ const fadeInVariants = {
 const SetupSteps: React.FC<SetupStepsProps> = ({ 
   gameSetup, 
   setGameSetup, 
-  selectedCategory, 
-  setSelectedCategory,
+  selectedCategories,
+  toggleCategory,
   onComplete 
 }) => {
   return (
@@ -166,15 +167,18 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
           </motion.div>
           
           <motion.div variants={fadeInVariants} custom={6}>
-            <label className="block text-sm font-medium text-gray-300 mb-2">تصنيف الأسئلة</label>
+            <div className="flex items-center mb-2">
+              <Layers className="w-4 h-4 text-blue-400 mr-2" />
+              <label className="block text-sm font-medium text-gray-300">تصنيفات الأسئلة (يمكن اختيار أكثر من تصنيف)</label>
+            </div>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={selectedCategory === category.id ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category.id)}
+                  variant={selectedCategories.includes(category.id) ? "default" : "outline"}
+                  onClick={() => toggleCategory(category.id)}
                   className={`text-xs h-10 transition-all duration-300 ${
-                    selectedCategory === category.id 
+                    selectedCategories.includes(category.id) 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-700/20' 
                       : 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-700/30'
                   }`}
@@ -182,6 +186,9 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                   {category.name}
                 </Button>
               ))}
+            </div>
+            <div className="mt-2 text-xs text-blue-400">
+              * تم اختيار {selectedCategories.length} {selectedCategories.length === 1 ? 'تصنيف' : 'تصنيفات'}
             </div>
           </motion.div>
         </div>

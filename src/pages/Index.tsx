@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,7 +46,7 @@ const transitionVariants = [
 
 const Index = () => {
   const isMobile = useIsMobile();
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false); // Changed to false to disable intro
   
   const gameState = useGameState();
   
@@ -73,7 +74,7 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent text-center flex-1"
           >
-            مسابقة تحدي المعرفة
+            تحدي المعرفة
           </motion.h1>
         </div>
       </header>
@@ -99,8 +100,8 @@ const Index = () => {
                   <SetupSteps 
                     gameSetup={gameState.gameSetup}
                     setGameSetup={(value) => gameState.setGameSetup(value)}
-                    selectedCategory={gameState.selectedCategory}
-                    setSelectedCategory={gameState.setSelectedCategory}
+                    selectedCategories={gameState.selectedCategories}
+                    toggleCategory={gameState.toggleCategory}
                     onComplete={() => gameState.setSetupStep('features')}
                   />
                 </motion.div>
@@ -201,6 +202,7 @@ const Index = () => {
                     <JudgeView 
                       gameSetup={gameState.gameSetup}
                       handleJudgeDecision={gameState.handleJudgeDecision}
+                      handleJudgeDeductPoints={gameState.handleJudgeDeductPoints}
                       nextQuestion={gameState.nextQuestion}
                       currentQuestionIndex={gameState.currentQuestionIndex}
                       questions={gameState.questions}

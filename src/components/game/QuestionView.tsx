@@ -149,7 +149,17 @@ const QuestionView: React.FC<QuestionViewProps> = ({
       />
       
       <Card className="p-4 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-indigo-700/30 shadow-xl shadow-indigo-900/20 overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/5 to-purple-600/5 z-0 pointer-events-none"></div>
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-tr from-indigo-600/5 to-purple-600/5 z-0"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%'],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            repeatType: 'reverse',
+          }}
+        />
         
         <motion.h4 
           className="text-base font-bold mb-4 text-center text-gray-100 relative z-10"

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Sparkles } from 'lucide-react';
+import { Brain } from 'lucide-react';
 
 const aiMessages = [
   "جاري تحليل الموضوع...",
@@ -23,7 +23,7 @@ const LoadingQuestions = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 backdrop-blur-md bg-gradient-to-b from-gray-900 to-gray-800">
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 backdrop-blur-md bg-gradient-to-b from-gray-900/90 to-gray-800/90">
       <div className="w-full max-w-xs px-6 text-center">
         {/* Brain Logo Animation - Enhanced */}
         <motion.div
@@ -35,10 +35,10 @@ const LoadingQuestions = () => {
           <div className="relative">
             {/* Glowing background */}
             <motion.div 
-              className="absolute inset-0 rounded-full bg-blue-500/30 blur-xl"
+              className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl"
               animate={{ 
                 scale: [1, 1.2, 1],
-                opacity: [0.7, 0.9, 0.7] 
+                opacity: [0.5, 0.7, 0.5] 
               }}
               transition={{ 
                 duration: 3, 
@@ -46,23 +46,6 @@ const LoadingQuestions = () => {
                 repeatType: "reverse"
               }}
             />
-            
-            {/* Multiple rotating orbits for enhanced brain effect */}
-            <motion.div
-              className="absolute inset-0"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <div className="w-full h-full rounded-full border border-dashed border-blue-400/50" />
-            </motion.div>
-            
-            <motion.div
-              className="absolute inset-0"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            >
-              <div className="w-full h-full rounded-full border-2 border-dotted border-indigo-400/30" />
-            </motion.div>
             
             {/* Main brain icon */}
             <motion.div
@@ -82,14 +65,6 @@ const LoadingQuestions = () => {
               }}
             >
               <Brain className="w-14 h-14 text-blue-400/90 z-20" />
-              
-              <motion.div 
-                className="absolute inset-0 flex items-center justify-center"
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
-              >
-                <Sparkles className="w-8 h-8 text-indigo-300/70" />
-              </motion.div>
             </motion.div>
           </div>
         </motion.div>
@@ -135,7 +110,7 @@ const LoadingQuestions = () => {
           </div>
           
           <div className="mt-4 text-xs text-gray-400 opacity-60">
-            أسئلة فريدة بلغة عربية فصحى بفضل الذكاء الاصطناعي
+            جاري التحميل...
           </div>
         </div>
       </div>

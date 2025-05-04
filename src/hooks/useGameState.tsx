@@ -1,5 +1,5 @@
+
 import { useState, useEffect } from 'react';
-import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { resetUsedQuestions, swapQuestion, generateQuestions } from "@/services/questionService";
 
@@ -53,7 +53,7 @@ const useGameState = () => {
   const [gameFeatures, setGameFeatures] = useState<GameFeatures>({
     streakBonus: true,
     timeBonus: true,
-    confettiEffects: true,
+    confettiEffects: false,  // Turned off as per request
     judgeFunctionality: true,
     powerUps: true
   });
@@ -64,7 +64,7 @@ const useGameState = () => {
     { name: "الفريق الثاني", players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 },
   ]);
   
-  const [selectedCategory, setSelectedCategory] = useState("general");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(["general"]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timer, setTimer] = useState(45);
@@ -109,7 +109,6 @@ const useGameState = () => {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(countdown);
-          toast.error("انتهى الوقت!");
           setShowAnswer(true);
           return 0;
         }
@@ -147,14 +146,33 @@ const useGameState = () => {
     try {
       resetUsedQuestions();
       
-      const generatedQuestions = await generateQuestions(
-        selectedCategory, 
-        gameSetup.questionCount,
-        gameSetup.difficulty
-      );
+      // Use all selected categories for generating questions
+      let allQuestions: Question[] = [];
       
-      if (generatedQuestions.length > 0) {
-        setQuestions(generatedQuestions);
+      // Calculate how many questions to get from each category
+      const questionsPerCategory = Math.ceil(gameSetup.questionCount / selectedCategories.length);
+      
+      // Generate questions from each selected category
+      for (const category of selectedCategories) {
+        const categoryQuestions = await generateQuestions(
+          category,
+          questionsPerCategory,
+          gameSetup.difficulty
+        );
+        
+        allQuestions = [...allQuestions, ...categoryQuestions];
+      }
+      
+      // Trim to exact question count if we got too many
+      if (allQuestions.length > gameSetup.questionCount) {
+        allQuestions = allQuestions.slice(0, gameSetup.questionCount);
+      }
+      
+      // Shuffle the questions to mix categories
+      const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
+      
+      if (shuffledQuestions.length > 0) {
+        setQuestions(shuffledQuestions);
         setGameStarted(true);
         setCurrentTab("game");
         setCurrentQuestionIndex(0);
@@ -164,14 +182,11 @@ const useGameState = () => {
         setExcludedOptions([]);
         setShowAnswer(false);
         setGameView('teams');
-        toast.success("تم توليد الأسئلة بنجاح!");
       } else {
         setSetupStep('settings');
-        toast.error("حدث خطأ في توليد الأسئلة");
       }
     } catch (error) {
       setSetupStep('settings');
-      toast.error("فشل في توليد الأسئلة، يرجى المحاولة مرة أخرى");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -193,12 +208,10 @@ const useGameState = () => {
     setShowAnswer(false);
     setShowManualQuestionForm(false);
     setGameView('teams');
-    toast.success("تم إعداد الأسئلة بنجاح!");
   };
 
   const handleStartTimer = () => {
     setTimerActive(true);
-    toast.info("بدأ العد التنازلي!");
   };
 
   const handleAnswerSelect = (option: string) => {
@@ -233,7 +246,6 @@ const useGameState = () => {
         return newTeams;
       });
       
-      toast.success("إجابة صحيحة! 🎉");
       triggerConfetti();
     } else {
       setTeams(prev => {
@@ -241,8 +253,6 @@ const useGameState = () => {
         newTeams[currentTeam].streak = 0;
         return newTeams;
       });
-      
-      toast.error("إجابة خاطئة! ❌");
     }
   };
 
@@ -262,7 +272,6 @@ const useGameState = () => {
         return newTeams;
       });
       
-      toast.success("الحكم صحح الإجابة! 🎉");
       if (gameFeatures.confettiEffects) {
         triggerConfetti();
       }
@@ -280,9 +289,18 @@ const useGameState = () => {
           return newTeams;
         });
       }
-      
-      toast.error("الحكم رفض الإجابة! ❌");
     }
+  };
+
+  // New function to handle judge deducting points for misconduct
+  const handleJudgeDeductPoints = (points: number) => {
+    if (!gameFeatures.judgeFunctionality) return;
+    
+    setTeams(prev => {
+      const newTeams = [...prev] as [Team, Team];
+      newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - points) * 10) / 10);
+      return newTeams;
+    });
   };
 
   const nextQuestion = () => {
@@ -320,7 +338,9 @@ const useGameState = () => {
     
     try {
       const currentQuestion = questions[currentQuestionIndex];
-      const newQuestion = await swapQuestion(selectedCategory, currentQuestion, gameSetup.difficulty);
+      // Use the first selected category for consistency when swapping questions
+      const category = selectedCategories[0]; 
+      const newQuestion = await swapQuestion(category, currentQuestion, gameSetup.difficulty);
       
       if (newQuestion) {
         changeTransitionType();
@@ -335,15 +355,10 @@ const useGameState = () => {
           setTimerActive(false);
           setExcludedOptions([]);
           setShowQuestion(true);
-          
-          toast.success("تم استبدال السؤال الحالي بنجاح");
         }, 300);
-      } else {
-        toast.error("لم يتم العثور على سؤال بديل مناسب");
       }
     } catch (error) {
       console.error("خطأ أثناء تبديل السؤال:", error);
-      toast.error("حدث خطأ أثناء تبديل السؤال");
     } finally {
       setIsRefreshingQuestion(false);
     }
@@ -369,7 +384,6 @@ const useGameState = () => {
         const newTeams = [...prev] as [Team, Team];
         if (newTeams[currentTeam].jokers > 0) {
           newTeams[currentTeam].jokers -= 1;
-          toast.info("تم استخدام الجوكر لحذف إجابتين خاطئتين");
         }
         return newTeams;
       });
@@ -386,7 +400,6 @@ const useGameState = () => {
         newPowerUps.extraTime[currentTeam] -= 1;
         return newPowerUps;
       });
-      toast.success("تم إضافة 15 ثانية إضافية! ⏱️");
     } 
     else if (powerUp === 'doublePoints' && powerUpsAvailable.doublePoints[currentTeam] > 0) {
       setPowerUpsAvailable(prev => {
@@ -394,7 +407,6 @@ const useGameState = () => {
         newPowerUps.doublePoints[currentTeam] -= 1;
         return newPowerUps;
       });
-      toast.success("النقاط المضاعفة مفعلة للإجابة التالية! 🔥");
     }
     else if (powerUp === 'skipQuestion' && powerUpsAvailable.skipQuestion[currentTeam] > 0) {
       setPowerUpsAvailable(prev => {
@@ -402,7 +414,6 @@ const useGameState = () => {
         newPowerUps.skipQuestion[currentTeam] -= 1;
         return newPowerUps;
       });
-      toast.info("تم تخطي السؤال! ⏭️");
       nextQuestion();
     }
   };
@@ -433,14 +444,12 @@ const useGameState = () => {
   const endGame = () => {
     if (!gameStarted) return;
     
-    if (window.confirm("هل أنت متأكد من إنهاء اللعبة؟ سيتم العودة إلى شاشة النتائج.")) {
-      setGameStarted(false);
-      setCurrentTab("results");
-      
-      if (teams[0].score !== teams[1].score) {
-        const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
-        setLosingTeamIndex(losingIndex);
-      }
+    setGameStarted(false);
+    setCurrentTab("results");
+    
+    if (teams[0].score !== teams[1].score) {
+      const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
+      setLosingTeamIndex(losingIndex);
     }
   };
   
@@ -455,8 +464,6 @@ const useGameState = () => {
   const showPunishment = () => {
     if (losingTeamIndex !== null) {
       setShowPunishmentBox(true);
-    } else {
-      toast.info("تعادل الفريقان، لا يوجد عقاب!");
     }
   };
 
@@ -465,8 +472,6 @@ const useGameState = () => {
       ...prev,
       [feature]: !prev[feature]
     }));
-    
-    toast.info(`تم ${gameFeatures[feature] ? 'تعطيل' : 'تفعيل'} ${getFeatureName(feature)}`);
   };
   
   const getFeatureName = (feature: keyof typeof gameFeatures): string => {
@@ -501,6 +506,19 @@ const useGameState = () => {
     }
   };
 
+  // Updated to toggle category selection
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(categoryId)) {
+        // Don't remove if it's the last category
+        if (prev.length <= 1) return prev;
+        return prev.filter(id => id !== categoryId);
+      } else {
+        return [...prev, categoryId];
+      }
+    });
+  };
+
   return {
     gameSetup,
     setGameSetup: setGameSetupValue,
@@ -509,8 +527,8 @@ const useGameState = () => {
     setCurrentTab,
     teams,
     setTeams,
-    selectedCategory,
-    setSelectedCategory,
+    selectedCategories,
+    toggleCategory,
     questions,
     setQuestions,
     currentQuestionIndex,
@@ -539,6 +557,7 @@ const useGameState = () => {
     handleStartTimer,
     handleAnswerSelect,
     handleJudgeDecision,
+    handleJudgeDeductPoints,
     nextQuestion,
     refreshCurrentQuestion,
     useJoker,

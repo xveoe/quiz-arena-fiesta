@@ -18,29 +18,29 @@ import useGameState from "@/hooks/useGameState";
 
 const transitionVariants = [
   { // اتجاه لأعلى
-    initial: { y: 300, opacity: 0 },
+    initial: { y: 30, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: -300, opacity: 0, transition: { duration: 0.2 } }
+    exit: { y: -30, opacity: 0, transition: { duration: 0.3 } }
   },
   { // اتجاه لأسفل
-    initial: { y: -300, opacity: 0 },
+    initial: { y: -30, opacity: 0 },
     animate: { y: 0, opacity: 1 },
-    exit: { y: 300, opacity: 0, transition: { duration: 0.2 } }
+    exit: { y: 30, opacity: 0, transition: { duration: 0.3 } }
   },
   { // اتجاه لليمين
-    initial: { x: -300, opacity: 0 },
+    initial: { x: -30, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: 300, opacity: 0, transition: { duration: 0.2 } }
+    exit: { x: 30, opacity: 0, transition: { duration: 0.3 } }
   },
   { // اتجاه لليسار
-    initial: { x: 300, opacity: 0 },
+    initial: { x: 30, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: -300, opacity: 0, transition: { duration: 0.2 } }
+    exit: { x: -30, opacity: 0, transition: { duration: 0.3 } }
   },
   { // ظهور وتلاشي مع تكبير وتصغير
-    initial: { scale: 0.9, opacity: 0 },
+    initial: { scale: 0.98, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    exit: { scale: 1.1, opacity: 0, transition: { duration: 0.2 } }
+    exit: { scale: 1.02, opacity: 0, transition: { duration: 0.3 } }
   }
 ];
 
@@ -76,7 +76,7 @@ const Index = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-xl font-bold text-gradient text-center"
+            className="text-xl font-bold text-blue-500 text-center"
           >
             تحدي المعرفة
           </motion.h1>
@@ -89,7 +89,7 @@ const Index = () => {
 
       <main className="flex-1 p-6 max-w-screen-md mx-auto w-full">
         <Tabs value={gameState.currentTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 bg-gray-100 rounded-xl p-1">
+          <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-50 rounded-xl p-1">
             <TabsTrigger 
               value="setup" 
               disabled={gameState.gameStarted}
@@ -121,10 +121,10 @@ const Index = () => {
               {gameState.setupStep === 'settings' && (
                 <motion.div
                   key="settings"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
                   className="fade-in"
                 >
                   <SetupSteps 
@@ -140,10 +140,10 @@ const Index = () => {
               {gameState.setupStep === 'features' && (
                 <motion.div
                   key="features"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
                   className="fade-in"
                 >
                   <FeatureSelector 
@@ -157,10 +157,10 @@ const Index = () => {
               {gameState.setupStep === 'loading' && (
                 <motion.div
                   key="loading"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.4 }}
                   className="fade-in"
                 >
                   <EnhancedLoadingScreen 
@@ -190,7 +190,7 @@ const Index = () => {
                   initial={transitionVariants[gameState.transitionType].initial}
                   animate={transitionVariants[gameState.transitionType].animate}
                   exit={transitionVariants[gameState.transitionType].exit}
-                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
                   {gameState.gameView === 'teams' && (
                     <TeamsView 
@@ -204,7 +204,7 @@ const Index = () => {
                     />
                   )}
                   
-                  {gameState.gameView === 'question' && gameState.showQuestion && (
+                  {gameState.gameView === 'question' && (
                     <QuestionView 
                       questions={gameState.questions}
                       currentQuestionIndex={gameState.currentQuestionIndex}

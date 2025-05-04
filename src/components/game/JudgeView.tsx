@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft, ThumbsUp, ThumbsDown, MinusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface JudgeViewProps {
   gameSetup: {
@@ -28,38 +29,38 @@ const JudgeView: React.FC<JudgeViewProps> = ({
   changeTransitionType,
   setGameView
 }) => {
-  const [showDeductOptions, setShowDeductOptions] = React.useState(false);
+  const [showDeductOptions, setShowDeductOptions] = useState(false);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <button 
           onClick={() => {
             changeTransitionType();
             setGameView('teams');
           }} 
-          className="flex items-center text-xs text-gray-400 hover:text-white transition-colors"
+          className="flex items-center text-xs text-gray-500 hover:text-gray-700 transition-colors"
         >
           <ChevronRight className="w-4 h-4 ml-1" /> العودة
         </button>
         
-        <h3 className="text-center text-sm font-bold text-amber-400">تدخل الحكم</h3>
+        <h3 className="text-center text-sm font-bold text-amber-600">تدخل الحكم</h3>
         
         <div className="w-8"></div>
       </div>
       
-      <Card className="p-4 bg-gradient-to-b from-gray-800/90 to-gray-900/95 border border-gray-700/50 shadow-lg">
+      <Card className="p-5 bg-white border border-gray-100 shadow-sm rounded-2xl">
         <div className="text-center mb-4">
-          <div className="mb-2">
-            <span className="text-sm text-gray-400">يمكن للحكم</span>
-            <h3 className="text-lg font-bold text-amber-300">{gameSetup.judgeName}</h3>
-            <span className="text-sm text-gray-400">التدخل وتغيير نتيجة الإجابة:</span>
+          <div className="mb-3">
+            <span className="text-sm text-gray-500">يمكن للحكم</span>
+            <h3 className="text-lg font-bold text-amber-600 my-1">{gameSetup.judgeName}</h3>
+            <span className="text-sm text-gray-500">التدخل وتغيير نتيجة الإجابة أو خصم نقاط:</span>
           </div>
           
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             <Button 
               onClick={() => handleJudgeDecision(true)}
-              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-green-800 to-green-700 hover:from-green-700 hover:to-green-600 text-green-100 shadow-md shadow-green-900/30"
+              className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl shadow-sm"
             >
               <ThumbsUp className="w-4 h-4" />
               <span>تصحيح الإجابة</span>
@@ -67,58 +68,60 @@ const JudgeView: React.FC<JudgeViewProps> = ({
             
             <Button 
               onClick={() => handleJudgeDecision(false)}
-              className="flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-red-800 to-red-700 hover:from-red-700 hover:to-red-600 text-red-100 shadow-md shadow-red-900/30"
+              className="flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-sm"
             >
               <ThumbsDown className="w-4 h-4" />
               <span>رفض الإجابة</span>
             </Button>
           </div>
           
-          <div className="mt-2">
-            <Button 
-              onClick={() => setShowDeductOptions(!showDeductOptions)}
-              className="w-full flex items-center justify-center gap-1 py-2 bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600 text-amber-100 shadow-md shadow-amber-900/30"
-            >
-              <MinusCircle className="w-4 h-4" />
-              <span>خصم نقاط لسوء السلوك</span>
-            </Button>
-            
-            {showDeductOptions && (
-              <motion.div 
-                className="grid grid-cols-3 gap-2 mt-2"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
+          <div className="mt-4">
+            <Collapsible>
+              <CollapsibleTrigger asChild>
                 <Button 
-                  variant="outline"
-                  onClick={() => handleJudgeDeductPoints(0.5)}
-                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
+                  className="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl shadow-sm"
                 >
-                  -0.5 نقطة
+                  <MinusCircle className="w-4 h-4" />
+                  <span>خصم نقاط لسوء السلوك</span>
                 </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => handleJudgeDeductPoints(1)}
-                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <motion.div 
+                  className="grid grid-cols-3 gap-2 mt-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  -1 نقطة
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => handleJudgeDeductPoints(2)}
-                  className="py-1 bg-gray-800 text-gray-300 border-gray-700"
-                >
-                  -2 نقطة
-                </Button>
-              </motion.div>
-            )}
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleJudgeDeductPoints(0.5)}
+                    className="py-1.5 bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 rounded-xl"
+                  >
+                    -0.5 نقطة
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleJudgeDeductPoints(1)}
+                    className="py-1.5 bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 rounded-xl"
+                  >
+                    -1 نقطة
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleJudgeDeductPoints(2)}
+                    className="py-1.5 bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900 rounded-xl"
+                  >
+                    -2 نقطة
+                  </Button>
+                </motion.div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           
-          <div className="mt-6">
+          <div className="mt-5">
             <Button 
               onClick={nextQuestion}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-500 hover:to-indigo-600 shadow-md shadow-indigo-900/30"
+              className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-sm"
             >
               {currentQuestionIndex >= questions.length - 1 ? (
                 <>انتهت الأسئلة - عرض النتائج</>

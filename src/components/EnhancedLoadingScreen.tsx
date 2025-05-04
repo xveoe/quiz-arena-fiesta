@@ -66,13 +66,13 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
   }, [onComplete, simulateLoading, duration]);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900">
+    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 bg-white">
       {/* Ambient particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-indigo-500/20"
+            className="absolute rounded-full bg-blue-50"
             style={{
               width: Math.random() * 20 + 5,
               height: Math.random() * 20 + 5,
@@ -104,12 +104,12 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
           <div className="relative">
             {/* Main animation circle */}
             <motion.div 
-              className="w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-purple-700 shadow-2xl shadow-indigo-700/30"
+              className="w-24 h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl"
               animate={{ 
                 boxShadow: [
-                  "0 0 20px rgba(79, 70, 229, 0.3)",
-                  "0 0 40px rgba(79, 70, 229, 0.5)",
-                  "0 0 20px rgba(79, 70, 229, 0.3)"
+                  "0 0 20px rgba(59, 130, 246, 0.3)",
+                  "0 0 40px rgba(59, 130, 246, 0.5)",
+                  "0 0 20px rgba(59, 130, 246, 0.3)"
                 ],
                 scale: [1, 1.05, 1]
               }}
@@ -131,19 +131,19 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                   ease: "linear" 
                 }}
               >
-                <Sparkles className="w-12 h-12 text-indigo-100" />
+                <Sparkles className="w-12 h-12 text-white" />
               </motion.div>
             </motion.div>
             
             {/* Orbit rings */}
             <motion.div
-              className="absolute inset-[-15px] rounded-full border border-indigo-500/20"
+              className="absolute inset-[-15px] rounded-full border border-blue-100"
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             />
             
             <motion.div
-              className="absolute inset-[-30px] rounded-full border border-indigo-500/10"
+              className="absolute inset-[-30px] rounded-full border border-blue-50"
               animate={{ rotate: -360 }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
             />
@@ -151,7 +151,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
         </motion.div>
         
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-3 text-indigo-100">جارٍ توليد الأسئلة...</h2>
+          <h2 className="text-2xl font-bold mb-3 text-gray-800">توليد الأسئلة جارٍ...</h2>
           
           <motion.div 
             className="h-12 flex items-center justify-center"
@@ -166,7 +166,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="text-center text-base text-indigo-200"
+                className="text-center text-base text-gray-600"
               >
                 {aiMessages[messageIndex]}
               </motion.p>
@@ -175,21 +175,21 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
           
           <div className="w-full mt-8 relative">
             {/* Progress bar */}
-            <div className="h-2 w-full rounded-full bg-indigo-900/60"></div>
+            <div className="h-2 w-full rounded-full bg-gray-100"></div>
             
             <motion.div 
               style={{ width: `${progress}%` }}
-              className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+              className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-600"
             >
               <motion.div 
-                className="absolute inset-0 rounded-full opacity-70 bg-indigo-400 blur-sm"
+                className="absolute inset-0 rounded-full opacity-70 bg-blue-300 blur-sm"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             </motion.div>
           </div>
           
-          <div className="mt-4 text-xs text-indigo-300">
+          <div className="mt-4 text-xs text-gray-500">
             أسئلة فريدة بلغة عربية فصحى
           </div>
         </div>

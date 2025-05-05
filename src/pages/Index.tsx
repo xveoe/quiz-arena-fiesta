@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HelpCircle, Settings, Trophy, Menu } from "lucide-react";
+import { HelpCircle, Trophy } from "lucide-react";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
@@ -15,33 +15,33 @@ import QuestionView from "@/components/game/QuestionView";
 import JudgeView from "@/components/game/JudgeView";
 import ResultsView from "@/components/game/ResultsView";
 import useGameState from "@/hooks/useGameState";
-import CustomCategoryInput from "@/components/CustomCategoryInput";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const transitionVariants = [
   { // اتجاه لأعلى - أكثر سلاسة الآن
     initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { y: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+    animate: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { y: -20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
   },
   { // اتجاه لأسفل - أكثر سلاسة الآن
     initial: { y: -20, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { y: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+    animate: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { y: 20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
   },
   { // اتجاه لليمين - أكثر سلاسة الآن
     initial: { x: -20, opacity: 0 },
-    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { x: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+    animate: { x: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { x: 20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
   },
   { // اتجاه لليسار - أكثر سلاسة الآن
     initial: { x: 20, opacity: 0 },
-    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { x: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+    animate: { x: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { x: -20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
   },
   { // ظهور وتلاشي مع تكبير وتصغير - أكثر سلاسة الآن
     initial: { scale: 0.98, opacity: 0 },
-    animate: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+    animate: { scale: 1, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
   }
 ];
 
@@ -67,12 +67,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800">
-      <header className="py-4 px-6 bg-white shadow-sm border-b border-blue-50">
-        <div className="max-w-screen-md mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <Menu className="w-5 h-5 text-blue-600 mr-3" />
-          </div>
-          
+      <header className="py-4 px-6 bg-white">
+        <div className="max-w-screen-md mx-auto">
           <motion.h1 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,14 +77,10 @@ const Index = () => {
           >
             تحدي المعرفة
           </motion.h1>
-          
-          <div className="flex items-center">
-            <Settings className="w-5 h-5 text-blue-600 ml-2" />
-          </div>
         </div>
       </header>
 
-      <main className="flex-1 p-6 max-w-screen-md mx-auto w-full">
+      <main className="flex-1 p-4 sm:p-6 max-w-screen-md mx-auto w-full">
         <Tabs value={gameState.currentTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-50 rounded-xl p-1">
             <TabsTrigger 
@@ -96,8 +88,7 @@ const Index = () => {
               disabled={gameState.gameStarted}
               className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
             >
-              <Settings className="w-4 h-4 ml-2" />
-              الإعدادات
+              <span className="ml-1">الإعدادات</span>
             </TabsTrigger>
             <TabsTrigger 
               value="game" 
@@ -125,7 +116,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.6 }}
                   className="fade-in"
                 >
                   <SetupSteps 
@@ -144,7 +135,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.6 }}
                   className="fade-in"
                 >
                   <FeatureSelector 
@@ -161,7 +152,7 @@ const Index = () => {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.6 }}
                   className="fade-in"
                 >
                   <EnhancedLoadingScreen 
@@ -191,7 +182,7 @@ const Index = () => {
                   initial={transitionVariants[gameState.transitionType].initial}
                   animate={transitionVariants[gameState.transitionType].animate}
                   exit={transitionVariants[gameState.transitionType].exit}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
                 >
                   {gameState.gameView === 'teams' && (
                     <TeamsView 

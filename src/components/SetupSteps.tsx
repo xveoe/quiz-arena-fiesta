@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Settings, Layers } from 'lucide-react';
 import { categories } from "@/services/questionService";
 import { GameSetup } from "@/hooks/useGameState";
+import CustomCategoryInput from "@/components/CustomCategoryInput";
 
 interface SetupStepsProps {
   gameSetup: {
@@ -32,7 +33,7 @@ const fadeInVariants = {
     y: 0,
     transition: { 
       delay: custom * 0.1,
-      duration: 0.5, 
+      duration: 0.6, 
       ease: [0.25, 0.1, 0.25, 1.0]
     }
   })
@@ -45,6 +46,14 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
   toggleCategory,
   onComplete 
 }) => {
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+
+  const handleAddCustomCategory = (category: string) => {
+    const categoryId = `custom-${Date.now()}`;
+    setCustomCategories([...customCategories, categoryId]);
+    toggleCategory(categoryId);
+  };
+
   return (
     <motion.div
       initial="hidden"
@@ -66,7 +75,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <Settings className="w-5 h-5 text-white" />
           </div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent ml-3">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent ml-3">
             إعدادات اللعبة
           </h2>
         </div>
@@ -82,7 +91,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                 type="text" 
                 value={gameSetup.team1Name}
                 onChange={(e) => setGameSetup({...gameSetup, team1Name: e.target.value})}
-                className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"
+                className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all text-white"
               />
             </div>
             
@@ -92,7 +101,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                 type="text" 
                 value={gameSetup.team2Name}
                 onChange={(e) => setGameSetup({...gameSetup, team2Name: e.target.value})}
-                className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"
+                className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all text-white"
               />
             </div>
           </motion.div>
@@ -103,7 +112,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
               type="text" 
               value={gameSetup.judgeName}
               onChange={(e) => setGameSetup({...gameSetup, judgeName: e.target.value})}
-              className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"
+              className="bg-gray-800/80 border-gray-700/70 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all text-white"
             />
           </motion.div>
           
@@ -167,8 +176,12 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
           </motion.div>
           
           <motion.div variants={fadeInVariants} custom={6}>
+            <CustomCategoryInput onAddCustomCategory={handleAddCustomCategory} />
+          </motion.div>
+          
+          <motion.div variants={fadeInVariants} custom={7}>
             <div className="flex items-center mb-2">
-              <Layers className="w-4 h-4 text-blue-400 mr-2" />
+              <Layers className="w-4 h-4 text-blue-400 ml-2" />
               <label className="block text-sm font-medium text-gray-300">تصنيفات الأسئلة (يمكن اختيار أكثر من تصنيف)</label>
             </div>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
@@ -180,7 +193,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                   className={`text-xs h-10 transition-all duration-300 ${
                     selectedCategories.includes(category.id) 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-700/20' 
-                      : 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-700/30'
+                      : 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-700/30 text-white'
                   }`}
                 >
                   {category.name}
@@ -194,11 +207,11 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
         </div>
       </Card>
 
-      <motion.div variants={fadeInVariants} custom={7} className="flex justify-end">
+      <motion.div variants={fadeInVariants} custom={8} className="flex justify-end">
         <Button 
           onClick={onComplete}
-          className="mt-4 px-6 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 
-                    text-white shadow-lg shadow-blue-700/30 transition-all duration-300 rounded-xl"
+          className="mt-4 px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 
+                    text-white shadow-lg shadow-blue-700/30 transition-all duration-300 rounded-xl text-lg font-medium"
         >
           <span className="ml-2">التالي</span>
           <ArrowRight className="h-5 w-5" />

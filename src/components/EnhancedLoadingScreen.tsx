@@ -99,7 +99,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
           className="mb-8 flex items-center justify-center"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <div className="relative">
             {/* Main animation circle */}
@@ -116,7 +116,8 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
               transition={{ 
                 duration: 2.5, 
                 repeat: Infinity,
-                repeatType: "reverse"
+                repeatType: "reverse",
+                ease: "easeInOut"
               }}
             >
               {/* Sparkles in the center */}
@@ -165,7 +166,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
                 className="text-center text-base text-gray-600"
               >
                 {aiMessages[messageIndex]}
@@ -187,10 +188,6 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             </motion.div>
-          </div>
-          
-          <div className="mt-4 text-xs text-gray-500">
-            أسئلة فريدة بلغة عربية فصحى
           </div>
         </div>
       </div>

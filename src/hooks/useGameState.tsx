@@ -292,13 +292,15 @@ const useGameState = () => {
     }
   };
 
-  // New function to handle judge deducting points for misconduct
-  const handleJudgeDeductPoints = (points: number) => {
+  // Updated to handle deduction for a specific team
+  const handleJudgeDeductPoints = (points: number, teamIndex?: number) => {
     if (!gameFeatures.judgeFunctionality) return;
     
     setTeams(prev => {
       const newTeams = [...prev] as [Team, Team];
-      newTeams[currentTeam].score = Math.max(0, Math.round((newTeams[currentTeam].score - points) * 10) / 10);
+      // If teamIndex is provided, deduct from that team, otherwise use current team
+      const targetTeam = teamIndex !== undefined ? teamIndex : currentTeam;
+      newTeams[targetTeam].score = Math.max(0, Math.round((newTeams[targetTeam].score - points) * 10) / 10);
       return newTeams;
     });
   };

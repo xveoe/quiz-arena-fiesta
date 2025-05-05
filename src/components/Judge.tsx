@@ -7,7 +7,7 @@ interface JudgeProps {
   name: string;
   onApproveAnswer: () => void;
   onRejectAnswer: () => void;
-  onDeductPoints: (points: number) => void;
+  onDeductPoints: (points: number, teamIndex?: number) => void;
   onNextQuestion: () => void;
   isDisabled: boolean;
   showAnswer: boolean;
@@ -23,6 +23,7 @@ const Judge: React.FC<JudgeProps> = ({
   showAnswer 
 }) => {
   const [showDeductOptions, setShowDeductOptions] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<number | undefined>(undefined);
   
   const handleApprove = () => {
     onApproveAnswer();
@@ -33,8 +34,9 @@ const Judge: React.FC<JudgeProps> = ({
   };
   
   const handleDeduct = (points: number) => {
-    onDeductPoints(points);
+    onDeductPoints(points, selectedTeam);
     setShowDeductOptions(false);
+    setSelectedTeam(undefined);
   };
 
   return (
@@ -42,7 +44,7 @@ const Judge: React.FC<JudgeProps> = ({
       className="modern-card p-4"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="flex items-center justify-center gap-2 mb-3">
         <Gavel className="w-4 h-4 text-amber-500" />
@@ -87,7 +89,7 @@ const Judge: React.FC<JudgeProps> = ({
         disabled={isDisabled}
         className={`
           w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-center mb-3
-          ${isDisabled ? 'bg-gray-100 text-gray-400' : 'bg-amber-500 text-white hover:bg-amber-600'}
+          ${isDisabled ? 'bg-gray-100 text-gray-400' : 'bg-blue-500 text-white hover:bg-blue-600'}
           transition-all duration-200 relative overflow-hidden font-medium
         `}
       >
@@ -96,31 +98,55 @@ const Judge: React.FC<JudgeProps> = ({
       </button>
       
       {showDeductOptions && (
-        <motion.div 
-          className="grid grid-cols-3 gap-2 mb-3"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <button 
-            onClick={() => handleDeduct(0.5)} 
-            className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
+        <>
+          <motion.div 
+            className="grid grid-cols-2 gap-2 mb-3"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            -0.5
-          </button>
-          <button 
-            onClick={() => handleDeduct(1)} 
-            className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
-          >
-            -1
-          </button>
-          <button 
-            onClick={() => handleDeduct(2)} 
-            className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
-          >
-            -2
-          </button>
-        </motion.div>
+            <button 
+              onClick={() => setSelectedTeam(0)} 
+              className={`bg-blue-50 border ${selectedTeam === 0 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'} text-gray-700 hover:bg-blue-100 py-2 px-3 rounded-lg text-sm font-medium`}
+            >
+              الفريق الأول
+            </button>
+            <button 
+              onClick={() => setSelectedTeam(1)} 
+              className={`bg-blue-50 border ${selectedTeam === 1 ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'} text-gray-700 hover:bg-blue-100 py-2 px-3 rounded-lg text-sm font-medium`}
+            >
+              الفريق الثاني
+            </button>
+          </motion.div>
+          
+          {selectedTeam !== undefined && (
+            <motion.div 
+              className="grid grid-cols-3 gap-2 mb-3"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button 
+                onClick={() => handleDeduct(0.5)} 
+                className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
+              >
+                -0.5
+              </button>
+              <button 
+                onClick={() => handleDeduct(1)} 
+                className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
+              >
+                -1
+              </button>
+              <button 
+                onClick={() => handleDeduct(2)} 
+                className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm font-medium"
+              >
+                -2
+              </button>
+            </motion.div>
+          )}
+        </>
       )}
 
       {showAnswer && (

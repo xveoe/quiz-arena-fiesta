@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const LoadingQuestions: React.FC = () => {
   return (
     <motion.div 
-      className="flex flex-col items-center justify-center p-10 rounded-2xl bg-white border border-gray-100 shadow-sm"
+      className="flex flex-col items-center justify-center p-10 rounded-2xl bg-white border border-blue-100 shadow-sm"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -26,9 +26,9 @@ const LoadingQuestions: React.FC = () => {
         />
       </motion.div>
       
-      <h3 className="text-xl font-bold text-gray-800 mb-2">توليد الأسئلة جارٍ...</h3>
-      <p className="text-gray-500 text-center max-w-xs">
-        يتم الآن إعداد مجموعة متنوعة من الأسئلة المناسبة لمسابقتك
+      <h3 className="text-xl font-bold text-blue-700 mb-2">جاري التحميل...</h3>
+      <p className="text-blue-500 text-center max-w-xs">
+        يتم إعداد أسئلة جديدة لمسابقتك الآن
       </p>
     </motion.div>
   );

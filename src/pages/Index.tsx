@@ -15,38 +15,39 @@ import QuestionView from "@/components/game/QuestionView";
 import JudgeView from "@/components/game/JudgeView";
 import ResultsView from "@/components/game/ResultsView";
 import useGameState from "@/hooks/useGameState";
+import CustomCategoryInput from "@/components/CustomCategoryInput";
 
 const transitionVariants = [
-  { // اتجاه لأعلى
-    initial: { y: 30, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: -30, opacity: 0, transition: { duration: 0.3 } }
+  { // اتجاه لأعلى - أكثر سلاسة الآن
+    initial: { y: 20, opacity: 0 },
+    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { y: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لأسفل
-    initial: { y: -30, opacity: 0 },
-    animate: { y: 0, opacity: 1 },
-    exit: { y: 30, opacity: 0, transition: { duration: 0.3 } }
+  { // اتجاه لأسفل - أكثر سلاسة الآن
+    initial: { y: -20, opacity: 0 },
+    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { y: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليمين
-    initial: { x: -30, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: 30, opacity: 0, transition: { duration: 0.3 } }
+  { // اتجاه لليمين - أكثر سلاسة الآن
+    initial: { x: -20, opacity: 0 },
+    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { x: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليسار
-    initial: { x: 30, opacity: 0 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: -30, opacity: 0, transition: { duration: 0.3 } }
+  { // اتجاه لليسار - أكثر سلاسة الآن
+    initial: { x: 20, opacity: 0 },
+    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { x: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // ظهور وتلاشي مع تكبير وتصغير
+  { // ظهور وتلاشي مع تكبير وتصغير - أكثر سلاسة الآن
     initial: { scale: 0.98, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    exit: { scale: 1.02, opacity: 0, transition: { duration: 0.3 } }
+    animate: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   }
 ];
 
 const Index = () => {
   const isMobile = useIsMobile();
-  const [showIntro, setShowIntro] = useState(false); // Changed to false to disable intro
+  const [showIntro, setShowIntro] = useState(false);
   
   const gameState = useGameState();
   
@@ -66,23 +67,23 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800">
-      <header className="py-4 px-6 bg-white shadow-sm border-b border-gray-100">
+      <header className="py-4 px-6 bg-white shadow-sm border-b border-blue-50">
         <div className="max-w-screen-md mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <Menu className="w-5 h-5 text-gray-600 mr-3" />
+            <Menu className="w-5 h-5 text-blue-600 mr-3" />
           </div>
           
           <motion.h1 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-xl font-bold text-blue-500 text-center"
+            className="text-xl font-bold text-blue-600 text-center"
           >
             تحدي المعرفة
           </motion.h1>
           
           <div className="flex items-center">
-            <Settings className="w-5 h-5 text-gray-600 ml-2" />
+            <Settings className="w-5 h-5 text-blue-600 ml-2" />
           </div>
         </div>
       </header>

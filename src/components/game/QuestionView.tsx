@@ -85,7 +85,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
   const currentQuestion = questions[currentQuestionIndex];
   
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <button 
           onClick={() => {
@@ -139,7 +139,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
       
       <Card className="modern-card p-5 border border-blue-100 shadow-sm rounded-2xl">
         <motion.h4 
-          className="text-lg font-bold mb-6 text-center text-gray-800"
+          className="text-lg font-bold mb-6 text-center text-blue-800"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
@@ -147,7 +147,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
           {currentQuestion.question}
         </motion.h4>
         
-        <div className="grid grid-cols-1 gap-3 mb-3">
+        <div className="grid grid-cols-1 gap-3 mb-5">
           {currentQuestion.options.map((option, index) => (
             <motion.div
               key={index}
@@ -165,7 +165,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
                     ? 'bg-green-500 hover:bg-green-600 text-white font-medium' 
                     : showAnswer && !excludedOptions.includes(index)
                     ? 'bg-red-500 hover:bg-red-600 text-white font-medium'
-                    : 'bg-white hover:bg-blue-50 border border-blue-100 text-gray-700 hover:text-blue-700 hover:border-blue-200'}
+                    : 'bg-white hover:bg-blue-50 border border-blue-100 text-blue-800 hover:text-blue-700 hover:border-blue-200'}
                 `}
               >
                 <span className="flex-1 text-lg">{option}</span>
@@ -178,7 +178,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
         </div>
       </Card>
       
-      <div className="mt-4">
+      <div className="mt-6">
         <PowerUps 
           powerUpsAvailable={powerUpsAvailable}
           currentTeam={currentTeam}
@@ -193,7 +193,7 @@ const QuestionView: React.FC<QuestionViewProps> = ({
       
       {showAnswer && (
         <motion.div 
-          className="flex justify-center mt-3"
+          className="flex justify-center mt-5"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}

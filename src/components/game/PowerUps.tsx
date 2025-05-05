@@ -38,16 +38,16 @@ const PowerUps: React.FC<PowerUpsProps> = ({
   return (
     <motion.div 
       className="grid grid-cols-4 gap-2"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
     >
       <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
         <Button
           variant={powerUpsAvailable.extraTime[currentTeam] > 0 ? "outline" : "ghost"}
           disabled={powerUpsAvailable.extraTime[currentTeam] <= 0 || showAnswer}
           onClick={() => usePowerUp('extraTime')}
-          className="flex flex-col items-center py-2 h-auto w-full border border-blue-200 text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600"
+          className="flex flex-col items-center py-1.5 h-auto w-full text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
           size="sm"
         >
           <Timer className="h-3.5 w-3.5 mb-1" />
@@ -61,7 +61,7 @@ const PowerUps: React.FC<PowerUpsProps> = ({
           variant={powerUpsAvailable.doublePoints[currentTeam] > 0 ? "outline" : "ghost"}
           disabled={powerUpsAvailable.doublePoints[currentTeam] <= 0 || showAnswer}
           onClick={() => usePowerUp('doublePoints')}
-          className="flex flex-col items-center py-2 h-auto w-full border border-blue-200 text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600"
+          className="flex flex-col items-center py-1.5 h-auto w-full text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
           size="sm"
         >
           <Star className="h-3.5 w-3.5 mb-1" />
@@ -75,7 +75,7 @@ const PowerUps: React.FC<PowerUpsProps> = ({
           variant={powerUpsAvailable.skipQuestion[currentTeam] > 0 ? "outline" : "ghost"}
           disabled={powerUpsAvailable.skipQuestion[currentTeam] <= 0 || showAnswer}
           onClick={() => usePowerUp('skipQuestion')}
-          className="flex flex-col items-center py-2 h-auto w-full border border-blue-200 text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600"
+          className="flex flex-col items-center py-1.5 h-auto w-full text-xs rounded-xl bg-blue-500 text-white hover:bg-blue-600 shadow-sm"
           size="sm"
         >
           <Award className="h-3.5 w-3.5 mb-1" />
@@ -88,7 +88,7 @@ const PowerUps: React.FC<PowerUpsProps> = ({
         <Button 
           onClick={useJoker} 
           disabled={teamJokers <= 0 || excludedOptions.length > 0 || showAnswer}
-          className="flex flex-col items-center py-2 h-auto w-full text-xs border border-blue-200 bg-blue-500 text-white hover:bg-blue-600 rounded-xl"
+          className="flex flex-col items-center py-1.5 h-auto w-full text-xs bg-blue-500 text-white hover:bg-blue-600 rounded-xl shadow-sm"
           size="sm"
         >
           <Zap className="h-3.5 w-3.5 mb-1" />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import confetti from "canvas-confetti";
 import { resetUsedQuestions, swapQuestion, generateQuestions } from "@/services/questionService";
@@ -65,6 +64,8 @@ const useGameState = () => {
   ]);
   
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["general"]);
+  const [customCategories, setCustomCategories] = useState<{[key: string]: string}>({});
+  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timer, setTimer] = useState(45);
@@ -154,13 +155,24 @@ const useGameState = () => {
       
       // Generate questions from each selected category
       for (const category of selectedCategories) {
-        const categoryQuestions = await generateQuestions(
-          category,
-          questionsPerCategory,
-          gameSetup.difficulty
-        );
-        
-        allQuestions = [...allQuestions, ...categoryQuestions];
+        // Check if this is a custom category
+        if (category.startsWith('custom-')) {
+          const categoryName = customCategories[category] || "general";
+          const categoryQuestions = await generateQuestions(
+            "custom",
+            questionsPerCategory,
+            gameSetup.difficulty,
+            categoryName // Pass the custom category name
+          );
+          allQuestions = [...allQuestions, ...categoryQuestions];
+        } else {
+          const categoryQuestions = await generateQuestions(
+            category,
+            questionsPerCategory,
+            gameSetup.difficulty
+          );
+          allQuestions = [...allQuestions, ...categoryQuestions];
+        }
       }
       
       // Trim to exact question count if we got too many
@@ -478,7 +490,7 @@ const useGameState = () => {
   
   const getFeatureName = (feature: keyof typeof gameFeatures): string => {
     const featureNames: Record<keyof typeof gameFeatures, string> = {
-      streakBonus: "مكافأة السلسلة",
+      streakBonus: "مكافأة ا��سلسلة",
       timeBonus: "مكافأة الوقت",
       confettiEffects: "تأثيرات الاحتفال",
       judgeFunctionality: "وظيفة الحكم",
@@ -508,7 +520,7 @@ const useGameState = () => {
     }
   };
 
-  // Updated to toggle category selection
+  // Updated to toggle category selection and handle custom categories
   const toggleCategory = (categoryId: string) => {
     setSelectedCategories(prev => {
       if (prev.includes(categoryId)) {
@@ -519,6 +531,22 @@ const useGameState = () => {
         return [...prev, categoryId];
       }
     });
+  };
+
+  const addCustomCategory = (categoryName: string) => {
+    // Generate a unique ID for this custom category
+    const categoryId = `custom-${Date.now()}`;
+    
+    // Store the mapping between ID and category name
+    setCustomCategories(prev => ({
+      ...prev,
+      [categoryId]: categoryName
+    }));
+    
+    // Add this category to selected categories
+    setSelectedCategories(prev => [...prev, categoryId]);
+    
+    return categoryId;
   };
 
   return {
@@ -573,7 +601,9 @@ const useGameState = () => {
     getFeatureName,
     handleAdvanceSetup,
     setGameView,
-    setShowPunishmentBox
+    setShowPunishmentBox,
+    customCategories,
+    addCustomCategory
   };
 };
 

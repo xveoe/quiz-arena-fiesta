@@ -41,7 +41,7 @@ const Judge: React.FC<JudgeProps> = ({
 
   return (
     <motion.div 
-      className="modern-card p-4"
+      className="modern-card p-4 bg-white border border-blue-100 rounded-xl shadow-sm"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}

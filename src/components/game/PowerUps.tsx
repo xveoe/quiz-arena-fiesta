@@ -37,7 +37,7 @@ const PowerUps: React.FC<PowerUpsProps> = ({
 
   return (
     <motion.div 
-      className="grid grid-cols-4 gap-2 mb-4"
+      className="grid grid-cols-4 gap-2 mb-4 max-w-md mx-auto"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}

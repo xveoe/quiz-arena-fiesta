@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const aiMessages = [
   "جاري تحليل الموضوع...",
@@ -66,34 +67,34 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
   }, [onComplete, simulateLoading, duration]);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center z-40 bg-white">
-      {/* Ambient particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-blue-50"
-            style={{
-              width: Math.random() * 20 + 5,
-              height: Math.random() * 20 + 5,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: [0, 1, 1.2, 1],
-              opacity: [0, 0.5, 0.3, 0]
-            }}
-            transition={{ 
-              duration: Math.random() * 4 + 3,
-              repeat: Infinity,
-              delay: Math.random() * 5
-            }}
-          />
-        ))}
-      </div>
-      
-      <div className="w-full max-w-xs px-6 text-center z-10">
+    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
+      <div className="relative w-full max-w-md px-6 py-10 text-center bg-white/70 backdrop-blur-md rounded-xl shadow-lg z-10">
+        {/* Ambient particles */}
+        <div className="absolute inset-0 overflow-hidden rounded-xl">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-blue-50"
+              style={{
+                width: Math.random() * 20 + 5,
+                height: Math.random() * 20 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ 
+                scale: [0, 1, 1.2, 1],
+                opacity: [0, 0.5, 0.3, 0]
+              }}
+              transition={{ 
+                duration: Math.random() * 4 + 3,
+                repeat: Infinity,
+                delay: Math.random() * 5
+              }}
+            />
+          ))}
+        </div>
+        
         {/* Main animation */}
         <motion.div
           className="mb-8 flex items-center justify-center"
@@ -191,7 +192,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </AspectRatio>
   );
 };
 

@@ -34,9 +34,9 @@ const JudgeView: React.FC<JudgeViewProps> = ({
   const [selectedTeam, setSelectedTeam] = useState<number | undefined>(undefined);
 
   return (
-    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between mb-2">
+    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
+      <div className="w-full max-w-lg px-4">
+        <div className="flex items-center justify-between mb-4">
           <button 
             onClick={() => {
               changeTransitionType();
@@ -101,7 +101,7 @@ const JudgeView: React.FC<JudgeViewProps> = ({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <motion.div 
-                      className="grid grid-cols-2 gap-2 mt-3"
+                      className="grid grid-cols-2 gap-2 mt-4"
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}

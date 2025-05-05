@@ -67,19 +67,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800">
-      <header className="py-4 px-6 bg-white">
-        <div className="max-w-screen-md mx-auto">
-          <motion.h1 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-xl font-bold text-blue-600 text-center"
-          >
-            تحدي المعرفة
-          </motion.h1>
-        </div>
-      </header>
-
       <main className="flex-1 p-4 sm:p-6 max-w-screen-md mx-auto w-full">
         <Tabs value={gameState.currentTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-50 rounded-xl p-1">

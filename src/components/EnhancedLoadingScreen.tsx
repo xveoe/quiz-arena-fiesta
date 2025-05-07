@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const aiMessages = [
   "جاري تحليل الموضوع...",
@@ -67,16 +66,8 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
   }, [onComplete, simulateLoading, duration]);
 
   return (
-    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
-      <div 
-        className="relative w-full max-w-md px-6 py-10 text-center bg-transparent z-10"
-        style={{ 
-          position: 'absolute', 
-          left: '50%', 
-          top: '50%', 
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="relative w-full max-w-md px-6 py-10 text-center">
         {/* Ambient particles */}
         <div className="absolute inset-0 overflow-hidden rounded-xl">
           {[...Array(15)].map((_, i) => (
@@ -206,7 +197,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
           </div>
         </div>
       </div>
-    </AspectRatio>
+    </div>
   );
 };
 

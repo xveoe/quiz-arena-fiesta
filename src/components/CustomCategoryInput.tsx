@@ -19,25 +19,29 @@ const CustomCategoryInput: React.FC<CustomCategoryInputProps> = ({ onAddCustomCa
   };
   
   return (
-    <div className="flex flex-col space-y-3 mb-4">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-col space-y-3 mb-4 w-full">
+      <div className="flex items-center gap-3 w-full">
         <Input
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
           placeholder="أدخل تصنيف الأسئلة الخاص بك"
-          className="modern-input flex-grow text-gray-100 placeholder:text-blue-300 rounded-xl border-blue-700 focus:border-blue-400 bg-blue-600/90 shadow-sm"
-          style={{ color: 'white' }}
+          className="modern-input flex-grow rounded-xl border-blue-700 focus:border-blue-400 bg-blue-600/90 shadow-sm"
+          style={{ 
+            color: 'white', 
+            fontSize: '1rem',
+            caretColor: 'white' 
+          }}
         />
         <Button
           onClick={handleAddCategory}
           disabled={customCategory.trim().length === 0}
           className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white shadow-sm transition-all duration-300"
         >
-          <Plus className="w-4 h-4 mr-1" />
+          <Plus className="w-4 h-4 ml-1" />
           إضافة
         </Button>
       </div>
-      <p className="text-xs text-blue-500 px-1">
+      <p className="text-xs text-blue-300 px-1">
         يمكنك إضافة تصنيفات مخصصة للأسئلة وسيقوم النظام بتوليد أسئلة مناسبة
       </p>
     </div>

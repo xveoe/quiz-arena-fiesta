@@ -42,7 +42,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
 }) => {
   return (
     <motion.div 
-      className="space-y-6 flex flex-col min-h-[70vh] justify-between"
+      className="space-y-6 flex flex-col h-full justify-between w-full max-w-md mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
@@ -95,7 +95,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.3 }}
-        className="w-full mt-auto pt-8"
+        className="w-full mt-auto pt-4"
       >
         <Button 
           onClick={endGame}

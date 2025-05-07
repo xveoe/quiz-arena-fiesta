@@ -5,24 +5,19 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const LoadingQuestions: React.FC = () => {
   return (
-    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center">
       <motion.div 
-        className="flex flex-col items-center justify-center p-10 rounded-2xl bg-transparent"
+        className="flex flex-col items-center justify-center p-6 rounded-2xl bg-transparent w-full max-w-md"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
-        style={{ 
-          position: 'absolute', 
-          left: '50%', 
-          top: '50%', 
-          transform: 'translate(-50%, -50%)' 
-        }}
       >
         <motion.div
           className="w-16 h-16 mb-6 relative"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ filter: 'blur(1px)' }} // Added blur for motion effect
         >
           <motion.div 
             className="absolute inset-0 rounded-full border-4 border-blue-500/30"
@@ -48,7 +43,7 @@ const LoadingQuestions: React.FC = () => {
           يتم إعداد أسئلة جديدة لمسابقتك الآن
         </p>
       </motion.div>
-    </AspectRatio>
+    </div>
   );
 };
 

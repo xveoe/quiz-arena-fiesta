@@ -20,7 +20,7 @@ interface EnhancedLoadingScreenProps {
 const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({ 
   onComplete,
   simulateLoading = true,
-  duration = 15000 // Default 15 seconds
+  duration = 5000 // Default 5 seconds
 }) => {
   const [messageIndex, setMessageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -66,35 +66,8 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
   }, [onComplete, simulateLoading, duration]);
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full flex items-center justify-center py-6">
       <div className="relative w-full max-w-md px-6 py-10 text-center">
-        {/* Ambient particles */}
-        <div className="absolute inset-0 overflow-hidden rounded-xl">
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-blue-50"
-              style={{
-                width: Math.random() * 20 + 5,
-                height: Math.random() * 20 + 5,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                filter: 'blur(2px)'
-              }}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: [0, 1, 1.2, 1],
-                opacity: [0, 0.5, 0.3, 0]
-              }}
-              transition={{ 
-                duration: Math.random() * 4 + 3,
-                repeat: Infinity,
-                delay: Math.random() * 5
-              }}
-            />
-          ))}
-        </div>
-        
         {/* Main animation */}
         <motion.div
           className="mb-8 flex items-center justify-center"
@@ -120,7 +93,6 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 repeatType: "reverse",
                 ease: "easeInOut"
               }}
-              style={{ filter: 'blur(0.5px)' }}
             >
               {/* Sparkles in the center */}
               <motion.div
@@ -133,7 +105,6 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                   repeat: Infinity,
                   ease: "linear" 
                 }}
-                style={{ filter: 'blur(0.5px)' }}
               >
                 <Sparkles className="w-12 h-12 text-white" />
               </motion.div>
@@ -144,14 +115,12 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
               className="absolute inset-[-15px] rounded-full border border-blue-100"
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-              style={{ filter: 'blur(0.5px)' }}
             />
             
             <motion.div
               className="absolute inset-[-30px] rounded-full border border-blue-50"
               animate={{ rotate: -360 }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              style={{ filter: 'blur(0.5px)' }}
             />
           </div>
         </motion.div>
@@ -191,7 +160,6 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 className="absolute inset-0 rounded-full opacity-70 bg-blue-300"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                style={{ filter: 'blur(3px)' }}
               />
             </motion.div>
           </div>

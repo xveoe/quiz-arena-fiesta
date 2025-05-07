@@ -5,7 +5,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const LoadingQuestions: React.FC = () => {
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full flex items-center justify-center py-10">
       <motion.div 
         className="flex flex-col items-center justify-center p-6 rounded-2xl bg-transparent w-full max-w-md"
         initial={{ opacity: 0, y: 10 }}
@@ -17,11 +17,9 @@ const LoadingQuestions: React.FC = () => {
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          style={{ filter: 'blur(1px)' }} // Added blur for motion effect
         >
           <motion.div 
             className="absolute inset-0 rounded-full border-4 border-blue-500/30"
-            style={{ filter: 'blur(1px)' }}
           />
           <motion.div 
             className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent"
@@ -32,7 +30,6 @@ const LoadingQuestions: React.FC = () => {
               ease: "linear"
             }}
             style={{ 
-              filter: 'blur(0.5px)',
               boxShadow: '0 0 15px rgba(59, 130, 246, 0.5)'
             }}
           />

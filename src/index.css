@@ -156,11 +156,6 @@
     display: none;
   }
   
-  /* Motion blur for animations */
-  .motion-blur {
-    filter: blur(1px);
-  }
-  
   /* Responsive utilities */
   .mobile-padding {
     @apply px-3 py-2 sm:px-4 sm:py-3;
@@ -175,7 +170,7 @@
   }
   
   .mobile-container {
-    @apply w-full max-w-[450px] mx-auto px-3;
+    @apply w-full max-w-md mx-auto px-3;
   }
   
   .mobile-button {
@@ -186,12 +181,24 @@
     @apply text-sm p-2 sm:text-base sm:p-3;
   }
   
-  /* Portrait aspect ratio container */
+  /* Portrait container - fixing to use full height */
   .portrait-container {
-    aspect-ratio: 9/16;
     width: 100%;
     max-width: 450px;
     margin: 0 auto;
+    height: calc(100vh - 2rem);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Vertical layout container */
+  .vertical-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 

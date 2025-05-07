@@ -17,30 +17,30 @@ import ResultsView from "@/components/game/ResultsView";
 import useGameState from "@/hooks/useGameState";
 
 const transitionVariants = [
-  { // اتجاه لأعلى - أكثر سلاسة الآن
+  { // اتجاه لأعلى
     initial: { y: 20, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { y: -20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
+    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { y: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لأسفل - أكثر سلاسة الآن
+  { // اتجاه لأسفل
     initial: { y: -20, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { y: 20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
+    animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { y: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليمين - أكثر سلاسة الآن
+  { // اتجاه لليمين
     initial: { x: -20, opacity: 0 },
-    animate: { x: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { x: 20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
+    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { x: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليسار - أكثر سلاسة الآن
+  { // اتجاه لليسار
     initial: { x: 20, opacity: 0 },
-    animate: { x: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { x: -20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
+    animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { x: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // ظهور وتلاشي مع تكبير وتصغير - أكثر سلاسة الآن
+  { // ظهور وتلاشي مع تكبير وتصغير
     initial: { scale: 0.98, opacity: 0 },
-    animate: { scale: 1, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
-    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } }
+    animate: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   }
 ];
 
@@ -66,10 +66,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-800">
-      <div className="flex-1 p-4 sm:p-6 w-full flex items-center justify-center">
+      <div className="flex-1 p-3 pt-1 pb-1 w-full flex items-center justify-center vertical-layout">
         <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center">
           <Tabs value={gameState.currentTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-50 rounded-xl p-1">
+            <TabsList className="grid w-full grid-cols-3 mb-4 bg-blue-50 rounded-xl p-1">
               <TabsTrigger 
                 value="setup" 
                 disabled={gameState.gameStarted}
@@ -103,7 +103,7 @@ const Index = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.4 }}
                     className="fade-in w-full"
                   >
                     <SetupSteps 
@@ -122,7 +122,7 @@ const Index = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.4 }}
                     className="fade-in w-full"
                   >
                     <FeatureSelector 
@@ -139,7 +139,7 @@ const Index = () => {
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.4 }}
                     className="fade-in w-full flex items-center justify-center"
                   >
                     <EnhancedLoadingScreen 
@@ -170,17 +170,8 @@ const Index = () => {
                     initial={transitionVariants[gameState.transitionType].initial}
                     animate={transitionVariants[gameState.transitionType].animate}
                     exit={transitionVariants[gameState.transitionType].exit}
-                    transition={{ duration: 0.6, ease: "easeInOut" }}
                     className="w-full"
-                    style={{ filter: 'url(#motion-blur)' }} // Apply motion blur filter
                   >
-                    {/* SVG filter for motion blur */}
-                    <svg width="0" height="0" className="absolute">
-                      <filter id="motion-blur">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
-                      </filter>
-                    </svg>
-                    
                     {gameState.gameView === 'teams' && (
                       <TeamsView 
                         teams={gameState.teams}

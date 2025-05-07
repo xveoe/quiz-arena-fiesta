@@ -89,7 +89,7 @@ function parseQuestions(text: string): Question[] {
   for (const line of lines) {
     const parts = line.split("|").map((part) => part.trim());
     if (parts.length >= 6) {
-      // تأكد من أن السؤال والخيارات ليست فارغة
+      // تأكد من أن السؤال والخيارات ليست فارغ��
       if (
         parts[0] && 
         parts[1] && parts[2] && parts[3] && parts[4] && parts[5] &&
@@ -124,12 +124,14 @@ function parseQuestions(text: string): Question[] {
   return uniqueQuestions;
 }
 
-// دالة توليد الأسئلة باستخدام Gemini
-export async function generateQuestions(categoryId: string, count: number, difficulty: number = 50): Promise<Question[]> {
+// Modified to properly handle custom categories
+export async function generateQuestions(categoryId: string, count: number, difficulty: number = 50, customCategoryName?: string): Promise<Question[]> {
   console.log(`Generating ${count} questions for category ${categoryId} with difficulty ${difficulty}`);
   
-  // إنشاء مفتاح فريد للتخزين المؤقت
-  const cacheKey = `${categoryId}_${difficulty}`;
+  // Create a unique cache key
+  const cacheKey = customCategoryName 
+    ? `custom_${customCategoryName}_${difficulty}`
+    : `${categoryId}_${difficulty}`;
   
   // Check if we have cached questions for this category and difficulty
   if (questionCache[cacheKey] && questionCache[cacheKey].length >= count) {
@@ -151,8 +153,14 @@ export async function generateQuestions(categoryId: string, count: number, diffi
     console.log("Not enough unused questions in cache, generating new ones");
   }
 
-  const categoryObj = categories.find((cat) => cat.id === categoryId);
-  const category = categoryObj ? categoryObj.name : "معلومات عامة";
+  // Determine the category name to use
+  let categoryName: string;
+  if (categoryId.startsWith('custom-') && customCategoryName) {
+    categoryName = customCategoryName;
+  } else {
+    const categoryObj = categories.find((cat) => cat.id === categoryId);
+    categoryName = categoryObj ? categoryObj.name : "معلومات عامة";
+  }
 
   // تحديد مستوى الصعوبة في نص
   let difficultyText = "متوسطة";
@@ -163,7 +171,7 @@ export async function generateQuestions(categoryId: string, count: number, diffi
   }
 
   // نص التوجيه (prompt) المحسن للحصول على أسئلة فريدة
-  const prompt = `أنشئ ${count + 5} أسئلة اختيارات متعددة باللغة العربية الفصحى في فئة "${category}" بمستوى صعوبة "${difficultyText}".
+  const prompt = `أنشئ ${count + 5} أسئلة اختيارات متعددة باللغة العربية الفصحى في فئة "${categoryName}" بمستوى صعوبة "${difficultyText}".
 
 يجب أن تكون الأسئلة والخيارات مصاغة بلغة عربية فصحى سليمة نحوياً وإملائياً. احرص على الدقة التامة في صياغة الأسئلة وعلامات الترقيم والإعراب الصحيح.
 
@@ -226,7 +234,7 @@ export async function generateQuestions(categoryId: string, count: number, diffi
       throw new Error("لم يتم توليد أي أسئلة صالحة");
     }
     
-    // Cache the generated questions
+    // Cache the generated questions with the proper key
     questionCache[cacheKey] = parsedQuestions;
     
     // Mark questions as used to prevent repetition

@@ -159,7 +159,7 @@ const useGameState = () => {
         if (category.startsWith('custom-')) {
           const categoryName = customCategories[category] || "general";
           const categoryQuestions = await generateQuestions(
-            "custom",
+            category,
             questionsPerCategory,
             gameSetup.difficulty,
             categoryName // Pass the custom category name
@@ -304,7 +304,7 @@ const useGameState = () => {
     }
   };
 
-  // Updated to handle deduction for a specific team
+  // Fixed the handleJudgeDeductPoints function - removed extra parameter
   const handleJudgeDeductPoints = (points: number, teamIndex?: number) => {
     if (!gameFeatures.judgeFunctionality) return;
     

@@ -7,10 +7,16 @@ const LoadingQuestions: React.FC = () => {
   return (
     <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
       <motion.div 
-        className="flex flex-col items-center justify-center p-10 rounded-2xl bg-white border border-blue-100 shadow-sm"
+        className="flex flex-col items-center justify-center p-10 rounded-2xl bg-transparent"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
+        style={{ 
+          position: 'absolute', 
+          left: '50%', 
+          top: '50%', 
+          transform: 'translate(-50%, -50%)' 
+        }}
       >
         <motion.div
           className="w-16 h-16 mb-6 relative"
@@ -20,11 +26,20 @@ const LoadingQuestions: React.FC = () => {
         >
           <motion.div 
             className="absolute inset-0 rounded-full border-4 border-blue-500/30"
+            style={{ filter: 'blur(1px)' }}
           />
           <motion.div 
             className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent"
             animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 1.2, 
+              ease: "linear"
+            }}
+            style={{ 
+              filter: 'blur(0.5px)',
+              boxShadow: '0 0 15px rgba(59, 130, 246, 0.5)'
+            }}
           />
         </motion.div>
         

@@ -68,7 +68,15 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
 
   return (
     <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto flex items-center justify-center">
-      <div className="relative w-full max-w-md px-6 py-10 text-center bg-white/70 backdrop-blur-md rounded-xl shadow-lg z-10">
+      <div 
+        className="relative w-full max-w-md px-6 py-10 text-center bg-transparent z-10"
+        style={{ 
+          position: 'absolute', 
+          left: '50%', 
+          top: '50%', 
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
         {/* Ambient particles */}
         <div className="absolute inset-0 overflow-hidden rounded-xl">
           {[...Array(15)].map((_, i) => (
@@ -80,6 +88,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 height: Math.random() * 20 + 5,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
+                filter: 'blur(2px)'
               }}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ 
@@ -120,6 +129,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                 repeatType: "reverse",
                 ease: "easeInOut"
               }}
+              style={{ filter: 'blur(0.5px)' }}
             >
               {/* Sparkles in the center */}
               <motion.div
@@ -132,6 +142,7 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
                   repeat: Infinity,
                   ease: "linear" 
                 }}
+                style={{ filter: 'blur(0.5px)' }}
               >
                 <Sparkles className="w-12 h-12 text-white" />
               </motion.div>
@@ -142,12 +153,14 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
               className="absolute inset-[-15px] rounded-full border border-blue-100"
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+              style={{ filter: 'blur(0.5px)' }}
             />
             
             <motion.div
               className="absolute inset-[-30px] rounded-full border border-blue-50"
               animate={{ rotate: -360 }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              style={{ filter: 'blur(0.5px)' }}
             />
           </div>
         </motion.div>
@@ -184,9 +197,10 @@ const EnhancedLoadingScreen: React.FC<EnhancedLoadingScreenProps> = ({
               className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-600"
             >
               <motion.div 
-                className="absolute inset-0 rounded-full opacity-70 bg-blue-300 blur-sm"
+                className="absolute inset-0 rounded-full opacity-70 bg-blue-300"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
+                style={{ filter: 'blur(3px)' }}
               />
             </motion.div>
           </div>

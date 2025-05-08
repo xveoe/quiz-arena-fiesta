@@ -41,6 +41,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   const handleAllowWinnerChoose = () => {
     setShowPunishmentOptions(false);
   };
+  
+  const handleResetGame = () => {
+    resetGame();
+  };
 
   return (
     <motion.div 
@@ -105,8 +109,8 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         <div className="flex flex-col gap-4">
           {losingTeamIndex !== null && !showPunishmentOptions && (
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <Button 
@@ -121,8 +125,8 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           
           {showPunishmentOptions && (
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
               className="bg-white p-6 rounded-2xl border border-blue-100 mb-4 shadow-md"
             >
@@ -147,12 +151,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           )}
           
           <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
           >
             <Button 
-              onClick={resetGame}
+              onClick={handleResetGame}
               className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20 rounded-xl"
             >
               <RefreshCw className="w-4 h-4 ml-2" />

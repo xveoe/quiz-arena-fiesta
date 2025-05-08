@@ -95,6 +95,7 @@ const useGameState = () => {
   const [gameView, setGameView] = useState<GameView>('teams');
   
   const [setupStep, setSetupStep] = useState<SetupStep>('settings');
+  const [doublePointsActive, setDoublePointsActive] = useState<[boolean, boolean]>([false, false]);
   
   useEffect(() => {
     setTeams(prev => [
@@ -110,6 +111,7 @@ const useGameState = () => {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(countdown);
+          setTimerActive(false);
           setShowAnswer(true);
           return 0;
         }
@@ -194,6 +196,12 @@ const useGameState = () => {
         setExcludedOptions([]);
         setShowAnswer(false);
         setGameView('teams');
+        // Reset team scores and stats
+        setTeams([
+          { name: gameSetup.team1Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 },
+          { name: gameSetup.team2Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 }
+        ]);
+        setDoublePointsActive([false, false]);
       } else {
         setSetupStep('settings');
       }
@@ -202,9 +210,6 @@ const useGameState = () => {
       console.error(error);
     } finally {
       setIsLoading(false);
-      if (questions.length > 0) {
-        setSetupStep('settings');
-      }
     }
   };
 
@@ -220,6 +225,12 @@ const useGameState = () => {
     setShowAnswer(false);
     setShowManualQuestionForm(false);
     setGameView('teams');
+    // Reset team scores and stats
+    setTeams([
+      { name: gameSetup.team1Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 },
+      { name: gameSetup.team2Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 }
+    ]);
+    setDoublePointsActive([false, false]);
   };
 
   const handleStartTimer = () => {
@@ -239,19 +250,29 @@ const useGameState = () => {
         
         let pointsToAdd = 1;
         
+        // Calculate time bonus correctly
         let timeBonus = 0;
         if (gameFeatures.timeBonus) {
           timeBonus = Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10;
         }
         
+        // Update streak and apply streak multiplier if applicable
         newTeams[currentTeam].streak += 1;
-        const streakMultiplier = (gameFeatures.streakBonus && newTeams[currentTeam].streak >= 3) ? 1.5 : 1;
+        let streakMultiplier = 1;
+        if (gameFeatures.streakBonus && newTeams[currentTeam].streak >= 3) {
+          streakMultiplier = 1.5;
+        }
         
-        const doublePointsActive = gameFeatures.powerUps && powerUpsAvailable.doublePoints[currentTeam] < 1;
-        const doubleMultiplier = doublePointsActive ? 2 : 1;
+        // Apply double points if active
+        let doubleMultiplier = 1;
+        if (doublePointsActive[currentTeam]) {
+          doubleMultiplier = 2;
+        }
         
+        // Calculate total points with all multipliers
         pointsToAdd = (pointsToAdd + timeBonus) * streakMultiplier * doubleMultiplier;
         
+        // Update score and bonus points
         newTeams[currentTeam].score = Math.round((newTeams[currentTeam].score + pointsToAdd) * 10) / 10;
         newTeams[currentTeam].bonusPoints = Math.round((newTeams[currentTeam].bonusPoints + timeBonus) * 10) / 10;
         
@@ -272,6 +293,8 @@ const useGameState = () => {
     if (!showAnswer || !gameFeatures.judgeFunctionality) return;
 
     const currentQuestion = questions[currentQuestionIndex];
+    
+    // Check if the answer was already marked correct via normal means
     const wasAnsweredCorrectly = currentQuestion.correctAnswer === currentQuestion.options.find(
       (_, i) => !excludedOptions.includes(i)
     );
@@ -304,7 +327,6 @@ const useGameState = () => {
     }
   };
 
-  // Fixed the handleJudgeDeductPoints function - removed extra parameter
   const handleJudgeDeductPoints = (points: number, teamIndex?: number) => {
     if (!gameFeatures.judgeFunctionality) return;
     
@@ -318,9 +340,12 @@ const useGameState = () => {
   };
 
   const nextQuestion = () => {
+    // If this is the last question, show results
     if (currentQuestionIndex >= questions.length - 1) {
-      setGameStarted(false);
-      setCurrentTab("results");
+      setCurrentTab("results"); 
+      
+      // Important: We need to keep gameStarted true until we actually show the results
+      // This fixes the issue where clicking "Next Question" on the last question goes back to setup
       
       if (teams[0].score !== teams[1].score) {
         const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
@@ -329,6 +354,7 @@ const useGameState = () => {
       return;
     }
 
+    // Switch to the other team for next question
     setCurrentTeam(prev => (prev === 0 ? 1 : 0));
     
     changeTransitionType();
@@ -416,6 +442,12 @@ const useGameState = () => {
       });
     } 
     else if (powerUp === 'doublePoints' && powerUpsAvailable.doublePoints[currentTeam] > 0) {
+      setDoublePointsActive(prev => {
+        const newDoublePoints = [...prev] as [boolean, boolean];
+        newDoublePoints[currentTeam] = true;
+        return newDoublePoints;
+      });
+      
       setPowerUpsAvailable(prev => {
         const newPowerUps = {...prev};
         newPowerUps.doublePoints[currentTeam] -= 1;
@@ -445,6 +477,7 @@ const useGameState = () => {
       doublePoints: [1, 1],
       skipQuestion: [1, 1]
     });
+    setDoublePointsActive([false, false]);
     setTeams([
       { name: gameSetup.team1Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 },
       { name: gameSetup.team2Name, players: [], score: 0, jokers: 2, streak: 0, bonusPoints: 0 }
@@ -458,7 +491,7 @@ const useGameState = () => {
   const endGame = () => {
     if (!gameStarted) return;
     
-    setGameStarted(false);
+    // This is the correct way to handle ending the game
     setCurrentTab("results");
     
     if (teams[0].score !== teams[1].score) {
@@ -570,6 +603,7 @@ const useGameState = () => {
     showAnswer,
     timerActive,
     powerUpsAvailable,
+    doublePointsActive,
     showManualQuestionForm,
     setShowManualQuestionForm,
     showPunishmentBox,

@@ -18,14 +18,22 @@ const CustomCategoryInput: React.FC<CustomCategoryInputProps> = ({ onAddCustomCa
     }
   };
   
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && customCategory.trim().length > 0) {
+      handleAddCategory();
+    }
+  };
+  
   return (
     <div className="flex flex-col space-y-3 mb-4 w-full">
       <div className="flex items-center gap-3 w-full">
         <Input
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="أدخل تصنيف الأسئلة الخاص بك"
           className="flex-grow rounded-xl border-blue-700 bg-white text-gray-900 shadow-sm"
+          dir="rtl"
         />
         <Button
           onClick={handleAddCategory}

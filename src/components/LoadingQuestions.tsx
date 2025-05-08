@@ -31,7 +31,7 @@ const LoadingQuestions: React.FC = () => {
           />
         </motion.div>
         
-        <h3 className="text-2xl font-bold text-blue-700 mb-4">توليد الأسئلة جارٍ...</h3>
+        <h3 className="text-2xl font-bold text-blue-700 mb-4 text-center">توليد الأسئلة جارٍ...</h3>
         <p className="text-blue-600 text-lg text-center max-w-xs">
           يتم إعداد أسئلة جديدة لمسابقتك الآن
         </p>

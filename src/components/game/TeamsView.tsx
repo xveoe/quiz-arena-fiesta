@@ -40,6 +40,20 @@ const TeamsView: React.FC<TeamsViewProps> = ({
   setGameView, 
   endGame 
 }) => {
+  const handleShowQuestion = () => {
+    changeTransitionType();
+    setGameView('question');
+  };
+  
+  const handleShowJudge = () => {
+    changeTransitionType();
+    setGameView('judge');
+  };
+  
+  const handleEndGame = () => {
+    endGame();
+  };
+  
   return (
     <motion.div 
       className="space-y-6 flex flex-col h-full justify-between w-full max-w-md mx-auto"
@@ -60,10 +74,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
             className="w-full"
           >
             <Button 
-              onClick={() => {
-                changeTransitionType();
-                setGameView('question');
-              }}
+              onClick={handleShowQuestion}
               className="w-full py-3 modern-button hover-scale rounded-xl"
             >
               <Brain className="w-4 h-4 ml-2" /> عرض السؤال
@@ -78,10 +89,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
               className="w-full"
             >
               <Button 
-                onClick={() => {
-                  changeTransitionType();
-                  setGameView('judge');
-                }}
+                onClick={handleShowJudge}
                 className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white shadow-sm shadow-amber-500/20 rounded-xl transition-all duration-300"
               >
                 <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
@@ -98,7 +106,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
         className="w-full mt-auto pt-4"
       >
         <Button 
-          onClick={endGame}
+          onClick={handleEndGame}
           variant="outline"
           className="w-full py-2 modern-button-outline hover-scale rounded-xl"
         >

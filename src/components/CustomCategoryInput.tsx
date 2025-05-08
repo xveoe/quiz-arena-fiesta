@@ -25,7 +25,7 @@ const CustomCategoryInput: React.FC<CustomCategoryInputProps> = ({ onAddCustomCa
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
           placeholder="أدخل تصنيف الأسئلة الخاص بك"
-          className="flex-grow rounded-xl border-blue-700 bg-gray-100 text-gray-900"
+          className="flex-grow rounded-xl border-blue-700 bg-white text-gray-900 shadow-sm"
         />
         <Button
           onClick={handleAddCategory}
@@ -36,7 +36,7 @@ const CustomCategoryInput: React.FC<CustomCategoryInputProps> = ({ onAddCustomCa
           إضافة
         </Button>
       </div>
-      <p className="text-xs text-blue-700 px-1">
+      <p className="text-sm text-blue-700 font-medium px-1">
         يمكنك إضافة تصنيفات مخصصة للأسئلة وسيقوم النظام بتوليد أسئلة مناسبة
       </p>
     </div>

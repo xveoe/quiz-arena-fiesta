@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { HelpCircle, Trophy } from "lucide-react";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
@@ -84,6 +83,8 @@ const Index = () => {
                 selectedCategories={gameState.selectedCategories}
                 toggleCategory={gameState.toggleCategory}
                 onComplete={() => gameState.setSetupStep('features')}
+                addCustomCategory={gameState.addCustomCategory}
+                customCategories={gameState.customCategories}
               />
             </motion.div>
           )}
@@ -112,7 +113,7 @@ const Index = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="fade-in w-full flex items-center justify-center"
+              className="fade-in w-full h-full flex items-center justify-center"
             >
               <EnhancedLoadingScreen 
                 onComplete={gameState.handleStartGame}
@@ -129,7 +130,7 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="w-full flex items-center justify-center"
+          className="w-full h-full flex items-center justify-center"
         >
           <LoadingQuestions />
         </motion.div>
@@ -152,7 +153,7 @@ const Index = () => {
           initial={transitionVariants[gameState.transitionType].initial}
           animate={transitionVariants[gameState.transitionType].animate}
           exit={transitionVariants[gameState.transitionType].exit}
-          className="w-full"
+          className="w-full h-full"
         >
           {gameState.gameView === 'teams' && (
             <TeamsView 

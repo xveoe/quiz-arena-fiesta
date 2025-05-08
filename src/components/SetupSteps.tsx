@@ -24,6 +24,8 @@ interface SetupStepsProps {
   selectedCategories: string[];
   toggleCategory: (categoryId: string) => void;
   onComplete: () => void;
+  addCustomCategory: (categoryName: string) => string;
+  customCategories: {[key: string]: string};
 }
 
 const fadeInVariants = {
@@ -44,18 +46,16 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
   setGameSetup, 
   selectedCategories,
   toggleCategory,
-  onComplete 
+  onComplete,
+  addCustomCategory,
+  customCategories
 }) => {
-  const [customCategories, setCustomCategories] = useState<string[]>([]);
-
   const handleAddCustomCategory = (category: string) => {
-    const categoryId = `custom-${Date.now()}`;
-    setCustomCategories([...customCategories, category]);
-    toggleCategory(categoryId);
+    addCustomCategory(category);
   };
 
   return (
-    <div className="w-full mx-auto h-full overflow-y-auto pb-6">
+    <div className="w-full mx-auto px-2 pb-32">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -69,7 +69,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
             }
           }
         }}
-        className="space-y-6 px-2 py-4"
+        className="space-y-6 py-4"
       >
         <motion.div variants={fadeInVariants} custom={0}>
           <div className="flex items-center mb-6">
@@ -201,13 +201,18 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                   </Button>
                 ))}
                 
-                {customCategories.map((category, index) => (
+                {Object.entries(customCategories).map(([id, name]) => (
                   <Button
-                    key={`custom-${index}`}
-                    variant="default"
-                    className="text-xs h-10 transition-all duration-300 bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md shadow-green-700/20"
+                    key={id}
+                    variant={selectedCategories.includes(id) ? "default" : "outline"}
+                    onClick={() => toggleCategory(id)}
+                    className={`text-xs h-10 transition-all duration-300 ${
+                      selectedCategories.includes(id) 
+                        ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md shadow-green-700/20' 
+                        : 'bg-gray-800/50 border-gray-700/50 hover:bg-gray-700/30 text-white'
+                    }`}
                   >
-                    {category}
+                    {name}
                   </Button>
                 ))}
               </div>

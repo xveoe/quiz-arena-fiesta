@@ -9,7 +9,6 @@ import { ArrowRight, Settings, Layers } from 'lucide-react';
 import { categories } from "@/services/questionService";
 import { GameSetup } from "@/hooks/useGameState";
 import CustomCategoryInput from "@/components/CustomCategoryInput";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface SetupStepsProps {
   gameSetup: {
@@ -56,7 +55,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
   };
 
   return (
-    <AspectRatio ratio={16/9} className="w-full max-w-3xl mx-auto">
+    <div className="w-full mx-auto h-full overflow-y-auto pb-6">
       <motion.div
         initial="hidden"
         animate="visible"
@@ -70,23 +69,23 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
             }
           }
         }}
-        className="space-y-6 py-4 px-4 h-full overflow-y-auto"
+        className="space-y-6 px-2 py-4"
       >
         <motion.div variants={fadeInVariants} custom={0}>
           <div className="flex items-center mb-6">
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
               <Settings className="w-5 h-5 text-white" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent ml-3">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-600 to-gray-800 bg-clip-text text-transparent mr-3">
               إعدادات اللعبة
             </h2>
           </div>
         </motion.div>
 
-        <Card className="p-5 bg-gradient-to-b from-gray-800/70 to-gray-900/90 border border-gray-700/50 shadow-xl shadow-blue-900/10 backdrop-blur-sm rounded-xl overflow-hidden relative">
+        <Card className="p-5 bg-gradient-to-b from-gray-800/70 to-gray-900/90 border border-gray-700/50 shadow-xl shadow-blue-900/10 rounded-xl overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 z-0"></div>
           <div className="relative z-10 space-y-5">
-            <motion.div variants={fadeInVariants} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <motion.div variants={fadeInVariants} custom={1} className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">اسم الفريق الأول</label>
                 <Input 
@@ -186,7 +185,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
                 <Layers className="w-4 h-4 text-blue-400 ml-2" />
                 <label className="block text-sm font-medium text-gray-300">تصنيفات الأسئلة (يمكن اختيار أكثر من تصنيف)</label>
               </div>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2">
                 {categories.map((category) => (
                   <Button
                     key={category.id}
@@ -230,7 +229,7 @@ const SetupSteps: React.FC<SetupStepsProps> = ({
           </Button>
         </motion.div>
       </motion.div>
-    </AspectRatio>
+    </div>
   );
 };
 

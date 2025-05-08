@@ -1,19 +1,18 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const LoadingQuestions: React.FC = () => {
   return (
-    <div className="w-full flex items-center justify-center py-10">
+    <div className="w-full flex items-center justify-center py-8">
       <motion.div 
-        className="flex flex-col items-center justify-center p-6 rounded-2xl bg-transparent w-full max-w-md"
+        className="flex flex-col items-center justify-center p-4 rounded-xl bg-transparent w-full max-w-md"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
         <motion.div
-          className="w-16 h-16 mb-6 relative"
+          className="w-16 h-16 mb-5 relative"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -28,9 +27,6 @@ const LoadingQuestions: React.FC = () => {
               repeat: Infinity, 
               duration: 1.2, 
               ease: "linear"
-            }}
-            style={{ 
-              boxShadow: '0 0 15px rgba(59, 130, 246, 0.5)'
             }}
           />
         </motion.div>

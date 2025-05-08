@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HelpCircle, Trophy } from "lucide-react";
 import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
@@ -37,10 +36,10 @@ const transitionVariants = [
     animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { x: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // ظهور وتلاشي مع تكبير وتصغير
-    initial: { scale: 0.98, opacity: 0 },
-    animate: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { scale: 0.98, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+  { // ظهور وتلاشي
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   }
 ];
 
@@ -64,178 +63,157 @@ const Index = () => {
     return null;
   }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-800">
-      <div className="flex-1 p-3 pt-1 pb-1 w-full flex items-center justify-center vertical-layout">
-        <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center">
-          <Tabs value={gameState.currentTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4 bg-blue-50 rounded-xl p-1">
-              <TabsTrigger 
-                value="setup" 
-                disabled={gameState.gameStarted}
-                className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <span className="ml-1">الإعدادات</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="game" 
-                disabled={!gameState.gameStarted}
-                className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <HelpCircle className="w-4 h-4 ml-2" />
-                اللعبة
-              </TabsTrigger>
-              <TabsTrigger 
-                value="results" 
-                disabled={gameState.gameStarted && gameState.currentQuestionIndex < gameState.questions.length - 1}
-                className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm"
-              >
-                <Trophy className="w-4 h-4 ml-2" />
-                النتائج
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="setup" className="mt-2 w-full">
-              <AnimatePresence mode="wait">
-                {gameState.setupStep === 'settings' && (
-                  <motion.div
-                    key="settings"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.4 }}
-                    className="fade-in w-full"
-                  >
-                    <SetupSteps 
-                      gameSetup={gameState.gameSetup}
-                      setGameSetup={(value) => gameState.setGameSetup(value)}
-                      selectedCategories={gameState.selectedCategories}
-                      toggleCategory={gameState.toggleCategory}
-                      onComplete={() => gameState.setSetupStep('features')}
-                    />
-                  </motion.div>
-                )}
-                
-                {gameState.setupStep === 'features' && (
-                  <motion.div
-                    key="features"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.4 }}
-                    className="fade-in w-full"
-                  >
-                    <FeatureSelector 
-                      gameFeatures={gameState.gameFeatures}
-                      toggleFeature={gameState.toggleFeature}
-                      onComplete={() => gameState.setSetupStep('loading')}
-                    />
-                  </motion.div>
-                )}
-                
-                {gameState.setupStep === 'loading' && (
-                  <motion.div
-                    key="loading"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.4 }}
-                    className="fade-in w-full flex items-center justify-center"
-                  >
-                    <EnhancedLoadingScreen 
-                      onComplete={gameState.handleStartGame}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </TabsContent>
-
-            <TabsContent value="game" className="space-y-4 mt-2 w-full">
-              <AnimatePresence mode="wait">
-                {gameState.isLoading && (
-                  <motion.div 
-                    key="loading"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="w-full flex items-center justify-center"
-                  >
-                    <LoadingQuestions />
-                  </motion.div>
-                )}
-                
-                {!gameState.isLoading && gameState.gameStarted && (
-                  <motion.div 
-                    key={`${gameState.gameView}-${gameState.currentQuestionIndex}-${gameState.transitionType}`}
-                    initial={transitionVariants[gameState.transitionType].initial}
-                    animate={transitionVariants[gameState.transitionType].animate}
-                    exit={transitionVariants[gameState.transitionType].exit}
-                    className="w-full"
-                  >
-                    {gameState.gameView === 'teams' && (
-                      <TeamsView 
-                        teams={gameState.teams}
-                        currentTeam={gameState.currentTeam}
-                        gameFeatures={gameState.gameFeatures}
-                        showAnswer={gameState.showAnswer}
-                        changeTransitionType={gameState.changeTransitionType}
-                        setGameView={gameState.setGameView}
-                        endGame={gameState.endGame}
-                      />
-                    )}
-                    
-                    {gameState.gameView === 'question' && (
-                      <QuestionView 
-                        questions={gameState.questions}
-                        currentQuestionIndex={gameState.currentQuestionIndex}
-                        teams={gameState.teams}
-                        currentTeam={gameState.currentTeam}
-                        timer={gameState.timer}
-                        timerActive={gameState.timerActive}
-                        showAnswer={gameState.showAnswer}
-                        excludedOptions={gameState.excludedOptions}
-                        isRefreshingQuestion={gameState.isRefreshingQuestion}
-                        gameSetup={gameState.gameSetup}
-                        gameFeatures={gameState.gameFeatures}
-                        powerUpsAvailable={gameState.powerUpsAvailable}
-                        handleAnswerSelect={gameState.handleAnswerSelect}
-                        handleStartTimer={gameState.handleStartTimer}
-                        refreshCurrentQuestion={gameState.refreshCurrentQuestion}
-                        nextQuestion={gameState.nextQuestion}
-                        usePowerUp={gameState.usePowerUp}
-                        useJoker={gameState.useJoker}
-                        calculateTimeBonus={gameState.calculateTimeBonus}
-                        changeTransitionType={gameState.changeTransitionType}
-                        setGameView={gameState.setGameView}
-                      />
-                    )}
-                    
-                    {gameState.gameView === 'judge' && (
-                      <JudgeView 
-                        gameSetup={gameState.gameSetup}
-                        handleJudgeDecision={gameState.handleJudgeDecision}
-                        handleJudgeDeductPoints={gameState.handleJudgeDeductPoints}
-                        nextQuestion={gameState.nextQuestion}
-                        currentQuestionIndex={gameState.currentQuestionIndex}
-                        questions={gameState.questions}
-                        changeTransitionType={gameState.changeTransitionType}
-                        setGameView={gameState.setGameView}
-                      />
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </TabsContent>
-
-            <TabsContent value="results" className="mt-2 w-full">
-              <ResultsView 
-                teams={gameState.teams}
-                losingTeamIndex={gameState.losingTeamIndex}
-                showPunishment={gameState.showPunishment}
-                resetGame={gameState.resetGame}
+  // Render different screens based on game state without tabs
+  const renderGameContent = () => {
+    if (!gameState.gameStarted) {
+      // Setup phase
+      return (
+        <AnimatePresence mode="wait">
+          {gameState.setupStep === 'settings' && (
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="fade-in w-full"
+            >
+              <SetupSteps 
+                gameSetup={gameState.gameSetup}
+                setGameSetup={(value) => gameState.setGameSetup(value)}
+                selectedCategories={gameState.selectedCategories}
+                toggleCategory={gameState.toggleCategory}
+                onComplete={() => gameState.setSetupStep('features')}
               />
-            </TabsContent>
-          </Tabs>
+            </motion.div>
+          )}
+          
+          {gameState.setupStep === 'features' && (
+            <motion.div
+              key="features"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="fade-in w-full"
+            >
+              <FeatureSelector 
+                gameFeatures={gameState.gameFeatures}
+                toggleFeature={gameState.toggleFeature}
+                onComplete={() => gameState.setSetupStep('loading')}
+              />
+            </motion.div>
+          )}
+          
+          {gameState.setupStep === 'loading' && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fade-in w-full flex items-center justify-center"
+            >
+              <EnhancedLoadingScreen 
+                onComplete={gameState.handleStartGame}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      );
+    } else if (gameState.isLoading) {
+      // Loading phase
+      return (
+        <motion.div 
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="w-full flex items-center justify-center"
+        >
+          <LoadingQuestions />
+        </motion.div>
+      );
+    } else if (!gameState.gameStarted || gameState.currentQuestionIndex >= gameState.questions.length) {
+      // Results phase
+      return (
+        <ResultsView 
+          teams={gameState.teams}
+          losingTeamIndex={gameState.losingTeamIndex}
+          showPunishment={gameState.showPunishment}
+          resetGame={gameState.resetGame}
+        />
+      );
+    } else {
+      // Game phase
+      return (
+        <motion.div 
+          key={`${gameState.gameView}-${gameState.currentQuestionIndex}-${gameState.transitionType}`}
+          initial={transitionVariants[gameState.transitionType].initial}
+          animate={transitionVariants[gameState.transitionType].animate}
+          exit={transitionVariants[gameState.transitionType].exit}
+          className="w-full"
+        >
+          {gameState.gameView === 'teams' && (
+            <TeamsView 
+              teams={gameState.teams}
+              currentTeam={gameState.currentTeam}
+              gameFeatures={gameState.gameFeatures}
+              showAnswer={gameState.showAnswer}
+              changeTransitionType={gameState.changeTransitionType}
+              setGameView={gameState.setGameView}
+              endGame={gameState.endGame}
+            />
+          )}
+          
+          {gameState.gameView === 'question' && (
+            <QuestionView 
+              questions={gameState.questions}
+              currentQuestionIndex={gameState.currentQuestionIndex}
+              teams={gameState.teams}
+              currentTeam={gameState.currentTeam}
+              timer={gameState.timer}
+              timerActive={gameState.timerActive}
+              showAnswer={gameState.showAnswer}
+              excludedOptions={gameState.excludedOptions}
+              isRefreshingQuestion={gameState.isRefreshingQuestion}
+              gameSetup={gameState.gameSetup}
+              gameFeatures={gameState.gameFeatures}
+              powerUpsAvailable={gameState.powerUpsAvailable}
+              handleAnswerSelect={gameState.handleAnswerSelect}
+              handleStartTimer={gameState.handleStartTimer}
+              refreshCurrentQuestion={gameState.refreshCurrentQuestion}
+              nextQuestion={gameState.nextQuestion}
+              usePowerUp={gameState.usePowerUp}
+              useJoker={gameState.useJoker}
+              calculateTimeBonus={gameState.calculateTimeBonus}
+              changeTransitionType={gameState.changeTransitionType}
+              setGameView={gameState.setGameView}
+            />
+          )}
+          
+          {gameState.gameView === 'judge' && (
+            <JudgeView 
+              gameSetup={gameState.gameSetup}
+              handleJudgeDecision={gameState.handleJudgeDecision}
+              handleJudgeDeductPoints={gameState.handleJudgeDeductPoints}
+              nextQuestion={gameState.nextQuestion}
+              currentQuestionIndex={gameState.currentQuestionIndex}
+              questions={gameState.questions}
+              changeTransitionType={gameState.changeTransitionType}
+              setGameView={gameState.setGameView}
+            />
+          )}
+        </motion.div>
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-gray-800 flex flex-col">
+      <div className="flex-1 p-3 w-full h-full overflow-auto">
+        <div className="w-full max-w-md mx-auto h-full flex flex-col items-center justify-center">
+          {renderGameContent()}
         </div>
       </div>
 

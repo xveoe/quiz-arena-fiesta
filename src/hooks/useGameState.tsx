@@ -599,6 +599,7 @@ const useGameState = () => {
     excludedOptions,
     gameStarted,
     isLoading,
+    setIsLoading,
     showAnswer,
     timerActive,
     powerUpsAvailable,

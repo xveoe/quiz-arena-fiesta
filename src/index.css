@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -53,300 +52,39 @@
 }
 
 @layer utilities {
-  /* Luxury Glass Morphism */
+  /* Remove ALL borders globally */
+  .luxury-glass, .luxury-glass-intense, .mesomorphic-card, .luxury-btn-primary, .luxury-btn-secondary, .liquid-btn, .feature-glass-btn, .feature-glass-btn-active,
+  .center-container, .main-content, .luxury-loading-minimal-container, .luxury-outer-ring-minimal, .luxury-progress-ring-minimal {
+    border: none !important;
+    box-shadow: none;
+  }
+
   .luxury-glass {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 24px;
-    box-shadow: 
+    box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.1),
       inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    border: none !important;
+    box-shadow: 0 8px 32px rgba(0,0,0, 0.23), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.05);
   }
-
   .luxury-glass-intense {
     background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 28px;
-    box-shadow: 
+    box-shadow:
       0 20px 60px rgba(0, 0, 0, 0.4),
       inset 0 2px 0 rgba(255, 255, 255, 0.15),
       inset 0 -2px 0 rgba(255, 255, 255, 0.08);
+    border: none !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.15), inset 0 -2px 0 rgba(255,255,255,0.08);
   }
-
-  /* Luxury Buttons */
-  .luxury-btn-primary {
-    background: linear-gradient(135deg, #3A29FF 0%, #FF94B4 50%, #FF3232 100%);
-    background-size: 300% 300%;
-    color: white;
-    font-weight: 600;
-    padding: 16px 32px;
-    border-radius: 20px;
-    border: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 
-      0 10px 30px rgba(58, 41, 255, 0.3),
-      0 5px 15px rgba(255, 148, 180, 0.2);
-    animation: gradientShift 6s ease infinite;
-  }
-
-  .luxury-btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .luxury-btn-primary:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 
-      0 20px 50px rgba(58, 41, 255, 0.4),
-      0 10px 25px rgba(255, 148, 180, 0.3);
-  }
-
-  .luxury-btn-primary:hover::before {
-    opacity: 1;
-  }
-
-  .luxury-btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
-    padding: 16px 32px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  }
-
-  .luxury-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Liquid Animation Keyframes */
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  @keyframes liquidFlow {
-    0%, 100% { 
-      transform: translate(0px, 0px) scale(1) rotate(0deg);
-      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    }
-    25% { 
-      transform: translate(5px, -5px) scale(1.05) rotate(90deg);
-      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-    }
-    50% { 
-      transform: translate(-3px, 5px) scale(0.95) rotate(180deg);
-      border-radius: 50% 40% 60% 30% / 70% 50% 40% 60%;
-    }
-    75% { 
-      transform: translate(-5px, -3px) scale(1.02) rotate(270deg);
-      border-radius: 40% 70% 30% 60% / 40% 70% 60% 50%;
-    }
-  }
-
-  @keyframes mesomorphicPulse {
-    0%, 100% { 
-      transform: scale(1);
-      filter: blur(0px);
-    }
-    50% { 
-      transform: scale(1.05);
-      filter: blur(1px);
-    }
-  }
-
-  @keyframes particleFloat {
-    0%, 100% { 
-      transform: translateY(0px) rotate(0deg);
-      opacity: 0.3;
-    }
-    50% { 
-      transform: translateY(-20px) rotate(180deg);
-      opacity: 1;
-    }
-  }
-
-  /* Loading Circle Styles */
-  .luxury-loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    padding: 2rem;
-  }
-
-  .luxury-outer-ring {
-    position: absolute;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #3A29FF, #FF94B4, #FF3232, #3A29FF);
-    padding: 4px;
-  }
-
-  .luxury-ring-gradient {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-  }
-
-  .luxury-progress-ring {
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    z-index: 2;
-  }
-
-  .luxury-center-icon {
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 3;
-  }
-
-  .icon-container {
-    position: relative;
-    width: 40px;
-    height: 40px;
-  }
-
-  .luxury-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 24px;
-    height: 24px;
-  }
-
-  .luxury-icon.primary {
-    color: #3A29FF;
-    z-index: 3;
-  }
-
-  .luxury-icon.secondary {
-    color: #FF94B4;
-    z-index: 2;
-    opacity: 0.7;
-    animation: liquidFlow 4s ease-in-out infinite;
-  }
-
-  .luxury-icon.tertiary {
-    color: #FF3232;
-    z-index: 1;
-    opacity: 0.5;
-    animation: liquidFlow 6s ease-in-out infinite reverse;
-  }
-
-  .luxury-particle {
-    width: 6px;
-    height: 6px;
-    background: linear-gradient(45deg, #3A29FF, #FF94B4);
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(58, 41, 255, 0.5);
-  }
-
-  .luxury-progress-text {
-    margin-top: 3rem;
-    text-align: center;
-    max-width: 300px;
-  }
-
-  .luxury-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #3A29FF 0%, #FF94B4 50%, #FF3232 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
-  }
-
-  .luxury-message {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-    min-height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .luxury-progress-bar {
-    position: relative;
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .luxury-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #3A29FF 0%, #FF94B4 50%, #FF3232 100%);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-    position: relative;
-  }
-
-  .luxury-progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
-  }
-
-  .luxury-percentage {
-    position: absolute;
-    top: -25px;
-    right: 0;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  /* Mesomorphic Cards */
   .mesomorphic-card {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(30px);
@@ -358,111 +96,160 @@
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     animation: mesomorphicPulse 4s ease-in-out infinite;
+    border: none !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.13);
   }
-
-  .mesomorphic-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(58, 41, 255, 0.1) 0%, rgba(255, 148, 180, 0.1) 50%, rgba(255, 50, 50, 0.1) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 24px;
-  }
-
-  .mesomorphic-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  }
-
-  .mesomorphic-card:hover::before {
-    opacity: 1;
-  }
-
-  /* Liquid Buttons */
+  /* Remove border from all buttons */
+  .luxury-btn-primary,
+  .luxury-btn-secondary,
   .liquid-btn {
-    position: relative;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #3A29FF 0%, #FF94B4 100%);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    animation: liquidFlow 8s ease-in-out infinite;
+    border: none !important;
+  }
+  /* Remove border/outline from any card */
+  .feature-glass-btn, .feature-glass-btn-active {
+    border: none !important;
+    outline: none !important;
+    background: none;
+    box-shadow: none;
+    font-size: inherit;
+  }
+  /* Remove border from progress bar/mobile loader svg, etc */
+  .luxury-loading-minimal-container,
+  .luxury-progress-ring-minimal,
+  .luxury-outer-ring-minimal {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: none;
   }
 
-  .liquid-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s ease;
-  }
-
-  .liquid-btn:hover::before {
-    left: 100%;
-  }
-
-  .liquid-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(58, 41, 255, 0.4);
-  }
-
-  /* Center Layout */
-  .center-container {
+  /* New minimal mobile loader styles */
+  .luxury-loading-minimal-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 1rem;
-    position: relative;
-    z-index: 1;
+    min-height: 320px;
+    height: 60vh;
+    width: 100vw;
+    /* background: transparent; */
   }
 
-  .main-content {
+  .luxury-outer-ring-minimal {
+    height: 96px;
+    width: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .luxury-progress-ring-minimal {
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
+    height: 100%;
+    display: block;
   }
 
-  /* Responsive adjustments */
+  /* Mobile responsive: make elements larger, center contents, fill width */
+  .main-content {
+    max-width: 460px;
+    width: 100vw !important;
+    padding: 0 !important;
+  }
+  .luxury-glass, .luxury-glass-intense, .mesomorphic-card {
+    border-radius: 22px !important;
+    padding: 1.75rem 1.25rem !important;
+    margin-inline:0;
+    width: 100% !important;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.22);
+  }
+  .center-container {
+    max-width: 100vw;
+    width: 100vw !important;
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:0;
+  }
+  /* Global: make buttons and features bigger */
+  .luxury-btn-primary, .luxury-btn-secondary, .liquid-btn, .feature-glass-btn, .feature-glass-btn-active {
+    font-size: 1.22rem !important;
+    padding: 1.25rem 0 !important;
+    min-height: 56px !important;
+    border-radius: 18px !important;
+    width: 100% !important;
+    margin: 0.4rem 0 !important;
+    /* Increased click/touch area for mobile */
+  }
+
+  /* Feature selector: new big, borderless glass buttons with gradient fill on active */
+  .feature-glass-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.025);
+    color: #d0cffa;
+    border-radius: 18px;
+    padding: 24px 14px;
+    font-weight: 600;
+    font-size: 1.22rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: none;
+    transition: background 0.3s cubic-bezier(.4,0,.2,1), color 0.22s;
+    outline: none;
+  }
+  .feature-glass-btn:active, .feature-glass-btn:focus {
+    background: rgba(171,44,255,0.09);
+    color: #fff;
+  }
+  .feature-glass-btn-active {
+    background: linear-gradient(90deg, #6e52ff 0%, #ff82a9 100%);
+    color: #fff !important;
+    box-shadow: 0 0 16px 0 rgba(170, 82, 255, 0.09);
+  }
+  .feature-desc {
+    font-size: 0.8rem;
+    color: #bebee6;
+    font-weight: 400;
+    margin-top: 5px;
+  }
+  /* Switch align for mobile */
+  .feature-switch-wrap {
+    margin-left: 2vw;
+    min-width: 54px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  /* FeatureSelector header */
+  .feature-header-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  /* Responsive mobile paddings and scaling */
   @media (max-width: 768px) {
-    .luxury-loading-container {
-      min-height: 300px;
-      padding: 1rem;
+    .main-content, .luxury-glass, .luxury-glass-intense, .mesomorphic-card {
+      max-width: 97vw !important;
+      border-radius: 17px !important;
+      padding: 1.4rem 0.85rem !important;
     }
-    
-    .luxury-outer-ring {
-      width: 120px;
-      height: 120px;
+    .luxury-btn-primary, .luxury-btn-secondary, .liquid-btn, .feature-glass-btn, .feature-glass-btn-active {
+      font-size: 1.21rem !important;
+      min-height: 54px !important;
+      border-radius: 14px !important;
+      padding:1.1rem 0 !important;
     }
-    
-    .luxury-progress-ring {
-      width: 90px;
-      height: 90px;
+    .feature-header-title {
+      font-size: 1.33rem;
     }
-    
-    .luxury-center-icon {
-      width: 60px;
-      height: 60px;
+    .luxury-loading-minimal-container {
+      min-height: 220px;
+      height: 48vw;
+      width: 100vw;
     }
-    
-    .luxury-title {
-      font-size: 1.25rem;
-    }
-    
-    .main-content {
-      max-width: 350px;
+    .luxury-outer-ring-minimal {
+      width: 64px;
+      height: 64px;
     }
   }
 }

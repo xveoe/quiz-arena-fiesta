@@ -62,23 +62,23 @@ const TeamsView: React.FC<TeamsViewProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-5">
-        <Card className="modern-card overflow-hidden p-4">
+        <Card className="luxury-card overflow-hidden p-6">
           <TeamScore teams={teams} currentTeam={currentTeam} gameFeatures={gameFeatures} />
         </Card>
 
-        <div className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-4">
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}
             className="w-full"
           >
-            <Button 
+            <button 
               onClick={handleShowQuestion}
-              className="w-full py-3 modern-button hover-scale rounded-xl"
+              className="w-full luxury-button flex items-center justify-center gap-3 py-4 text-lg font-semibold"
             >
-              <Brain className="w-4 h-4 ml-2" /> عرض السؤال
-            </Button>
+              <Brain className="w-5 h-5" /> عرض السؤال
+            </button>
           </motion.div>
           
           {showAnswer && gameFeatures.judgeFunctionality && (
@@ -88,12 +88,12 @@ const TeamsView: React.FC<TeamsViewProps> = ({
               transition={{ delay: 0.3, duration: 0.3 }}
               className="w-full"
             >
-              <Button 
+              <button 
                 onClick={handleShowJudge}
-                className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white shadow-sm shadow-amber-500/20 rounded-xl transition-all duration-300"
+                className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:via-amber-700 hover:to-orange-700 text-white font-semibold px-6 py-4 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 backdrop-blur-lg border border-white/20 flex items-center justify-center gap-3 text-lg"
               >
-                <Gavel className="w-4 h-4 ml-2" /> تدخل الحكم
-              </Button>
+                <Gavel className="w-5 h-5" /> تدخل الحكم
+              </button>
             </motion.div>
           )}
         </div>
@@ -105,13 +105,12 @@ const TeamsView: React.FC<TeamsViewProps> = ({
         transition={{ delay: 0.4, duration: 0.3 }}
         className="w-full mt-auto pt-4"
       >
-        <Button 
+        <button 
           onClick={handleEndGame}
-          variant="outline"
-          className="w-full py-2 modern-button-outline hover-scale rounded-xl"
+          className="w-full bg-white/60 backdrop-blur-lg hover:bg-white/80 text-gray-700 border border-white/40 font-semibold px-6 py-4 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 text-lg"
         >
-          <X className="w-4 h-4 ml-2" /> إنهاء اللعبة
-        </Button>
+          <X className="w-5 h-5" /> إنهاء اللعبة
+        </button>
       </motion.div>
     </motion.div>
   );

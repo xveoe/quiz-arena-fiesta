@@ -25,28 +25,30 @@ const CustomCategoryInput: React.FC<CustomCategoryInputProps> = ({ onAddCustomCa
   };
   
   return (
-    <div className="flex flex-col space-y-3 mb-4 w-full">
+    <div className="flex flex-col space-y-4 mb-6 w-full">
       <div className="flex items-center gap-3 w-full">
         <Input
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="أدخل تصنيف الأسئلة الخاص بك"
-          className="flex-grow rounded-xl border-blue-700 bg-white text-gray-900 shadow-sm"
+          className="flex-grow modern-input text-right"
           dir="rtl"
         />
-        <Button
+        <button
           onClick={handleAddCategory}
           disabled={customCategory.trim().length === 0}
-          className="px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white shadow-sm transition-all duration-300"
+          className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-lg border border-white/20 flex items-center gap-2"
         >
-          <Plus className="w-4 h-4 ml-1" />
+          <Plus className="w-4 h-4" />
           إضافة
-        </Button>
+        </button>
       </div>
-      <p className="text-sm text-blue-700 font-medium px-1">
-        يمكنك إضافة تصنيفات مخصصة للأسئلة وسيقوم النظام بتوليد أسئلة مناسبة
-      </p>
+      <div className="luxury-card p-4">
+        <p className="text-sm text-blue-700 font-medium text-center">
+          يمكنك إضافة تصنيفات مخصصة للأسئلة وسيقوم النظام بتوليد أسئلة مناسبة
+        </p>
+      </div>
     </div>
   );
 };

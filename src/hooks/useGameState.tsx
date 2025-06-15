@@ -342,10 +342,8 @@ const useGameState = () => {
   const nextQuestion = () => {
     // If this is the last question, show results
     if (currentQuestionIndex >= questions.length - 1) {
+      // Set the results tab and determine losing team
       setCurrentTab("results"); 
-      
-      // Important: We need to keep gameStarted true until we actually show the results
-      // This fixes the issue where clicking "Next Question" on the last question goes back to setup
       
       if (teams[0].score !== teams[1].score) {
         const losingIndex = teams[0].score < teams[1].score ? 0 : 1;
@@ -486,12 +484,13 @@ const useGameState = () => {
     setLosingTeamIndex(null);
     setGameView('teams');
     setSetupStep('settings');
+    setIsLoading(false);
   };
-  
+
   const endGame = () => {
     if (!gameStarted) return;
     
-    // This is the correct way to handle ending the game
+    // This correctly handles ending the game
     setCurrentTab("results");
     
     if (teams[0].score !== teams[1].score) {
@@ -499,7 +498,7 @@ const useGameState = () => {
       setLosingTeamIndex(losingIndex);
     }
   };
-  
+
   const calculateTimeBonus = () => {
     return gameFeatures.timeBonus ? Math.round((timer / gameSetup.timePerQuestion) * 0.5 * 10) / 10 : 0;
   };

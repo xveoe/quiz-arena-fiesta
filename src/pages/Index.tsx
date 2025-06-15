@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import LoadingQuestions from "@/components/LoadingQuestions";
 import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
 import SetupSteps from "@/components/SetupSteps";
@@ -64,6 +63,18 @@ const Index = () => {
 
   // Render different screens based on game state without tabs
   const renderGameContent = () => {
+    // Show results when the game is finished
+    if (gameState.currentTab === "results") {
+      return (
+        <ResultsView 
+          teams={gameState.teams}
+          losingTeamIndex={gameState.losingTeamIndex}
+          showPunishment={gameState.showPunishment}
+          resetGame={gameState.resetGame}
+        />
+      );
+    }
+
     if (!gameState.gameStarted) {
       // Setup phase
       return (
@@ -117,13 +128,14 @@ const Index = () => {
             >
               <EnhancedLoadingScreen 
                 onComplete={gameState.handleStartGame}
+                duration={4000}
               />
             </motion.div>
           )}
         </AnimatePresence>
       );
     } else if (gameState.isLoading) {
-      // Loading phase
+      // Loading phase - using same EnhancedLoadingScreen
       return (
         <motion.div 
           key="loading"
@@ -132,18 +144,11 @@ const Index = () => {
           exit={{ opacity: 0 }}
           className="w-full h-full flex items-center justify-center"
         >
-          <LoadingQuestions />
+          <EnhancedLoadingScreen 
+            onComplete={() => gameState.setIsLoading(false)}
+            duration={3000}
+          />
         </motion.div>
-      );
-    } else if (!gameState.gameStarted || gameState.currentQuestionIndex >= gameState.questions.length) {
-      // Results phase
-      return (
-        <ResultsView 
-          teams={gameState.teams}
-          losingTeamIndex={gameState.losingTeamIndex}
-          showPunishment={gameState.showPunishment}
-          resetGame={gameState.resetGame}
-        />
       );
     } else {
       // Game phase
@@ -211,10 +216,20 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 flex flex-col">
-      <div className="flex-1 p-3 w-full h-full overflow-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800 flex flex-col relative overflow-hidden">
+      {/* Luxury dots background pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.15) 1px, transparent 0)`,
+          backgroundSize: '20px 20px'
+        }}></div>
+      </div>
+      
+      <div className="flex-1 p-3 w-full h-full overflow-auto relative z-10">
         <div className="w-full max-w-md mx-auto h-full flex flex-col items-center justify-center">
-          {renderGameContent()}
+          <div className="glass-effect rounded-3xl p-6 w-full shadow-2xl border border-white/20">
+            {renderGameContent()}
+          </div>
         </div>
       </div>
 

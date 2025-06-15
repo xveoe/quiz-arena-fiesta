@@ -46,20 +46,21 @@ const FeatureSelector: React.FC<FeatureSelectorProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="py-2"
+      style={{ width: '100vw', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 0, padding: 0 }}
     >
-      <div className="mb-7">
+      <div className="mb-9" style={{width: '98vw'}}>
         <h2 className="feature-header-title">اختر ميزات المسابقة</h2>
-        <div className="text-gray-300 text-center" style={{fontSize:'1.03rem'}}>يمكنك تفعيل ميزات إضافية لزيادة التحدي والمتعة</div>
+        <div className="text-gray-300 text-center" style={{fontSize:'1.20rem', paddingBottom:6}}>يمكنك تفعيل ميزات إضافية لزيادة التحدي والمتعة</div>
       </div>
-      <div>
+      <div style={{width:"99vw"}}>
         {Object.entries(gameFeatures).map(([key, value], index) => (
           <div
             key={key}
             className={`feature-glass-btn${value ? " feature-glass-btn-active" : ""}`}
-            style={{marginBottom:"1.1rem"}}
+            style={{marginBottom:"1.37rem", width:"98vw"}}
           >
-            <div>
-              <div style={{fontWeight: 800, fontSize:'1.09em'}}>{getFeatureName(key)}</div>
+            <div style={{flex:"1"}}>
+              <div style={{fontWeight: 900, fontSize:'1.31em'}}>{getFeatureName(key)}</div>
               <div className="feature-desc">{getFeatureDescription(key)}</div>
             </div>
             <div className="feature-switch-wrap">
@@ -67,17 +68,16 @@ const FeatureSelector: React.FC<FeatureSelectorProps> = ({
                 checked={value}
                 onCheckedChange={() => toggleFeature(key as keyof typeof gameFeatures)}
                 className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-600 data-[state=checked]:to-pink-500"
-                style={{transform: "scale(1.37)"}}
               />
             </div>
           </div>
         ))}
       </div>
-      <div style={{marginTop:"2rem"}}>
+      <div style={{marginTop:"2.4rem", width:"99vw"}}>
         <button
           onClick={onComplete}
           className="luxury-btn-primary"
-          style={{fontSize:'1.22rem'}}
+          style={{fontSize:'1.29rem', minHeight:68, fontWeight:900}}
         >
           ابدأ المسابقة
         </button>

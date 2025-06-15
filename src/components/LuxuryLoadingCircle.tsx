@@ -8,7 +8,7 @@ interface LuxuryLoadingCircleProps {
 }
 
 /**
- * Clean spinning loader: borderless, no icons, no text, no bar, only animated ring. Mobile optimized.
+ * دائرة تحميل أنيقة: بدون حدود خلفية أو أيقونات أو بار أو نص، فقط حلقة تدور. مخصصة للموبايل.
  */
 const LuxuryLoadingCircle: React.FC<LuxuryLoadingCircleProps> = ({
   onComplete,
@@ -34,7 +34,14 @@ const LuxuryLoadingCircle: React.FC<LuxuryLoadingCircleProps> = ({
   }, [onComplete, duration]);
 
   return (
-    <div className="luxury-loading-minimal-container">
+    <div className="luxury-loading-minimal-container" style={{
+      background: 'none',
+      boxShadow: 'none',
+      border: 'none',
+      outline: 'none',
+      width: "100vw",
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
       <motion.div
         className="luxury-outer-ring-minimal"
         animate={{
@@ -43,15 +50,26 @@ const LuxuryLoadingCircle: React.FC<LuxuryLoadingCircleProps> = ({
         transition={{
           rotate: { duration: 1.5, repeat: Infinity, ease: "linear" },
         }}
+        style={{
+          background: "none",
+          border: "none",
+          boxShadow: "none",
+          outline: "none",
+        }}
       >
-        <svg className="luxury-progress-ring-minimal" viewBox="0 0 64 64">
+        <svg className="luxury-progress-ring-minimal" viewBox="0 0 64 64" style={{
+          display: 'block',
+          height: "100%",
+          width: "100%",
+          background: 'none'
+        }}>
           <motion.circle
             cx="32"
             cy="32"
             r="28"
             fill="none"
             stroke="url(#loaderGradient)"
-            strokeWidth="6"
+            strokeWidth="7"
             strokeLinecap="round"
             strokeDasharray={176}
             strokeDashoffset={176 - (176 * progress) / 100}

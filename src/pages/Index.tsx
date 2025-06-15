@@ -5,7 +5,8 @@ import ManualQuestionForm from "@/components/ManualQuestionForm";
 import PunishmentBox from "@/components/PunishmentBox";
 import SetupSteps from "@/components/SetupSteps";
 import FeatureSelector from "@/components/FeatureSelector";
-import EnhancedLoadingScreen from "@/components/EnhancedLoadingScreen";
+import LuxuryLoadingCircle from "@/components/LuxuryLoadingCircle";
+import Aurora from "@/components/Aurora";
 import { useIsMobile } from "@/hooks/use-mobile";
 import TeamsView from "@/components/game/TeamsView";
 import QuestionView from "@/components/game/QuestionView";
@@ -14,30 +15,30 @@ import ResultsView from "@/components/game/ResultsView";
 import useGameState from "@/hooks/useGameState";
 
 const transitionVariants = [
-  { // اتجاه لأعلى
+  {
     initial: { y: 20, opacity: 0 },
     animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { y: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لأسفل
+  {
     initial: { y: -20, opacity: 0 },
     animate: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { y: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليمين
+  {
     initial: { x: -20, opacity: 0 },
     animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { x: 20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // اتجاه لليسار
+  {
     initial: { x: 20, opacity: 0 },
     animate: { x: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { x: -20, opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
   },
-  { // ظهور وتلاشي
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }
+  {
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.9, transition: { duration: 0.3, ease: "easeIn" } }
   }
 ];
 
@@ -61,9 +62,7 @@ const Index = () => {
     return null;
   }
 
-  // Render different screens based on game state without tabs
   const renderGameContent = () => {
-    // Show results when the game is finished
     if (gameState.currentTab === "results") {
       return (
         <ResultsView 
@@ -76,7 +75,6 @@ const Index = () => {
     }
 
     if (!gameState.gameStarted) {
-      // Setup phase
       return (
         <AnimatePresence mode="wait">
           {gameState.setupStep === 'settings' && (
@@ -86,7 +84,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4 }}
-              className="fade-in w-full"
+              className="w-full"
             >
               <SetupSteps 
                 gameSetup={gameState.gameSetup}
@@ -107,7 +105,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4 }}
-              className="fade-in w-full"
+              className="w-full"
             >
               <FeatureSelector 
                 gameFeatures={gameState.gameFeatures}
@@ -124,9 +122,9 @@ const Index = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="fade-in w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center"
             >
-              <EnhancedLoadingScreen 
+              <LuxuryLoadingCircle 
                 onComplete={gameState.handleStartGame}
                 duration={4000}
               />
@@ -135,7 +133,6 @@ const Index = () => {
         </AnimatePresence>
       );
     } else if (gameState.isLoading) {
-      // Loading phase - using same EnhancedLoadingScreen
       return (
         <motion.div 
           key="loading"
@@ -144,14 +141,13 @@ const Index = () => {
           exit={{ opacity: 0 }}
           className="w-full h-full flex items-center justify-center"
         >
-          <EnhancedLoadingScreen 
+          <LuxuryLoadingCircle 
             onComplete={() => gameState.setIsLoading(false)}
             duration={3000}
           />
         </motion.div>
       );
     } else {
-      // Game phase
       return (
         <motion.div 
           key={`${gameState.gameView}-${gameState.currentQuestionIndex}-${gameState.transitionType}`}
@@ -216,18 +212,19 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-800 flex flex-col relative overflow-hidden">
-      {/* Luxury dots background pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.15) 1px, transparent 0)`,
-          backgroundSize: '20px 20px'
-        }}></div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Aurora Background */}
+      <Aurora
+        colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
+        blend={0.5}
+        amplitude={1.0}
+        speed={0.5}
+      />
       
-      <div className="flex-1 p-3 w-full h-full overflow-auto relative z-10">
-        <div className="w-full max-w-md mx-auto h-full flex flex-col items-center justify-center">
-          <div className="glass-effect rounded-3xl p-6 w-full shadow-2xl border border-white/20">
+      {/* Main Content Container */}
+      <div className="center-container">
+        <div className="main-content">
+          <div className="luxury-glass-intense p-6 w-full">
             {renderGameContent()}
           </div>
         </div>

@@ -1,10 +1,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from "@/components/ui/button";
 import { Brain, Gavel, X } from 'lucide-react';
 import TeamScore from './TeamScore';
-import { Card } from "@/components/ui/card";
 
 interface Team {
   name: string;
@@ -62,9 +60,9 @@ const TeamsView: React.FC<TeamsViewProps> = ({
       transition={{ duration: 0.4 }}
     >
       <div className="space-y-5">
-        <Card className="luxury-card overflow-hidden p-6">
+        <div className="mesomorphic-card">
           <TeamScore teams={teams} currentTeam={currentTeam} gameFeatures={gameFeatures} />
-        </Card>
+        </div>
 
         <div className="flex flex-col space-y-4">
           <motion.div 
@@ -75,7 +73,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
           >
             <button 
               onClick={handleShowQuestion}
-              className="w-full luxury-button flex items-center justify-center gap-3 py-4 text-lg font-semibold"
+              className="w-full luxury-btn-primary flex items-center justify-center gap-3 py-4 text-lg font-semibold"
             >
               <Brain className="w-5 h-5" /> عرض السؤال
             </button>
@@ -90,7 +88,10 @@ const TeamsView: React.FC<TeamsViewProps> = ({
             >
               <button 
                 onClick={handleShowJudge}
-                className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-600 hover:via-amber-700 hover:to-orange-700 text-white font-semibold px-6 py-4 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 backdrop-blur-lg border border-white/20 flex items-center justify-center gap-3 text-lg"
+                className="w-full liquid-btn flex items-center justify-center gap-3 py-4 text-lg font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FF94B4 0%, #FF3232 100%)'
+                }}
               >
                 <Gavel className="w-5 h-5" /> تدخل الحكم
               </button>
@@ -107,7 +108,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({
       >
         <button 
           onClick={handleEndGame}
-          className="w-full bg-white/60 backdrop-blur-lg hover:bg-white/80 text-gray-700 border border-white/40 font-semibold px-6 py-4 rounded-2xl shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 text-lg"
+          className="w-full luxury-btn-secondary flex items-center justify-center gap-3 py-4 text-lg font-semibold"
         >
           <X className="w-5 h-5" /> إنهاء اللعبة
         </button>
